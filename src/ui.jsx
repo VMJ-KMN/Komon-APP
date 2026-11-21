@@ -29,7 +29,7 @@ export const Switch = ({ on, onChange, label }) => (
 )
 export const Tabs = ({ items, value, onChange }) => (
   <div className="tabs" role="tablist">{items.map(([k, l, n]) => (
-    <button key={k} role="tab" aria-selected={value === k} className={value === k ? 'on' : ''} onClick={() => onChange(k)}>{l}{n != null && <span className="cnt">{String(n).padStart(2, '0')}</span>}</button>))}</div>
+    <button key={k} role="tab" aria-selected={value === k} className={value === k ? 'on' : ''} onClick={() => onChange(k)}>{l}{n != null && <span className="cnt">{typeof n === 'number' ? String(n).padStart(2, '0') : n}</span>}</button>))}</div>
 )
 export const Tile = ({ icon: I, size = 44, pri, ico = 22 }) => <span className={'tile' + (pri ? ' pri' : '')} style={{ width: size, height: size }}><I size={ico} strokeWidth={2} /></span>
 export const Sum = ({ icon, label, value, detail, onClick, alert }) => (

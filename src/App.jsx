@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { House, ScanQrCode, Package, Wallet, LayoutGrid, QrCode, Calendar as Cal, ClipboardList, Receipt, Bell, Utensils, Users, CircleAlert, ArrowUpRight, ArrowUpLeft, Clock, Building2, Shield, Droplet, Flame, Landmark, Lock, Camera, Wrench, MessageCircle, CircleHelp, CreditCard, Info, Plus, ChevronRight, Check, Settings, Megaphone, TriangleAlert, CircleCheck, UserRound, ShieldCheck, LogOut } from 'lucide-react'
+import { House, ScanQrCode, Package, Wallet, LayoutGrid, QrCode, Calendar as Cal, ClipboardList, Receipt, Bell, Utensils, Users, CircleAlert, ArrowUpRight, ArrowUpLeft, Clock, Building2, Shield, Droplet, Flame, Landmark, Lock, Camera, Wrench, MessageCircle, CircleHelp, CreditCard, Info, Plus, ChevronRight, Check, Wifi, Settings, Megaphone, TriangleAlert, CircleCheck, UserRound, ShieldCheck, LogOut } from 'lucide-react'
 import { Header, TabHeader, Foot, Btn, Sheet, Switch, Tabs, Tile, Sum, KV, PinBox, Success, Qr, Calendar, Dot, TODAY, MESES, DIAS, key, cap, dShort, money, initials } from './ui.jsx'
 import { initial, BLOCKS, STEPS, SHORT } from './data.js'
 
@@ -33,19 +33,22 @@ export default function App() {
     serv: Servicios, reservar: Reservar, confReserva: ConfReserva, reservaOk: ReservaOk,
     solCat: SolCat, solForm: SolForm, solOk: SolOk, sol: SolDetalle, avisos: Avisos, ajustes: Ajustes, perfil: Perfil }
   const S = Screens[cur.s]
-  const showNav = NAV.includes(cur.s)
+  const showNav = NAV.includes(cur.s) || cur.s === 'avisos'
+  const act = cur.s === 'avisos' ? 'home' : cur.s
   const nPass = st.passes.filter(p => p.status === 'vigente').length
   const nPkg = st.pkgs.filter(p => p.status === 'porteria').length
   const items = [['home', House, 'Inicio'], ['accesos', ScanQrCode, 'Accesos', nPass], ['enc', Package, 'Encomiendas', nPkg], ['fin', Wallet, 'Finanzas', 'dot'], ['serv', LayoutGrid, 'Servicios']]
 
   return (
     <div className="stage"><div className="phone">
+      <div className="sbar" aria-hidden="true"><span>9:41</span><span className="ind"><span style={{ display: 'flex', gap: 2, alignItems: 'flex-end' }}>{[4, 6, 8, 10].map(h => <i key={h} style={{ width: 3, height: h, borderRadius: 1, background: '#f3f3f3' }} />)}</span><Wifi size={17} /><span style={{ position: 'relative', width: 27, height: 13 }}><i style={{ position: 'absolute', left: 0, top: 0, width: 24, height: 12, border: '1px solid #c5c5c5', borderRadius: 4 }} /><i style={{ position: 'absolute', left: 2, top: 2, width: 20, height: 8, borderRadius: 2.5, background: '#f3f3f3' }} /><i style={{ position: 'absolute', left: 25, top: 4, width: 2, height: 4, borderRadius: 1, background: '#c5c5c5' }} /></span></span></div>
       <S {...A} />
+      <div className="hind" aria-hidden="true"><i /></div>
       {showNav && <>
         <div className="fade" />
         <nav className="nav" aria-label="Principal">
           {items.map(([k, I, l, b]) => (
-            <button key={k} className={cur.s === k ? 'on' : ''} onClick={() => tab(k)} aria-current={cur.s === k ? 'page' : undefined}>
+            <button key={k} className={act === k ? 'on' : ''} onClick={() => tab(k)} aria-current={act === k ? 'page' : undefined}>
               <I size={20} strokeWidth={2} />{l}
               {b === 'dot' ? st.bills.length > 0 && <i className="dot" /> : b > 0 && <span className="bd">{b}</span>}
             </button>))}
@@ -593,14 +596,19 @@ function SolDetalle({ st, up, p, back, tab, toast }) {
 function Avisos({ st, back, go }) {
   const [t, setT] = useState('t')
   const mans = st.notices.filter(n => n.kind === 'man'), avs = st.notices.filter(n => n.kind !== 'man')
+  const urg = avs.find(n => n.kind === 'urg')
   return (
     <>
       <div className="hdr in"><button className="back" aria-label="Atrás" onClick={back}><ArrowUpLeft size={22} /></button><h1>Avisos</h1><button className="tile" aria-label="Ajustes de notificaciones" onClick={() => go('ajustes')} style={{ width: 40, height: 40, border: 0, background: 'var(--muted)' }}><Settings size={20} /></button></div>
-      <div className="scroll" style={{ paddingTop: 4, gap: 16 }}>
-        <Tabs items={[['t', 'Todos', st.notices.length], ['m', 'Mantención', mans.length]]} value={t} onChange={setT} />
-        {t === 't' && avs.map(n => <Notice key={n.id} n={n} />)}
-        {(t === 't' ? mans.length > 0 : true) && <p className="sec" style={{ marginBottom: -4 }}>Mantenciones</p>}
-        {mans.map(n => <ManCard key={n.id} n={n} />)}
+      <div className="scroll nav-pad" style={{ paddingTop: 4, gap: 16 }}>
+        <Tabs items={[['t', 'Todos', '03'], ['m', 'Mantención', '2']]} value={t} onChange={setT} />
+        {t === 't' ? <>
+          {avs.map(n => <Notice key={n.id} n={n} />)}
+          <p className="sec" style={{ marginBottom: -4 }}>Mantenciones</p>
+          {mans.map(n => <ManCard key={n.id} n={n} />)}</> : <>
+          <div className="row" style={{ justifyContent: 'space-between', marginBottom: -4 }}><p className="sec">Mantenciones</p><span className="t-xs mut">29 De Octubre</span></div>
+          {urg && <Notice n={{ ...urg, date: null }} />}
+          {mans.filter(n => n.badge === 'Finalizada').map(n => <ManCard key={n.id} n={n} />)}</>}
       </div></>)
 }
 function Ajustes({ st, up, back }) {
