@@ -149,3 +149,6 @@ html[data-theme=claro][data-contrast=alto] .card,html[data-theme=claro][data-con
 .wk{width:44px;height:44px;border-radius:9999px;border:1px solid var(--border);background:none;display:flex;align-items:center;justify-content:center;color:var(--content)}.wk:disabled{opacity:.35}
 html[data-theme=claro] .btn.inv{background:#3a3c3a;color:#fff}
 html[data-theme=claro][data-contrast=alto] .btn.inv{background:#1b1d1b}
+
+.logo-d,.logo-l{display:block}.logo-l{display:none}
+html[data-theme=claro] .logo-d{display:none}html[data-theme=claro] .logo-l{display:block}
