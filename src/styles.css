@@ -70,7 +70,7 @@ svg{flex:none}
 .tabs{display:flex;gap:8px;border:1px solid #6b6d6b;border-radius:9999px;padding:4px;margin-bottom:0}
 .tabs button{flex:1;height:44px;border:0;border-radius:9999px;background:var(--muted);color:var(--content);font-size:14px;font-weight:510;display:flex;align-items:center;justify-content:center;gap:8px}
 .tabs button.on{background:var(--primary);color:#fff}
-.cnt{background:var(--content);color:var(--surface);border-radius:9999px;font-size:12px;line-height:16px;min-width:22px;padding:0 6px;font-weight:510;text-align:center}
+.cnt{background:var(--content);color:var(--surface);border-radius:9999px;font-size:12px;line-height:16px;width:22px;height:22px;padding:0;font-weight:510;display:inline-flex;align-items:center;justify-content:center;flex:none}
 .tabs button.on .cnt{color:var(--primary)}
 .kv{display:flex;justify-content:space-between;gap:16px;font-size:14px;line-height:20px;padding:6px 0}
 .kv b{font-weight:510;text-align:right}
@@ -80,7 +80,7 @@ svg{flex:none}
 .nav{position:absolute;left:24px;right:24px;bottom:calc(env(safe-area-inset-bottom) + var(--navb));background:var(--nav);border-radius:9999px;padding:8px;display:flex;align-items:center;justify-content:center;z-index:6}
 .nav button{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;border-radius:16px;position:relative;color:var(--content-subtle);font-size:10px;line-height:12px;font-weight:510;min-width:44px}
 .nav button.on{background:var(--muted);color:var(--content);padding:8px 22px;border-radius:69px}
-.nav .bd{position:absolute;top:0;left:calc(50% + 4px);background:var(--primary);border:2px solid var(--nav);color:#fff;border-radius:9999px;padding:1px 4px;font-size:10px;line-height:12px}
+.nav .bd{position:absolute;top:0;left:calc(50% + 4px);background:var(--primary);border:2px solid var(--nav);color:#fff;border-radius:9999px;min-width:18px;height:18px;padding:0;display:flex;align-items:center;justify-content:center;font-size:10px;line-height:12px}
 .nav .dot{position:absolute;top:4px;left:calc(50% + 6px);width:10px;height:10px;border-radius:5px;background:#e5484d;border:2px solid var(--nav)}
 .fab{position:absolute;right:24px;bottom:calc(env(safe-area-inset-bottom) + var(--navb) + 76px);z-index:7;height:48px;padding:0 20px;border-radius:9999px;background:var(--primary);border:0;color:#fff;font-size:16px;font-weight:510;display:flex;align-items:center;gap:8px;box-shadow:0 6px 20px rgba(0,0,0,.35)}
 .sheet-bg{position:absolute;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;z-index:20;animation:fade .15s}
