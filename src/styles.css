@@ -80,9 +80,8 @@ svg{flex:none}
 .nav{position:absolute;left:24px;right:24px;bottom:calc(env(safe-area-inset-bottom) + var(--navb));background:var(--nav);border-radius:9999px;padding:8px;display:flex;align-items:center;justify-content:center;z-index:6}
 .nav button{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;border-radius:16px;position:relative;color:var(--content-subtle);font-size:10px;line-height:12px;font-weight:510;min-width:44px}
 .nav button.on{background:var(--muted);color:var(--content);padding:8px 22px;border-radius:69px}
-.nav .bd{position:absolute;top:0;left:calc(50% + 4px);background:var(--primary);border:2px solid var(--nav);color:#fff;border-radius:9999px;min-width:18px;height:18px;padding:0;display:flex;align-items:center;justify-content:center;font-size:10px;line-height:12px}
-.nav button.on .bd,.nav button.on .dot{border-color:var(--muted)}
-.nav .dot{position:absolute;top:4px;left:calc(50% + 6px);width:10px;height:10px;border-radius:5px;background:#e5484d;border:2px solid var(--nav)}
+.nav .bd{position:absolute;top:0;left:calc(50% + 4px);background:var(--primary);border:0;color:#fff;border-radius:9999px;min-width:18px;height:18px;padding:0;display:flex;align-items:center;justify-content:center;font-size:10px;line-height:12px}
+.nav .dot{position:absolute;top:4px;left:calc(50% + 6px);width:10px;height:10px;border-radius:5px;background:#e5484d;border:0}
 .fab{position:absolute;right:24px;bottom:calc(env(safe-area-inset-bottom) + var(--navb) + 76px);z-index:7;height:44px;padding:0 20px;border-radius:9999px;background:var(--primary);border:0;color:#fff;font-size:16px;font-weight:510;display:flex;align-items:center;gap:8px;box-shadow:0 6px 20px rgba(0,0,0,.35)}
 .sheet-bg{position:absolute;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;z-index:20;animation:fade .15s}
 .sheet{width:100%;background:var(--muted);border-radius:28px 28px 0 0;padding:24px 24px calc(env(safe-area-inset-bottom) + 20px);animation:up .22s ease-out;display:flex;flex-direction:column;gap:12px}
