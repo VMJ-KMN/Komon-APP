@@ -125,3 +125,7 @@ html[data-contrast=alto]{--content-muted:#e8e8e8;--content-subtle:#d0d0d0;--bord
 html[data-contrast=alto] .card,html[data-contrast=alto] .sum,html[data-contrast=alto] .opt{outline:1px solid #6b6d6b}
 html[data-motion=reducir] *,html[data-motion=reducir] *::before,html[data-motion=reducir] *::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+
+.field.bad{border-color:var(--danger)}
+.errtxt{display:flex;align-items:center;gap:6px;font-size:0.75rem;line-height:1rem;color:#f08a87;margin:8px 0 0}
+html[data-contrast=alto] .errtxt{color:#ffb4b0}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { House, ScanQrCode, Package, Wallet, LayoutGrid, QrCode, Calendar as Cal, ClipboardList, Receipt, Bell, Utensils, Users, CircleAlert, ArrowUpRight, ArrowUpLeft, Clock, Building2, Shield, Droplet, Flame, Landmark, Lock, Camera, Wrench, MessageCircle, CircleHelp, CreditCard, Info, Plus, ChevronRight, Check, Wifi, Settings, Megaphone, TriangleAlert, CircleCheck, UserRound, ShieldCheck, LogOut, Accessibility } from 'lucide-react'
+import { House, ScanQrCode, Package, Wallet, LayoutGrid, QrCode, Calendar as Cal, ClipboardList, Receipt, Bell, Utensils, Users, CircleAlert, ArrowUpRight, ArrowUpLeft, Clock, Building2, Shield, Droplet, Flame, Landmark, Lock, Camera, Wrench, MessageCircle, CircleHelp, CreditCard, Info, Plus, ChevronRight, Check, Wifi, Settings, Megaphone, TriangleAlert, CircleCheck, UserRound, ShieldCheck, LogOut, Accessibility, CircleX, Phone, Mail, FlaskConical } from 'lucide-react'
 import { Header, TabHeader, Foot, Btn, Sheet, Switch, Tabs, Tile, Sum, KV, PinBox, Success, Qr, Calendar, Dot, TODAY, MESES, DIAS, key, cap, dShort, money, initials } from './ui.jsx'
 import { initial, BLOCKS, STEPS, SHORT } from './data.js'
 
@@ -38,13 +38,13 @@ export default function App() {
   const back = () => setStack(a => (a.length > 1 ? a.slice(0, -1) : a))
   const tab = (s, p = {}) => setStack([{ s, p }])
   const replace = (s, p = {}) => setStack(a => [...a.slice(0, -1), { s, p }])
-  const reset = () => { setSt(initial()); setStack([{ s: 'onb' }]) }
+  const reset = () => { setSt(s => ({ ...initial(), sim: s.sim, a11y: s.a11y })); setStack([{ s: 'onb' }]) }
   const A = { st, up, go, back, tab, replace, toast: setToast, reset, p: cur.p || {}, deep: stack.length > 1 }
 
   const Screens = { onb: Onb, home: Home, accesos: Accesos, nuevoPase: NuevoPase, paseCreado: PaseCreado, pase: PaseDetalle, paseRev: PaseRevocado,
     enc: Encomiendas, fin: Finanzas, detalleCobro: DetalleCobro, historial: HistorialPagos, pagar: Pagar, confPago: ConfPago, proc: Procesando, pagoOk: PagoOk, comp: Comprobante,
     serv: Servicios, reservar: Reservar, confReserva: ConfReserva, reservaOk: ReservaOk,
-    solCat: SolCat, solForm: SolForm, solOk: SolOk, sol: SolDetalle, avisos: Avisos, ajustes: Ajustes, perfil: Perfil, a11y: Accesib }
+    solCat: SolCat, solForm: SolForm, solOk: SolOk, sol: SolDetalle, avisos: Avisos, ajustes: Ajustes, perfil: Perfil, a11y: Accesib, datos: Datos, ayuda: Ayuda, pagoFail: PagoFallido }
   const S = Screens[cur.s]
   const showNav = NAV.includes(cur.s) || cur.s === 'avisos'
   const act = cur.s === 'avisos' ? 'home' : cur.s
@@ -131,7 +131,7 @@ function Home({ st, go }) {
         </div>
         {(total > 0 || pk.length > 0) && <div className="col" style={{ gap: 12 }}>
           <p className="sec">Requiere tu atención</p>
-          {total > 0 && <Sum alert icon={Receipt} label="Saldo por pagar" value={money(total)} detail="Vence el 10 de diciembre" onClick={() => go('fin')} />}
+          {total > 0 && <Sum alert icon={Receipt} label="Saldo por pagar" value={money(total)} detail={(st.sim && st.sim.vencido) ? 'Vencido el 10 de noviembre' : 'Vence el 10 de diciembre'} onClick={() => go('fin')} />}
           {pk.length > 0 && <Sum icon={Package} label="Encomiendas" value={`${pk.length} por retirar`} detail={[...new Set(pk.map(p => p.from))].join(' · ')} onClick={() => go('enc')} />}
         </div>}
         {nt && <div className="col" style={{ gap: 12 }}><p className="sec">Aviso destacado</p><Notice n={{ ...nt, eyebrow: 'AVISOS', date: null }} action onClick={() => go('avisos')} /></div>}
@@ -208,8 +208,14 @@ function NuevoPase({ up, back, replace }) {
   const [rut, setRut] = useState('')
   const [dur, setDur] = useState('1 día')
   const [date, setDate] = useState(null)
-  const ok = name.trim().length > 1 && (dur !== 'Elegir fecha' || date)
+  const [er, setEr] = useState({})
   const create = () => {
+    const e = {}
+    if (name.trim().length < 2) e.name = 'Escribe el nombre de la visita'
+    if (rut.trim() && !/^\d{1,2}\.?\d{3}\.?\d{3}-?[\dkK]$/.test(rut.trim())) e.rut = 'Revisa el RUT. Ejemplo: 12.345.678-9'
+    if (dur === 'Elegir fecha' && !date) e.date = 'Elige una fecha en el calendario'
+    setEr(e)
+    if (Object.keys(e).length) { setTimeout(() => document.querySelector('[aria-invalid="true"], .errtxt')?.scrollIntoView({ block: 'center' }), 30); setTimeout(() => document.querySelector('[aria-invalid="true"]')?.focus(), 60); return }
     const id = 'p' + Date.now(), n = name.trim()
     const pin = String(1000 + Math.floor(Math.random() * 9000))
     const week = new Date(TODAY.getTime() + 7 * 864e5)
@@ -223,12 +229,12 @@ function NuevoPase({ up, back, replace }) {
       <Header title="Nuevo pase" onBack={back} />
       <div className="scroll" style={{ gap: 20, paddingTop: 4 }}>
         <div><span className="lbl" style={{ marginBottom: 12 }}>Tipo de pase</span><div className="chips">{['Visita', 'Delivery', 'Proveedor'].map(k => <button key={k} className={'chip' + (kind === k ? ' on' : '')} onClick={() => setKind(k)}>{k}</button>)}</div></div>
-        <div><label className="lbl" htmlFor="nm" style={{ marginBottom: 8 }}>Nombre de la visita</label><input id="nm" className="field" placeholder="Ej: Pedro Rojas" value={name} onChange={e => setName(e.target.value)} /><p className="help">Como aparecerá en el pase</p></div>
-        <div><label className="lbl" htmlFor="rut" style={{ marginBottom: 8 }}>RUT (opcional)</label><input id="rut" className="field" placeholder="Ej: 12.345.678-9" inputMode="text" value={rut} onChange={e => setRut(e.target.value)} /><p className="help">Solo si conserjería lo necesita</p></div>
+        <div><label className="lbl" htmlFor="nm" style={{ marginBottom: 8 }}>Nombre de la visita</label><input id="nm" className={'field' + (er.name ? ' bad' : '')} aria-invalid={!!er.name} aria-describedby="nm-h" placeholder="Ej: Pedro Rojas" value={name} onChange={e => { setName(e.target.value); setEr(x => ({ ...x, name: null })) }} /><Hint id="nm-h" err={er.name}>Como aparecerá en el pase</Hint></div>
+        <div><label className="lbl" htmlFor="rut" style={{ marginBottom: 8 }}>RUT (opcional)</label><input id="rut" className={'field' + (er.rut ? ' bad' : '')} aria-invalid={!!er.rut} aria-describedby="rut-h" placeholder="Ej: 12.345.678-9" inputMode="text" value={rut} onChange={e => { setRut(e.target.value); setEr(x => ({ ...x, rut: null })) }} /><Hint id="rut-h" err={er.rut}>Solo si conserjería lo necesita</Hint></div>
         <div><span className="lbl" style={{ marginBottom: 12 }}>Duración</span><div className="chips">{['1 día', '1 semana', 'Elegir fecha'].map(k => <button key={k} className={'chip' + (dur === k ? ' on' : '')} onClick={() => setDur(k)}>{k}</button>)}</div></div>
-        {dur === 'Elegir fecha' && <Calendar value={date} onChange={setDate} />}
+        {dur === 'Elegir fecha' && <><Calendar value={date} onChange={d => { setDate(d); setEr(x => ({ ...x, date: null })) }} />{er.date && <p className="errtxt" role="alert"><CircleAlert size={14} />{er.date}</p>}</>}
       </div>
-      <Foot><Btn disabled={!ok} onClick={create}>Crear pase</Btn></Foot></>)
+      <Foot><Btn onClick={create}>Crear pase</Btn></Foot></>)
 }
 
 function PaseCreado({ st, p, tab, toast }) {
@@ -322,9 +328,10 @@ function Finanzas({ st, go }) {
       <div className="scroll nav-pad" style={{ paddingTop: 12 }}>
         {total > 0 ? <>
           <div className="card col" style={{ gap: 12 }}>
-            <div className="row" style={{ justifyContent: 'space-between' }}><span className="t-sm mut">Saldo de noviembre</span><Dot c="#f59e0b" t="Por vencer" /></div>
+            <div className="row" style={{ justifyContent: 'space-between' }}><span className="t-sm mut">Saldo de noviembre</span>{(st.sim && st.sim.vencido) ? <Dot c="#dc2626" t="Vencido" /> : <Dot c="#f59e0b" t="Por vencer" />}</div>
             <div style={{ fontSize: '2.25rem', lineHeight: '2.75rem', fontWeight: 590 }}>{money(total)}</div>
-            <div className="row t-sm mut" style={{ gap: 8 }}><Cal size={16} />Vence el 10 de diciembre de 2026</div>
+            <div className="row t-sm mut" style={{ gap: 8 }}><Cal size={16} />{(st.sim && st.sim.vencido) ? 'Venció el 10 de noviembre de 2026' : 'Vence el 10 de diciembre de 2026'}</div>
+            {(st.sim && st.sim.vencido) && <div className="row t-xs" style={{ gap: 8, color: '#f08a87', alignItems: 'flex-start' }}><TriangleAlert size={16} style={{ flexShrink: 0 }} />Tu pago está atrasado. Págalo hoy para evitar intereses por mora.</div>}
             <Btn onClick={() => go('confPago', { method: 'Tarjeta ····4821' })}>Pagar con tarjeta ····4821</Btn>
             <button className="lnk" style={{ height: 28 }} onClick={() => go('pagar')}>Usar otro método</button>
           </div>
@@ -407,6 +414,7 @@ function ConfPago({ st, p, back, replace }) {
 function Procesando({ st, up, p, replace }) {
   useEffect(() => {
     const t = setTimeout(() => {
+      if (st.sim && st.sim.fail) { up(s => ({ sim: { ...s.sim, fail: false } })); replace('pagoFail', { method: p.method }); return }
       const id = 'c' + Date.now(), total = st.bills.reduce((a, b) => a + b.v, 0), d = TODAY
       const mm = MESES[d.getMonth()].slice(0, 3)
       up(s => ({ bills: [], paid: [{ id, concept: 'Noviembre 2026', v: total, date: `${d.getDate()} ${mm} ${d.getFullYear()}, ${hhmm()}`, short: `${d.getDate()} ${mm}`, method: p.method, m: p.method.split(' ')[0], ref: 'SRN-001482' }, ...s.paid] }))
@@ -558,7 +566,13 @@ function SolForm({ p, up, back, replace }) {
   const [sub, setSub] = useState('')
   const [desc, setDesc] = useState('')
   const [foto, setFoto] = useState(false)
+  const [er, setEr] = useState({})
   const send = () => {
+    const e = {}
+    if (sub.trim().length < 3) e.sub = 'Escribe un asunto de al menos 3 letras'
+    if (desc.trim().length < 10) e.desc = 'Cuéntanos un poco más (mínimo 10 letras)'
+    setEr(e)
+    if (Object.keys(e).length) { setTimeout(() => document.querySelector('[aria-invalid="true"]')?.focus(), 60); return }
     const id = 's' + Date.now()
     const ref = String(236 + (Date.now() % 1000) % 50).padStart(4, '0')
     up(s => ({ reqs: [{ id, cat: p.cat, title: sub.trim(), desc: desc.trim() || 'Sin descripción.', status: 0, created: 'Hoy', ref, log: ['Hoy, ' + hhmm()] }, ...s.reqs] }))
@@ -569,11 +583,11 @@ function SolForm({ p, up, back, replace }) {
       <Header title="Nueva solicitud" onBack={back} />
       <div className="scroll" style={{ paddingTop: 0, gap: 20 }}>
         <span className="chip on" style={{ alignSelf: 'flex-start' }}>{p.cat}</span>
-        <div><label className="lbl" htmlFor="as" style={{ marginBottom: 8 }}>Asunto</label><input id="as" className="field" placeholder="Ej: Luz quemada en pasillo piso 12" value={sub} onChange={e => setSub(e.target.value)} /><p className="help">Resume el problema en una frase</p></div>
-        <div><label className="lbl" htmlFor="ds" style={{ marginBottom: 8 }}>Descripción</label><textarea id="ds" className="field" rows={4} placeholder="¿Qué pasó y dónde?" value={desc} onChange={e => setDesc(e.target.value)} style={{ resize: 'none' }} /><p className="help">Cuéntanos qué pasó y dónde.</p></div>
+        <div><label className="lbl" htmlFor="as" style={{ marginBottom: 8 }}>Asunto</label><input id="as" className={'field' + (er.sub ? ' bad' : '')} aria-invalid={!!er.sub} aria-describedby="as-h" placeholder="Ej: Luz quemada en pasillo piso 12" value={sub} onChange={e => { setSub(e.target.value); setEr(x => ({ ...x, sub: null })) }} /><Hint id="as-h" err={er.sub}>Resume el problema en una frase</Hint></div>
+        <div><label className="lbl" htmlFor="ds" style={{ marginBottom: 8 }}>Descripción</label><textarea id="ds" className={'field' + (er.desc ? ' bad' : '')} aria-invalid={!!er.desc} aria-describedby="ds-h" rows={4} placeholder="¿Qué pasó y dónde?" value={desc} onChange={e => { setDesc(e.target.value); setEr(x => ({ ...x, desc: null })) }} style={{ resize: 'none' }} /><Hint id="ds-h" err={er.desc}>Cuéntanos qué pasó y dónde.</Hint></div>
         <button onClick={() => setFoto(!foto)} className="row" style={{ justifyContent: 'center', gap: 12, height: 88, border: '1px dashed var(--border-strong)', borderRadius: 16, background: 'none', fontSize: '0.875rem' }}><Camera size={20} />{foto ? 'Foto agregada ✓' : 'Agregar foto (opcional)'}</button>
       </div>
-      <Foot><Btn disabled={sub.trim().length < 3} onClick={send}>Enviar solicitud</Btn></Foot></>)
+      <Foot><Btn onClick={send}>Enviar solicitud</Btn></Foot></>)
 }
 function SolOk({ st, p, tab, replace }) {
   const r = st.reqs.find(x => x.id === p.id)
@@ -638,19 +652,23 @@ function Ajustes({ st, up, back }) {
 }
 function Perfil({ st, up, back, go, tab, toast, reset }) {
   const R = ({ icon, t, onClick, right, red }) => <button onClick={onClick} className="row" style={{ gap: 12, background: 'var(--muted)', border: 0, borderRadius: 16, padding: '0 16px', height: 56, width: '100%', textAlign: 'left', color: red ? '#f08a87' : undefined }}><Tile icon={icon} size={32} ico={16} /><span className="t-sm" style={{ flex: 1, fontSize: '0.9375rem' }}>{t}</span>{right || (!red && <ChevronRight size={16} color="#c5c5c5" />)}</button>
-  const soon = () => toast('Disponible en la versión final')
   return (
     <>
       <Header title="Perfil" onBack={back} />
       <div className="scroll" style={{ paddingTop: 4, gap: 12 }}>
         <div className="card col center" style={{ gap: 8, padding: 24, borderRadius: 24 }}><span className="av" style={{ width: 48, height: 48 }}>RD</span><span className="t-base">Residente Demo</span><span className="t-xs mut">Torre A · Depto 1204</span></div>
-        <R icon={UserRound} t="Mis datos" onClick={soon} />
+        <R icon={UserRound} t="Mis datos" onClick={() => go('datos')} />
         <R icon={Bell} t="Notificaciones" onClick={() => go('ajustes')} />
         <div className="row" style={{ gap: 12, background: 'var(--muted)', borderRadius: 16, padding: '0 16px', height: 56 }}><Tile icon={ShieldCheck} size={32} ico={16} /><span className="t-sm" style={{ flex: 1, fontSize: '0.9375rem' }}>Ingreso con Face ID</span><Switch label="Ingreso con Face ID" on={!!st.sw.face} onChange={() => up(s => ({ sw: { ...s.sw, face: !s.sw.face } }))} /></div>
         <R icon={Accessibility} t="Accesibilidad" onClick={() => go('a11y')} />
         <R icon={Cal} t="Mis reservas" onClick={() => tab('serv')} />
-        <R icon={Info} t="Ayuda" onClick={soon} />
+        <R icon={Info} t="Ayuda" onClick={() => go('ayuda')} />
         <R icon={UserRound} t="Cerrar sesión" red onClick={reset} />
+        <div className="card col" style={{ gap: 4, padding: '12px 16px' }}>
+          <span className="t-xs sub row" style={{ gap: 6 }}><FlaskConical size={14} />Modo moderador · escenarios de prueba</span>
+          <div className="row" style={{ minHeight: 52, gap: 12 }}><span className="t-sm" style={{ flex: 1 }}>El próximo pago falla</span><Switch label="El próximo pago falla" on={!!(st.sim && st.sim.fail)} onChange={() => up(s => ({ sim: { ...(s.sim || {}), fail: !(s.sim && s.sim.fail) } }))} /></div>
+          <div className="row" style={{ minHeight: 52, gap: 12, borderTop: '1px solid var(--border)' }}><span className="t-sm" style={{ flex: 1 }}>Gasto común vencido</span><Switch label="Gasto común vencido" on={!!(st.sim && st.sim.vencido)} onChange={() => up(s => ({ sim: { ...(s.sim || {}), vencido: !(s.sim && s.sim.vencido) } }))} /></div>
+        </div>
         <span className="t-xs sub center" style={{ textAlign: 'center' }}>Cerrar sesión reinicia la demo para el siguiente participante.</span>
       </div></>)
 }
@@ -676,5 +694,46 @@ function Accesib({ st, up, back }) {
           <div className="row" style={{ minHeight: 68, gap: 12, borderTop: '1px solid var(--border)' }}><div className="col" style={{ flex: 1 }}><span className="t-base" style={{ fontWeight: 400 }}>Reducir movimiento</span><span className="t-xs mut">Menos animaciones</span></div><Switch label="Reducir movimiento" on={A.motion === 'reducir'} onChange={() => set({ motion: A.motion === 'reducir' ? 'normal' : 'reducir' })} /></div>
         </div>
         <p className="t-xs mut" style={{ margin: 0 }}>También respetamos la configuración de tu teléfono.</p>
+      </div></>)
+}
+
+function Hint({ id, err, children }) {
+  return err ? <p id={id} className="errtxt" role="alert"><CircleAlert size={14} />{err}</p> : <p id={id} className="help">{children}</p>
+}
+
+function PagoFallido({ st, p, go, replace, tab }) {
+  return (
+    <>
+      <div className="scroll center" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 48px)', gap: 12 }}>
+        <div className="ok" style={{ width: 96, height: 96, background: 'var(--danger)' }}><CircleX size={48} strokeWidth={1.6} color="#fff" /></div>
+        <h1 style={{ margin: '12px 0 0', fontSize: '1.375rem', fontWeight: 590 }}>No pudimos procesar tu pago</h1>
+        <p className="t-sm mut" style={{ margin: 0, maxWidth: 300 }}>Tu banco rechazó la operación. No se hizo ningún cargo a tu {p.method.startsWith('Tarjeta') ? 'tarjeta' : 'cuenta'}.</p>
+        <div className="card s" style={{ width: '100%', padding: '12px 24px', marginTop: 8 }}><KV k="Método" v={p.method} /><KV k="Motivo" v="Rechazado por el emisor" /></div>
+      </div>
+      <Foot nb><Btn onClick={() => replace('confPago', { method: p.method })}>Reintentar pago</Btn><Btn v="dark" onClick={() => replace('pagar')}>Usar otro método</Btn><button className="lnk" style={{ height: 28 }} onClick={() => tab('fin')}>Volver a Finanzas</button></Foot></>)
+}
+
+function Datos({ back }) {
+  const rows = [['Nombre', 'Residente Demo'], ['RUT', '12.345.678-9'], ['Correo', 'residente@komon.cl'], ['Teléfono', '+56 9 1234 5678'], ['Edificio', 'Torre A'], ['Departamento', '1204'], ['Estacionamiento', 'E-45']]
+  return (
+    <>
+      <Header title="Mis datos" onBack={back} />
+      <div className="scroll" style={{ paddingTop: 0, gap: 16 }}>
+        <div className="card">{rows.map(([k, v]) => <KV key={k} k={k} v={v} />)}</div>
+        <p className="t-xs mut" style={{ margin: 0 }}>Para cambiar tus datos, contacta a la administración.</p>
+      </div></>)
+}
+
+function Ayuda({ back, toast }) {
+  const C = ({ icon, t, s }) => <div className="card row" style={{ gap: 12 }}><Tile icon={icon} size={40} ico={18} /><div className="col" style={{ flex: 1 }}><span className="t-sm" style={{ fontWeight: 510 }}>{t}</span><span className="t-xs mut">{s}</span></div></div>
+  const F = [['¿Cómo creo un pase de visita?', 'En Accesos, toca "Nuevo pase", completa el nombre y elige la duración.'], ['¿Cómo pago los gastos comunes?', 'En Finanzas, toca "Pagar". Puedes usar tarjeta o transferencia.'], ['¿Cuándo llega mi encomienda?', 'Te avisamos en Encomiendas cuando llegue a portería, con tu PIN de retiro.']]
+  return (
+    <>
+      <Header title="Ayuda" onBack={back} />
+      <div className="scroll" style={{ paddingTop: 0, gap: 12 }}>
+        <C icon={Phone} t="Conserjería" s="+56 2 2345 6789 · 24 horas" />
+        <C icon={Mail} t="Administración" s="admin@komon.cl · Lun a Vie, 9:00 a 18:00" />
+        <span className="sec" style={{ marginTop: 8 }}>Preguntas frecuentes</span>
+        {F.map(([q, r]) => <div key={q} className="card col" style={{ gap: 4 }}><span className="t-sm" style={{ fontWeight: 510 }}>{q}</span><span className="t-xs mut">{r}</span></div>)}
       </div></>)
 }
