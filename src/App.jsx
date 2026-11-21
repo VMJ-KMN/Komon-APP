@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { House, ScanQrCode, Package, Wallet, LayoutGrid, QrCode, Calendar as Cal, ClipboardList, Receipt, Bell, Utensils, Users, CircleAlert, ArrowUpRight, ArrowUpLeft, Clock, Building2, Shield, Droplet, Flame, Landmark, Lock, Camera, Wrench, MessageCircle, CircleHelp, CreditCard, Info, Plus, ChevronRight, Check, Wifi, Settings, Megaphone, TriangleAlert, CircleCheck, UserRound, ShieldCheck, LogOut, Accessibility, CircleX, Phone, Mail, FlaskConical } from 'lucide-react'
+import { House, ScanQrCode, Package, Wallet, LayoutGrid, QrCode, Calendar as Cal, ClipboardList, Receipt, Bell, Utensils, Users, CircleAlert, ArrowUpRight, ArrowUpLeft, Clock, Building2, Shield, Droplet, Flame, Landmark, Lock, Camera, Wrench, MessageCircle, CircleHelp, CreditCard, Info, Plus, ChevronRight, Check, Wifi, Settings, Megaphone, TriangleAlert, CircleCheck, UserRound, ShieldCheck, LogOut, Accessibility, CircleX, Phone, Mail, FlaskConical, Image as ImageIcon, Trash2 } from 'lucide-react'
 import { Header, TabHeader, Foot, Btn, Sheet, Switch, Tabs, Tile, Sum, KV, PinBox, Success, Qr, Calendar, Dot, TODAY, MESES, DIAS, key, cap, dShort, money, initials } from './ui.jsx'
 import { initial, BLOCKS, STEPS, SHORT } from './data.js'
 
@@ -130,7 +130,7 @@ function Home({ st, go }) {
       <div className="hdr" style={{ paddingBottom: 0 }}>
         <div className="col" style={{ flex: 1, gap: 2, minWidth: 0 }}><h1 style={{ margin: 0, fontWeight: 400, fontSize: '1.875rem', lineHeight: '2.25rem' }}>Hola, Residente</h1><span className="t-sm mut">Torre A · Depto 1204</span></div>
         <button className="tile" aria-label="Avisos" onClick={() => go('avisos')} style={{ width: 40, height: 40, border: 0, background: 'var(--muted)', position: 'relative' }}><Bell size={20} /><i style={{ position: 'absolute', top: 8, right: 9, width: 8, height: 8, borderRadius: 4, background: '#e5484d' }} /></button>
-        <button className="av" aria-label="Perfil" onClick={() => go('perfil')} style={{ width: 40, height: 40, background: 'none' }}>RD</button>
+        <button className="av" aria-label="Perfil" onClick={() => go('perfil')} style={{ width: 40, height: 40, background: 'none', overflow: 'hidden', padding: 0 }}>{st.photo ? <img src={st.photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : 'RD'}</button>
       </div>
       <div className="scroll nav-pad" style={{ paddingTop: 12 }}>
         <div className="row" style={{ gap: 8, alignItems: 'stretch' }}>
@@ -660,18 +660,35 @@ function Ajustes({ st, up, back }) {
         <div className="card s" style={{ padding: '0 16px' }}>{rows.map(([k, l, s], i) => <div key={k} className="row" style={{ minHeight: 68, gap: 12, borderTop: i ? '1px solid var(--border)' : 0 }}><div className="col" style={{ flex: 1 }}><span className="t-base" style={{ fontWeight: 400 }}>{l}</span><span className="t-xs mut">{s}</span></div><Switch label={l} on={st.sw[k]} onChange={() => up(s => ({ sw: { ...s.sw, [k]: !s.sw[k] } }))} /></div>)}</div>
       </div></>)
 }
-function Perfil({ st, up, back, go, reset }) {
+function Perfil({ st, up, back, go, reset, toast }) {
   const [taps, setTaps] = useState(0)
   const mod = taps >= 5
+  const [ask, setAsk] = useState(false)
+  const pick = e => {
+    const f = e.target.files && e.target.files[0]; e.target.value = ''
+    if (!f) return
+    const img = new Image(), url = URL.createObjectURL(f)
+    img.onload = () => {
+      const S = 256, c = document.createElement('canvas'); c.width = c.height = S
+      const m = Math.min(img.width, img.height), sx = (img.width - m) / 2, sy = (img.height - m) / 2
+      c.getContext('2d').drawImage(img, sx, sy, m, m, 0, 0, S, S)
+      URL.revokeObjectURL(url)
+      up(() => ({ photo: c.toDataURL('image/jpeg', 0.85) })); setAsk(false); toast('Foto actualizada')
+    }
+    img.src = url
+  }
   const R = ({ icon, t, onClick, last }) => <button onClick={onClick} className="row" style={{ gap: 12, background: 'none', border: 0, borderTop: last === 0 ? 0 : '1px solid var(--border)', padding: '0 4px', minHeight: 60, width: '100%', textAlign: 'left' }}><Tile icon={icon} size={36} ico={18} /><span className="t-base" style={{ flex: 1, fontWeight: 400 }}>{t}</span><ChevronRight size={18} color="var(--content-muted)" /></button>
   const sim = k => () => up(s => ({ sim: { ...(s.sim || {}), [k]: !(s.sim && s.sim[k]) } }))
   return (
     <>
       <Header title="Perfil" onBack={back} />
       <div className="scroll" style={{ paddingTop: 8, gap: 24 }}>
-        <div className="row" style={{ gap: 16, padding: '0 4px' }} onClick={() => setTaps(t => t + 1)}>
-          <span className="av" style={{ width: 56, height: 56 }}>RD</span>
-          <div className="col" style={{ gap: 2 }}><span className="t-lg">Residente Demo</span><span className="t-sm mut">Torre A · Depto 1204</span></div>
+        <div className="row" style={{ gap: 16, padding: '0 4px' }}>
+          <button aria-label="Cambiar foto de perfil" onClick={() => setAsk(true)} style={{ position: 'relative', width: 72, height: 72, background: 'none', border: 0, flex: 'none' }}>
+            <span className="av" style={{ width: 72, height: 72, overflow: 'hidden', fontSize: '1.125rem' }}>{st.photo ? <img src={st.photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : 'RD'}</span>
+            <span style={{ position: 'absolute', right: -2, bottom: -2, width: 28, height: 28, borderRadius: 14, background: 'var(--primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid var(--surface)' }}><Camera size={14} /></span>
+          </button>
+          <div className="col" style={{ gap: 2 }}><span className="t-lg">Residente Demo</span><span className="t-sm mut">Torre A · Depto 1204</span><button className="lnk" style={{ alignSelf: 'flex-start', minHeight: 28, textAlign: 'left' }} onClick={() => setAsk(true)}>Editar foto</button></div>
         </div>
         <div className="card" style={{ padding: '0 12px' }}>
           <R last={0} icon={UserRound} t="Mis datos" onClick={() => go('datos')} />
@@ -680,13 +697,24 @@ function Perfil({ st, up, back, go, reset }) {
           <R icon={Info} t="Ayuda" onClick={() => go('ayuda')} />
         </div>
         <button className="lnk" style={{ alignSelf: 'center', color: 'var(--err)', minHeight: 44 }} onClick={reset}>Cerrar sesión</button>
+        <button className="t-xs sub" style={{ background: 'none', border: 0, alignSelf: 'center', minHeight: 44 }} onClick={() => setTaps(t => t + 1)}>Komón APP · Prototipo v1.0</button>
         {mod && <div className="card col" style={{ gap: 4, padding: '12px 16px' }}>
           <span className="t-xs sub row" style={{ gap: 6 }}><FlaskConical size={14} />Modo moderador</span>
           <div className="row" style={{ minHeight: 52, gap: 12 }}><span className="t-sm" style={{ flex: 1 }}>El próximo pago falla</span><Switch label="El próximo pago falla" on={!!(st.sim && st.sim.fail)} onChange={sim('fail')} /></div>
           <div className="row" style={{ minHeight: 52, gap: 12, borderTop: '1px solid var(--border)' }}><span className="t-sm" style={{ flex: 1 }}>Gasto común vencido</span><Switch label="Gasto común vencido" on={!!(st.sim && st.sim.vencido)} onChange={sim('vencido')} /></div>
           <span className="t-xs sub">«Cerrar sesión» reinicia la demo para el siguiente participante.</span>
         </div>}
-      </div></>)
+      </div>
+      {ask && <Sheet onClose={() => setAsk(false)}>
+        <h2 style={{ margin: 0, fontSize: '1rem', fontWeight: 510 }}>Foto de perfil</h2>
+        <input id="cam" type="file" accept="image/*" capture="user" hidden onChange={pick} />
+        <input id="gal" type="file" accept="image/*" hidden onChange={pick} />
+        <label htmlFor="cam" className="btn inv" role="button" tabIndex={0} onKeyDown={e => e.key === 'Enter' && document.getElementById('cam').click()}><Camera size={18} />Tomar foto</label>
+        <label htmlFor="gal" className="btn dark" role="button" tabIndex={0} onKeyDown={e => e.key === 'Enter' && document.getElementById('gal').click()}><ImageIcon size={18} />Elegir de la galería</label>
+        {st.photo && <Btn v="dark" onClick={() => { up(() => ({ photo: null })); setAsk(false); toast('Foto eliminada') }}><Trash2 size={18} />Quitar foto</Btn>}
+        <button className="lnk" style={{ minHeight: 44 }} onClick={() => setAsk(false)}>Cancelar</button>
+      </Sheet>}
+    </>)
 }
 
 function Accesib({ st, up, back }) {
