@@ -68,12 +68,12 @@ export default function App() {
         <div className="fade" />
         <nav className="nav" aria-label="Principal">
           {items.map(([k, I, l, b]) => (
-            <button key={k} className={act === k ? 'on' : ''} onClick={() => tab(k)} aria-current={act === k ? 'page' : undefined}>
+            <button key={k} className={act === k ? 'on' : ''} onClick={() => tab(k)} aria-current={act === k ? 'page' : undefined} aria-label={l + (b === 'dot' ? (st.bills.length > 0 ? ', pago pendiente' : '') : b > 0 ? `, ${b} ${b === 1 ? 'pendiente' : 'pendientes'}` : '')}>
               {act === k ? <FilledIcon k={k} /> : <I size={20} strokeWidth={2} />}{l}
-              {b === 'dot' ? st.bills.length > 0 && <i className="dot" /> : b > 0 && <span className="bd">{b}</span>}
+              {b === 'dot' ? st.bills.length > 0 && <i className="dot" aria-hidden="true" /> : b > 0 && <span className="bd" aria-hidden="true">{b}</span>}
             </button>))}
         </nav></>}
-      {toast && <div className="toast" role="status">{toast}</div>}
+      {toast && <div className="toast" role="status"><CircleCheck size={18} aria-hidden="true" />{toast}</div>}
       <div className="sr" role="status" aria-live="polite">{live}</div>
     </div></div>
   )
@@ -305,7 +305,8 @@ function Encomiendas({ st, up, back, deep, toast }) {
   const [t, setT] = useState('p')
   const lp = st.pkgs.filter(p => p.status === 'porteria'), lr = st.pkgs.filter(p => p.status === 'retirado')
   const list = t === 'p' ? lp : lr
-  const confirm = id => { up(s => ({ pkgs: s.pkgs.map(q => (q.id === id ? { ...q, status: 'retirado' } : q)) })); toast('Retiro confirmado') }
+  const [ask, setAsk] = useState(null)
+  const confirm = id => { up(s => ({ pkgs: s.pkgs.map(q => (q.id === id ? { ...q, status: 'retirado' } : q)) })); setAsk(null); toast('Retiro confirmado') }
   const del = id => up(s => ({ pkgs: s.pkgs.filter(q => q.id !== id) }))
   return (
     <>
@@ -317,9 +318,13 @@ function Encomiendas({ st, up, back, deep, toast }) {
           <div key={p.id} className="card col" style={{ gap: 12 }}>
             <div className="col" style={{ gap: 4 }}><div className="row" style={{ gap: 12 }}><Package size={22} /><span className="t-base" style={{ fontWeight: 400 }}>{p.from}</span></div><span className="t-xs mut">{p.info}</span></div>
             <PinBox label="PIN de retiro" pin={p.pin} />
-            {t === 'p' ? <Btn v="inv" onClick={() => confirm(p.id)}>Confirmar Retiro</Btn> : <Btn v="dark" onClick={() => del(p.id)}>Borrar de la lista</Btn>}
+            {t === 'p' ? <Btn v="inv" onClick={() => setAsk(p)}>Confirmar Retiro</Btn> : <Btn v="dark" onClick={() => del(p.id)}>Borrar de la lista</Btn>}
           </div>))}
-      </div></>)
+      </div>
+      {ask && <Sheet onClose={() => setAsk(null)}>
+        <h2 style={{ margin: 0, fontSize: '1rem', fontWeight: 510 }}>¿Ya retiraste la encomienda de {ask.from}?</h2>
+        <p className="t-xs mut" style={{ margin: '0 0 8px' }}>Confirma solo si ya tienes el paquete en tus manos. Pasará a Retirados.</p>
+        <Btn onClick={() => confirm(ask.id)}>Sí, la retiré</Btn><Btn v="dark" onClick={() => setAsk(null)}>Todavía no</Btn></Sheet>}</>)
 }
 
 /* ---------- Finanzas ---------- */
@@ -400,7 +405,7 @@ function Pagar({ st, back, go }) {
         <div className="col" style={{ gap: 12 }}>
           {opts.map(([k, I, t, s]) => <button key={k} className={'opt' + (m === k ? ' on' : '')} onClick={() => setM(k)}><Tile icon={I} size={44} ico={20} /><span className="col" style={{ flex: 1, gap: 2 }}><span className="t-base" style={{ fontWeight: 400 }}>{t}</span><span className="t-xs mut">{s}</span></span><span className={'radio' + (m === k ? ' on' : '')} /></button>)}
         </div>
-        <div className="row t-xs mut" style={{ gap: 8 }}><Lock size={16} />Pago seguro. No guardamos los datos de tu tarjeta.</div>
+        <div className="row t-xs mut" style={{ gap: 8 }}><Lock size={16} />Pago seguro. No guardamos los datos de tu tarjeta. Revisarás el resumen antes de pagar.</div>
       </div>
       <Foot><Btn onClick={() => go('confPago', { method: m === 'card' ? 'Tarjeta ····4821' : 'Transferencia' })}>Continuar</Btn></Foot></>)
 }
@@ -515,6 +520,7 @@ function Reservar({ st, back, go }) {
       <Header title="Reservar quincho" onBack={back} />
       <div className="scroll" style={{ paddingTop: 0, gap: 16 }}>
         <div className="row t-xs mut" style={{ gap: 8 }}><Users size={16} />Hasta 20 personas · 09:00 a 23:00 · Gratis</div>
+        <div className="row t-xs mut" style={{ gap: 8 }}><CircleHelp size={16} />Toca un día y luego un bloque libre. Podrás revisar antes de confirmar.</div>
         <div className="row" style={{ justifyContent: 'space-between' }}><span style={{ fontSize: '1rem', fontWeight: 510 }}>{cap(MESES[date.getMonth()])} {date.getFullYear()}</span>
           <span className="row" style={{ gap: 8 }}><button className="wk" aria-label="Semana anterior" disabled={pg === 0} onClick={() => move(-1)}><ChevronRight size={18} style={{ transform: 'rotate(180deg)' }} /></button><button className="wk" aria-label="Semana siguiente" disabled={pg >= 3} onClick={() => move(1)}><ChevronRight size={18} /></button></span></div>
         <div className="days" ref={strip} onScroll={e => setPg(Math.round(e.currentTarget.scrollLeft / (e.currentTarget.clientWidth + 8)))} role="listbox" aria-label="Elige un día">{days.map(d => <button key={key(d)} role="option" aria-selected={key(d) === key(date)} disabled={d < TODAY} className={'day' + (key(d) === key(date) ? ' on' : '')} onClick={() => { setDate(d); setBlock(null) }}><span>{cap(DIAS[d.getDay()].slice(0, 3))}</span><b>{d.getDate()}</b></button>)}</div>
