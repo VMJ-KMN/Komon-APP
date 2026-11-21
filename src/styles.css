@@ -8,7 +8,7 @@
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body,#root{height:100%;margin:0}
-body{background:#0c0d0c;color:var(--content);font-family:-apple-system,'SF Pro Text','SF Pro Display',BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;-webkit-font-smoothing:antialiased}
+body{background:#0c0d0c;color:var(--content);font-family:-apple-system,'SF Pro Text','SF Pro Display',BlinkMacSystemFont,'Inter Variable',Inter,Roboto,'Segoe UI',sans-serif;font-optical-sizing:auto;-webkit-font-smoothing:antialiased}
 button{font-family:inherit;color:inherit;cursor:pointer;padding:0}
 button:active:not(:disabled){opacity:.7}
 button:focus{outline:none}
