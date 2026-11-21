@@ -650,26 +650,32 @@ function Ajustes({ st, up, back }) {
         <div className="card s" style={{ padding: '0 16px' }}>{rows.map(([k, l, s], i) => <div key={k} className="row" style={{ minHeight: 68, gap: 12, borderTop: i ? '1px solid var(--border)' : 0 }}><div className="col" style={{ flex: 1 }}><span className="t-base" style={{ fontWeight: 400 }}>{l}</span><span className="t-xs mut">{s}</span></div><Switch label={l} on={st.sw[k]} onChange={() => up(s => ({ sw: { ...s.sw, [k]: !s.sw[k] } }))} /></div>)}</div>
       </div></>)
 }
-function Perfil({ st, up, back, go, tab, toast, reset }) {
-  const R = ({ icon, t, onClick, right, red }) => <button onClick={onClick} className="row" style={{ gap: 12, background: 'var(--muted)', border: 0, borderRadius: 16, padding: '0 16px', height: 56, width: '100%', textAlign: 'left', color: red ? '#f08a87' : undefined }}><Tile icon={icon} size={32} ico={16} /><span className="t-sm" style={{ flex: 1, fontSize: '0.9375rem' }}>{t}</span>{right || (!red && <ChevronRight size={16} color="#c5c5c5" />)}</button>
+function Perfil({ st, up, back, go, reset }) {
+  const [taps, setTaps] = useState(0)
+  const mod = taps >= 5
+  const R = ({ icon, t, onClick, last }) => <button onClick={onClick} className="row" style={{ gap: 12, background: 'none', border: 0, borderTop: last === 0 ? 0 : '1px solid var(--border)', padding: '0 4px', minHeight: 60, width: '100%', textAlign: 'left' }}><Tile icon={icon} size={36} ico={18} /><span className="t-base" style={{ flex: 1, fontWeight: 400 }}>{t}</span><ChevronRight size={18} color="#c5c5c5" /></button>
+  const sim = k => () => up(s => ({ sim: { ...(s.sim || {}), [k]: !(s.sim && s.sim[k]) } }))
   return (
     <>
       <Header title="Perfil" onBack={back} />
-      <div className="scroll" style={{ paddingTop: 4, gap: 12 }}>
-        <div className="card col center" style={{ gap: 8, padding: 24, borderRadius: 24 }}><span className="av" style={{ width: 48, height: 48 }}>RD</span><span className="t-base">Residente Demo</span><span className="t-xs mut">Torre A · Depto 1204</span></div>
-        <R icon={UserRound} t="Mis datos" onClick={() => go('datos')} />
-        <R icon={Bell} t="Notificaciones" onClick={() => go('ajustes')} />
-        <div className="row" style={{ gap: 12, background: 'var(--muted)', borderRadius: 16, padding: '0 16px', height: 56 }}><Tile icon={ShieldCheck} size={32} ico={16} /><span className="t-sm" style={{ flex: 1, fontSize: '0.9375rem' }}>Ingreso con Face ID</span><Switch label="Ingreso con Face ID" on={!!st.sw.face} onChange={() => up(s => ({ sw: { ...s.sw, face: !s.sw.face } }))} /></div>
-        <R icon={Accessibility} t="Accesibilidad" onClick={() => go('a11y')} />
-        <R icon={Cal} t="Mis reservas" onClick={() => tab('serv')} />
-        <R icon={Info} t="Ayuda" onClick={() => go('ayuda')} />
-        <R icon={UserRound} t="Cerrar sesión" red onClick={reset} />
-        <div className="card col" style={{ gap: 4, padding: '12px 16px' }}>
-          <span className="t-xs sub row" style={{ gap: 6 }}><FlaskConical size={14} />Modo moderador · escenarios de prueba</span>
-          <div className="row" style={{ minHeight: 52, gap: 12 }}><span className="t-sm" style={{ flex: 1 }}>El próximo pago falla</span><Switch label="El próximo pago falla" on={!!(st.sim && st.sim.fail)} onChange={() => up(s => ({ sim: { ...(s.sim || {}), fail: !(s.sim && s.sim.fail) } }))} /></div>
-          <div className="row" style={{ minHeight: 52, gap: 12, borderTop: '1px solid var(--border)' }}><span className="t-sm" style={{ flex: 1 }}>Gasto común vencido</span><Switch label="Gasto común vencido" on={!!(st.sim && st.sim.vencido)} onChange={() => up(s => ({ sim: { ...(s.sim || {}), vencido: !(s.sim && s.sim.vencido) } }))} /></div>
+      <div className="scroll" style={{ paddingTop: 8, gap: 24 }}>
+        <div className="row" style={{ gap: 16, padding: '0 4px' }} onClick={() => setTaps(t => t + 1)}>
+          <span className="av" style={{ width: 56, height: 56 }}>RD</span>
+          <div className="col" style={{ gap: 2 }}><span className="t-lg">Residente Demo</span><span className="t-sm mut">Torre A · Depto 1204</span></div>
         </div>
-        <span className="t-xs sub center" style={{ textAlign: 'center' }}>Cerrar sesión reinicia la demo para el siguiente participante.</span>
+        <div className="card" style={{ padding: '0 12px' }}>
+          <R last={0} icon={UserRound} t="Mis datos" onClick={() => go('datos')} />
+          <R icon={Bell} t="Notificaciones" onClick={() => go('ajustes')} />
+          <R icon={Accessibility} t="Accesibilidad" onClick={() => go('a11y')} />
+          <R icon={Info} t="Ayuda" onClick={() => go('ayuda')} />
+        </div>
+        <button className="lnk" style={{ alignSelf: 'center', color: '#f08a87', minHeight: 44 }} onClick={reset}>Cerrar sesión</button>
+        {mod && <div className="card col" style={{ gap: 4, padding: '12px 16px' }}>
+          <span className="t-xs sub row" style={{ gap: 6 }}><FlaskConical size={14} />Modo moderador</span>
+          <div className="row" style={{ minHeight: 52, gap: 12 }}><span className="t-sm" style={{ flex: 1 }}>El próximo pago falla</span><Switch label="El próximo pago falla" on={!!(st.sim && st.sim.fail)} onChange={sim('fail')} /></div>
+          <div className="row" style={{ minHeight: 52, gap: 12, borderTop: '1px solid var(--border)' }}><span className="t-sm" style={{ flex: 1 }}>Gasto común vencido</span><Switch label="Gasto común vencido" on={!!(st.sim && st.sim.vencido)} onChange={sim('vencido')} /></div>
+          <span className="t-xs sub">«Cerrar sesión» reinicia la demo para el siguiente participante.</span>
+        </div>}
       </div></>)
 }
 
