@@ -51,7 +51,7 @@ export default function App() {
   const Screens = { onb: Onb, home: Home, accesos: Accesos, nuevoPase: NuevoPase, paseCreado: PaseCreado, pase: PaseDetalle, paseRev: PaseRevocado,
     enc: Encomiendas, fin: Finanzas, detalleCobro: DetalleCobro, historial: HistorialPagos, pagar: Pagar, confPago: ConfPago, proc: Procesando, pagoOk: PagoOk, comp: Comprobante,
     serv: Servicios, reservar: Reservar, confReserva: ConfReserva, reservaOk: ReservaOk,
-    solCat: SolCat, solForm: SolForm, solOk: SolOk, sol: SolDetalle, avisos: Avisos, ajustes: Ajustes, perfil: Perfil, a11y: Accesib, datos: Datos, ayuda: Ayuda, pagoFail: PagoFallido }
+    solCat: SolCat, solForm: SolForm, solOk: SolOk, sol: SolDetalle, avisos: Avisos, ajustes: Ajustes, perfil: Perfil, a11y: Accesib, datos: Datos, ayuda: Ayuda, pagoFail: PagoFallido, correo: Correo, correoOk: CorreoOk }
   const S = Screens[cur.s]
   const showNav = NAV.includes(cur.s) || cur.s === 'avisos'
   const act = cur.s === 'avisos' ? 'home' : cur.s
@@ -611,7 +611,7 @@ function SolOk({ st, p, tab, replace }) {
       </div>
       <Foot nb><Btn v="inv" onClick={() => replace('sol', { id: r.id, fresh: true })}>Ver mi solicitud</Btn><Btn v="dark" onClick={() => tab('serv', { tab: 'sol' })}>Volver a Servicios</Btn></Foot></>)
 }
-function SolDetalle({ st, up, p, back, tab, toast }) {
+function SolDetalle({ st, up, p, back, tab, go }) {
   const r = st.reqs.find(x => x.id === p.id)
   if (!r) return null
   const I = CATICON[r.cat] || Wrench, SC = ['#f59e0b', 'var(--primary)', '#16a34a']
@@ -629,7 +629,7 @@ function SolDetalle({ st, up, p, back, tab, toast }) {
             <div className="t-xs mut">{(r.log || [])[i] || 'Pendiente'}</div></div>)}</div></div>
         {r.status < 2 && <button className="lnk" style={{ color: 'var(--content-subtle)', fontWeight: 400 }} onClick={() => up(s => ({ reqs: s.reqs.map(q => (q.id === r.id ? { ...q, status: q.status + 1, log: [...(q.log || []), 'Hoy, ' + hhmm()] } : q)) }))}>Demo: avanzar estado (moderador)</button>}
       </div>
-      <Foot><Btn v="dark" onClick={() => toast('Mensaje a administración: disponible en la versión final')}>Escribir a administración</Btn></Foot></>)
+      <Foot><Btn v="dark" onClick={() => go('correo', { id: r.id })}><Mail size={18} />Contactar con administrador</Btn></Foot></>)
 }
 
 /* ---------- Avisos / Perfil ---------- */
@@ -787,16 +787,52 @@ function Datos({ back }) {
       </div></>)
 }
 
-function Ayuda({ back, toast }) {
-  const C = ({ icon, t, s }) => <div className="card row" style={{ gap: 12 }}><Tile icon={icon} size={40} ico={18} /><div className="col" style={{ flex: 1 }}><span className="t-sm" style={{ fontWeight: 510 }}>{t}</span><span className="t-xs mut">{s}</span></div></div>
+function Ayuda({ back, go }) {
+  const C = ({ icon, t, s, onClick }) => <div className="card row" style={{ gap: 12, cursor: onClick ? 'pointer' : undefined }} onClick={onClick} role={onClick ? 'button' : undefined} tabIndex={onClick ? 0 : undefined}><Tile icon={icon} size={40} ico={18} /><div className="col" style={{ flex: 1 }}><span className="t-sm" style={{ fontWeight: 510 }}>{t}</span><span className="t-xs mut">{s}</span></div></div>
   const F = [['¿Cómo creo un pase de visita?', 'En Accesos, toca "Nuevo pase", completa el nombre y elige la duración.'], ['¿Cómo pago los gastos comunes?', 'En Finanzas, toca "Pagar". Puedes usar tarjeta o transferencia.'], ['¿Cuándo llega mi encomienda?', 'Te avisamos en Encomiendas cuando llegue a portería, con tu PIN de retiro.']]
   return (
     <>
       <Header title="Ayuda" onBack={back} />
       <div className="scroll" style={{ paddingTop: 0, gap: 12 }}>
         <C icon={Phone} t="Conserjería" s="+56 2 2345 6789 · 24 horas" />
-        <C icon={Mail} t="Administración" s="admin@komon.cl · Lun a Vie, 9:00 a 18:00" />
+        <C icon={Mail} t="Escribir a administración" s="admin@komon.cl · Lun a Vie, 9:00 a 18:00" onClick={() => go('correo', {})} />
         <span className="sec" style={{ marginTop: 8 }}>Preguntas frecuentes</span>
         {F.map(([q, r]) => <div key={q} className="card col" style={{ gap: 4 }}><span className="t-sm" style={{ fontWeight: 510 }}>{q}</span><span className="t-xs mut">{r}</span></div>)}
       </div></>)
+}
+
+function Correo({ st, p, back, replace }) {
+  const r = p.id && st.reqs.find(x => x.id === p.id)
+  const [subj, setSubj] = useState(r ? `Solicitud N° ${r.ref}: ${r.title}` : '')
+  const [msg, setMsg] = useState('')
+  const [er, setEr] = useState({})
+  const send = () => {
+    const e = {}
+    if (subj.trim().length < 3) e.subj = 'Escribe un asunto'
+    if (msg.trim().length < 10) e.msg = 'Cuéntale a la administración qué necesitas (mínimo 10 letras)'
+    setEr(e)
+    if (Object.keys(e).length) { setTimeout(() => document.querySelector('[aria-invalid="true"]')?.focus(), 60); return }
+    replace('correoOk', { id: p.id })
+  }
+  return (
+    <>
+      <Header title="Contactar con administrador" onBack={back} />
+      <div className="scroll" style={{ paddingTop: 0, gap: 20 }}>
+        <div><span className="lbl" style={{ marginBottom: 8 }}>Para</span>
+          <div className="card row" style={{ gap: 12, padding: 12, borderRadius: 16 }}><Tile icon={Building2} size={36} ico={18} /><div className="col"><span className="t-sm" style={{ fontWeight: 510 }}>Administración</span><span className="t-xs mut">admin@komon.cl</span></div></div></div>
+        <div><label className="lbl" htmlFor="cs" style={{ marginBottom: 8 }}>Asunto</label><input id="cs" className={'field' + (er.subj ? ' bad' : '')} aria-invalid={!!er.subj} aria-describedby="cs-h" placeholder="Ej: Consulta sobre mi solicitud" value={subj} onChange={e => { setSubj(e.target.value); setEr(x => ({ ...x, subj: null })) }} /><Hint id="cs-h" err={er.subj}>Resume el motivo de tu correo</Hint></div>
+        <div><label className="lbl" htmlFor="cm" style={{ marginBottom: 8 }}>Mensaje</label><textarea id="cm" className={'field' + (er.msg ? ' bad' : '')} aria-invalid={!!er.msg} aria-describedby="cm-h" rows={6} placeholder="Escribe tu mensaje" value={msg} onChange={e => { setMsg(e.target.value); setEr(x => ({ ...x, msg: null })) }} style={{ resize: 'none' }} /><Hint id="cm-h" err={er.msg}>Responderán a tu correo registrado.</Hint></div>
+      </div>
+      <Foot><Btn onClick={send}>Enviar correo</Btn></Foot></>)
+}
+
+function CorreoOk({ st, p, tab, replace }) {
+  const r = p.id && st.reqs.find(x => x.id === p.id)
+  return (
+    <>
+      <div className="scroll center" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 48px)', gap: 12 }}>
+        <Success /><h1 style={{ margin: '12px 0 0', fontSize: '1.375rem', fontWeight: 590 }}>Correo enviado</h1>
+        <p className="t-sm mut" style={{ margin: 0, maxWidth: 300 }}>La administración te responderá a residente@komon.cl en un plazo de 48 horas hábiles.</p>
+      </div>
+      <Foot nb>{r && <Btn v="inv" onClick={() => replace('sol', { id: r.id, fresh: true })}>Volver a mi solicitud</Btn>}<Btn v={r ? 'dark' : 'inv'} onClick={() => tab('home')}>Volver al inicio</Btn></Foot></>)
 }
