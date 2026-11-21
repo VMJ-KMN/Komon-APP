@@ -182,7 +182,7 @@ function Accesos({ st, go }) {
             <Dot c={STC[p.status]} t={p.status} />
           </button>))}
       </div>
-      {t === 'v' && vig.length > 0 && <button className="fab" onClick={() => go('nuevoPase')}><Plus size={22} /> Nuevo pase</button>}
+      {t === 'v' && vig.length > 0 && <button className="fab" onClick={() => go('nuevoPase')}><Plus size={20} /> Nuevo pase</button>}
     </>)
 }
 
@@ -460,7 +460,7 @@ function Servicios({ st, go, p }) {
               </button>) })}
           </div>}
       </div>
-      {t === 'sol' && <button className="fab" onClick={() => go('solCat')}><Plus size={22} /> Nueva solicitud</button>}
+      {t === 'sol' && <button className="fab" onClick={() => go('solCat')}><Plus size={20} /> Nueva solicitud</button>}
     </>)
 }
 
