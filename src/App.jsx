@@ -99,7 +99,14 @@ export default function App() {
 function Onb({ st, up, tab }) {
   const [n, setN] = useState(0)
   const [sw, setSw] = useState(st.sw)
-  const finish = () => { up(() => ({ onboarded: true, sw })); tab('home') }
+  const pushed = React.useRef(0)
+  const adv = to => { history.pushState({ ob: to }, ''); pushed.current += 1; setN(to) }
+  const prev = () => { if (pushed.current > 0) history.back(); else setN(x => Math.max(0, x - 1)) }
+  useEffect(() => {
+    const f = () => { if (pushed.current > 0) { pushed.current -= 1; setN(x => Math.max(0, x - 1)) } }
+    window.addEventListener('popstate', f); return () => window.removeEventListener('popstate', f)
+  }, [])
+  const finish = () => { const k = pushed.current; pushed.current = 0; up(() => ({ onboarded: true, sw })); tab('home'); if (k > 0) setTimeout(() => history.go(-k), 0) }
   const slides = [
     [House, 'Tu comunidad, en tu mano', 'Visitas, pagos, encomiendas y reservas del edificio en un solo lugar.'],
     [QrCode, 'Invita sin llamar a conserjería', 'Crea un pase con QR en segundos y revócalo cuando quieras.'],
@@ -112,11 +119,11 @@ function Onb({ st, up, tab }) {
   return (
     <>
       <div className="hdr" style={{ justifyContent: 'space-between', paddingTop: 'calc(env(safe-area-inset-top) + 20px)' }}>
-        <div style={{ width: 72 }}>{n > 0 && n < 5 && <button className="back" aria-label="Atrás" onClick={() => setN(n - 1)} style={{ background: 'none', border: 0, height: 40, display: 'flex', alignItems: 'center' }}><ArrowUpLeft size={22} /></button>}</div>
+        <div style={{ width: 72 }}>{n > 0 && <button className="back" aria-label="Atrás" onClick={prev} style={{ background: 'none', border: 0, height: 40, display: 'flex', alignItems: 'center' }}><ArrowUpLeft size={22} /></button>}</div>
         {n >= 1 && n <= 4 && <div className="row" style={{ gap: 8 }} aria-label={`Paso ${n} de 4`}>{[1, 2, 3, 4].map(i => <span key={i} style={{ width: i === n ? 24 : 8, height: 8, borderRadius: 4, background: i === n ? '#f3f3f3' : '#444544' }} />)}</div>}
-        <div style={{ width: 72, textAlign: 'right' }}>{n >= 1 && n <= 4 && <button className="lnk" style={{ color: 'var(--content-muted)', height: 40 }} onClick={() => setN(5)}>Omitir</button>}</div>
+        <div style={{ width: 72, textAlign: 'right' }}>{n >= 1 && n <= 4 && <button className="lnk" style={{ color: 'var(--content-muted)', height: 40 }} onClick={() => adv(5)}>Omitir</button>}</div>
       </div>
-      <div className="scroll col center" style={{ justifyContent: 'center', gap: 24 }}>
+      <div key={n} className="scroll col center" style={{ justifyContent: "center", gap: 24 }}>
         {n === 0 && <><img className="logo-d" src="/logo-komon.svg" alt="Komón" width="150" height="139" />
           <img className="logo-l" src="/logo-komon-claro.svg" alt="Komón" width="150" height="139" />
           <div className="col" style={{ gap: 12 }}><h1 style={{ margin: 0, fontSize: '2rem', lineHeight: 1.2, fontWeight: 590 }}>Tu comunidad, en tu mano</h1><p className="mut" style={{ margin: 0, fontSize: '1rem', lineHeight: '1.5rem' }}>{slides[0][2]}</p></div></>}
@@ -128,8 +135,8 @@ function Onb({ st, up, tab }) {
         {n === 5 && <><span className="tile" style={{ width: 120, height: 120, background: 'var(--success)' }}><Check size={56} strokeWidth={1.8} /></span><div><h1 style={{ margin: '0 0 12px', fontSize: '1.75rem', fontWeight: 590 }}>Todo listo, Residente</h1><p className="mut" style={{ margin: 0, fontSize: '1rem' }}>Tu Inicio te muestra primero lo que requiere tu atención.</p></div></>}
       </div>
       <Foot nb>
-        <Btn onClick={() => (n === 5 ? finish() : setN(n + 1))}>{lab[n]}</Btn>
-        {(n === 0 || n === 4) ? <Btn v="dark" onClick={() => (n === 0 ? finish() : setN(5))}>{n === 0 ? 'Ya tengo cuenta' : 'Ahora no'}</Btn> : <div style={{ height: 48 }} />}
+        <Btn onClick={() => (n === 5 ? finish() : adv(n + 1))}>{lab[n]}</Btn>
+        {(n === 0 || n === 4) ? <Btn v="dark" onClick={() => (n === 0 ? finish() : adv(5))}>{n === 0 ? 'Ya tengo cuenta' : 'Ahora no'}</Btn> : <div style={{ height: 48 }} />}
       </Foot></>)
 }
 
