@@ -80,7 +80,7 @@ function Onb({ st, up, tab }) {
         <div style={{ width: 72, textAlign: 'right' }}>{n >= 1 && n <= 4 && <button className="lnk" style={{ color: '#c5c5c5', height: 40 }} onClick={() => setN(5)}>Omitir</button>}</div>
       </div>
       <div className="scroll col center" style={{ justifyContent: 'center', gap: 24 }}>
-        {n === 0 && <><img src="/logo-komon.png" alt="Komón" width="150" style={{ display: 'block' }} />
+        {n === 0 && <><img src="/logo-komon.svg" alt="Komón" width="150" height="139" style={{ display: 'block' }} />
           <div className="col" style={{ gap: 12 }}><h1 style={{ margin: 0, fontSize: 32, lineHeight: 1.2, fontWeight: 590 }}>Tu comunidad, en tu mano</h1><p className="mut" style={{ margin: 0, fontSize: 16, lineHeight: '24px' }}>{slides[0][2]}</p></div></>}
         {I && n > 0 && <><span className="tile" style={{ width: 120, height: 120, background: 'var(--muted)' }}><I size={52} strokeWidth={1.6} /></span>
           <div className="col" style={{ gap: 12 }}>
