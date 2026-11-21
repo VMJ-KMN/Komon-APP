@@ -50,16 +50,17 @@ export default function App() {
   useEffect(() => {
     const f = () => {
       if (skip.current > 0) { skip.current -= 1; return }
-      if (hd.current > 0) { hd.current -= 1; setStack(a => (a.length > 1 ? a.slice(0, -1) : a)) }
+      if (hd.current > 0) { hd.current -= 1; dir.current = 'bck'; setStack(a => (a.length > 1 ? a.slice(0, -1) : a)) }
     }
     window.addEventListener('popstate', f); return () => window.removeEventListener('popstate', f)
   }, [])
   const up = f => setSt(s => ({ ...s, ...f(s) }))
-  const go = (s, p = {}) => setStack(a => [...a, { s, p }])
-  const back = () => setStack(a => (a.length > 1 ? a.slice(0, -1) : [{ s: 'home' }]))
-  const tab = (s, p = {}) => setStack([{ s, p }])
-  const under = (base, s, p = {}) => setStack([{ s: base[0], p: base[1] || {} }, { s, p }])
-  const replace = (s, p = {}) => setStack(a => [...a.slice(0, -1), { s, p }])
+  const dir = React.useRef('dfade')
+  const go = (s, p = {}) => { dir.current = 'fwd'; setStack(a => [...a, { s, p }]) }
+  const back = () => { dir.current = 'bck'; setStack(a => (a.length > 1 ? a.slice(0, -1) : [{ s: 'home' }])) }
+  const tab = (s, p = {}) => { dir.current = 'dfade'; setStack([{ s, p }]) }
+  const under = (base, s, p = {}) => { dir.current = 'fwd'; setStack([{ s: base[0], p: base[1] || {} }, { s, p }]) }
+  const replace = (s, p = {}) => { dir.current = 'fwd'; setStack(a => [...a.slice(0, -1), { s, p }]) }
   const reset = () => { setSt(s => ({ ...initial(), sim: s.sim, a11y: s.a11y })); setStack([{ s: 'onb' }]) }
   const A = { st, up, go, back, tab, replace, toast: setToast, reset, under, p: cur.p || {}, deep: stack.length > 1 }
 
@@ -77,7 +78,7 @@ export default function App() {
   return (
     <div className="stage"><div className="phone">
       <div className="sbar" aria-hidden="true"><span>9:41</span><span className="ind"><span style={{ display: 'flex', gap: 2, alignItems: 'flex-end' }}>{[4, 6, 8, 10].map(h => <i key={h} style={{ width: 3, height: h, borderRadius: 1, background: '#f3f3f3' }} />)}</span><Wifi size={17} /><span style={{ position: 'relative', width: 27, height: 13 }}><i style={{ position: 'absolute', left: 0, top: 0, width: 24, height: 12, border: '1px solid #c5c5c5', borderRadius: 4 }} /><i style={{ position: 'absolute', left: 2, top: 2, width: 20, height: 8, borderRadius: 2.5, background: '#f3f3f3' }} /><i style={{ position: 'absolute', left: 25, top: 4, width: 2, height: 4, borderRadius: 1, background: '#c5c5c5' }} /></span></span></div>
-      <S {...A} />
+      <div className={'scr ' + dir.current} key={cur.s + ':' + stack.length}><S {...A} /></div>
       <div className="hind" aria-hidden="true"><i /></div>
       {showNav && <>
         <div className="fade" />
