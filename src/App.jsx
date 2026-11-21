@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { House, ScanQrCode, Package, Wallet, LayoutGrid, QrCode, Calendar as Cal, ClipboardList, Receipt, Bell, Utensils, Users, CircleAlert, ArrowUpRight, ArrowUpLeft, Clock, Building2, Shield, Droplet, Flame, Landmark, Lock, Camera, Wrench, MessageCircle, CircleHelp, CreditCard, Info, Plus, ChevronRight, Check, Wifi, Settings, Megaphone, TriangleAlert, CircleCheck, UserRound, ShieldCheck, LogOut } from 'lucide-react'
+import { House, ScanQrCode, Package, Wallet, LayoutGrid, QrCode, Calendar as Cal, ClipboardList, Receipt, Bell, Utensils, Users, CircleAlert, ArrowUpRight, ArrowUpLeft, Clock, Building2, Shield, Droplet, Flame, Landmark, Lock, Camera, Wrench, MessageCircle, CircleHelp, CreditCard, Info, Plus, ChevronRight, Check, Wifi, Settings, Megaphone, TriangleAlert, CircleCheck, UserRound, ShieldCheck, LogOut, Accessibility } from 'lucide-react'
 import { Header, TabHeader, Foot, Btn, Sheet, Switch, Tabs, Tile, Sum, KV, PinBox, Success, Qr, Calendar, Dot, TODAY, MESES, DIAS, key, cap, dShort, money, initials } from './ui.jsx'
 import { initial, BLOCKS, STEPS, SHORT } from './data.js'
 
@@ -18,7 +18,20 @@ export default function App() {
   useEffect(() => { try { localStorage.setItem(LS, JSON.stringify(st)) } catch (e) {} }, [st])
   useEffect(() => { if (toast) { const t = setTimeout(() => setToast(null), 2400); return () => clearTimeout(t) } }, [toast])
   const cur = stack[stack.length - 1]
-  useEffect(() => { setToast(null) }, [cur.s])
+  const A11 = st.a11y || { size: 'n', contrast: 'normal', motion: 'normal' }
+  useEffect(() => {
+    const r = document.documentElement
+    r.dataset.size = A11.size; r.dataset.contrast = A11.contrast; r.dataset.motion = A11.motion
+  }, [A11.size, A11.contrast, A11.motion])
+  const [live, setLive] = useState('')
+  useEffect(() => {
+    setToast(null)
+    const t = setTimeout(() => {
+      const h = document.querySelector('.phone h1')
+      if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); setLive(h.textContent) }
+    }, 60)
+    return () => clearTimeout(t)
+  }, [cur.s])
 
   const up = f => setSt(s => ({ ...s, ...f(s) }))
   const go = (s, p = {}) => setStack(a => [...a, { s, p }])
@@ -31,7 +44,7 @@ export default function App() {
   const Screens = { onb: Onb, home: Home, accesos: Accesos, nuevoPase: NuevoPase, paseCreado: PaseCreado, pase: PaseDetalle, paseRev: PaseRevocado,
     enc: Encomiendas, fin: Finanzas, detalleCobro: DetalleCobro, historial: HistorialPagos, pagar: Pagar, confPago: ConfPago, proc: Procesando, pagoOk: PagoOk, comp: Comprobante,
     serv: Servicios, reservar: Reservar, confReserva: ConfReserva, reservaOk: ReservaOk,
-    solCat: SolCat, solForm: SolForm, solOk: SolOk, sol: SolDetalle, avisos: Avisos, ajustes: Ajustes, perfil: Perfil }
+    solCat: SolCat, solForm: SolForm, solOk: SolOk, sol: SolDetalle, avisos: Avisos, ajustes: Ajustes, perfil: Perfil, a11y: Accesib }
   const S = Screens[cur.s]
   const showNav = NAV.includes(cur.s) || cur.s === 'avisos'
   const act = cur.s === 'avisos' ? 'home' : cur.s
@@ -54,6 +67,7 @@ export default function App() {
             </button>))}
         </nav></>}
       {toast && <div className="toast" role="status">{toast}</div>}
+      <div className="sr" role="status" aria-live="polite">{live}</div>
     </div></div>
   )
 }
@@ -81,13 +95,13 @@ function Onb({ st, up, tab }) {
       </div>
       <div className="scroll col center" style={{ justifyContent: 'center', gap: 24 }}>
         {n === 0 && <><img src="/logo-komon.svg" alt="Komón" width="150" height="139" style={{ display: 'block' }} />
-          <div className="col" style={{ gap: 12 }}><h1 style={{ margin: 0, fontSize: 32, lineHeight: 1.2, fontWeight: 590 }}>Tu comunidad, en tu mano</h1><p className="mut" style={{ margin: 0, fontSize: 16, lineHeight: '24px' }}>{slides[0][2]}</p></div></>}
+          <div className="col" style={{ gap: 12 }}><h1 style={{ margin: 0, fontSize: '2rem', lineHeight: 1.2, fontWeight: 590 }}>Tu comunidad, en tu mano</h1><p className="mut" style={{ margin: 0, fontSize: '1rem', lineHeight: '1.5rem' }}>{slides[0][2]}</p></div></>}
         {I && n > 0 && <><span className="tile" style={{ width: 120, height: 120, background: 'var(--muted)' }}><I size={52} strokeWidth={1.6} /></span>
           <div className="col" style={{ gap: 12 }}>
-            <h1 style={{ margin: 0, fontSize: 28, lineHeight: 1.2, fontWeight: 590 }}>{slides[n][1]}</h1><p className="mut" style={{ margin: 0, fontSize: 16, lineHeight: '24px' }}>{slides[n][2]}</p></div></>}
-        {n === 4 && <div style={{ width: '100%' }}><h1 style={{ margin: '0 0 12px', fontSize: 28, fontWeight: 590 }}>Avisos que importan</h1><p className="mut" style={{ margin: '0 0 24px', fontSize: 16 }}>Elige de qué quieres enterarte. Puedes cambiarlo después en tu perfil.</p>
+            <h1 style={{ margin: 0, fontSize: '1.75rem', lineHeight: 1.2, fontWeight: 590 }}>{slides[n][1]}</h1><p className="mut" style={{ margin: 0, fontSize: '1rem', lineHeight: '1.5rem' }}>{slides[n][2]}</p></div></>}
+        {n === 4 && <div style={{ width: '100%' }}><h1 style={{ margin: '0 0 12px', fontSize: '1.75rem', fontWeight: 590 }}>Avisos que importan</h1><p className="mut" style={{ margin: '0 0 24px', fontSize: '1rem' }}>Elige de qué quieres enterarte. Puedes cambiarlo después en tu perfil.</p>
           <div className="card s" style={{ padding: '0 16px', textAlign: 'left' }}>{rows.map(([k, l, s], i) => <div key={k} className="row" style={{ minHeight: 68, gap: 12, borderTop: i ? '1px solid var(--border)' : 0 }}><div style={{ flex: 1 }}><div className="t-base">{l}</div><div className="t-sm mut">{s}</div></div><Switch label={l} on={sw[k]} onChange={() => setSw({ ...sw, [k]: !sw[k] })} /></div>)}</div></div>}
-        {n === 5 && <><span className="tile" style={{ width: 120, height: 120, background: 'var(--success)' }}><Check size={56} strokeWidth={1.8} /></span><div><h1 style={{ margin: '0 0 12px', fontSize: 28, fontWeight: 590 }}>Todo listo, Residente</h1><p className="mut" style={{ margin: 0, fontSize: 16 }}>Tu Inicio te muestra primero lo que requiere tu atención.</p></div></>}
+        {n === 5 && <><span className="tile" style={{ width: 120, height: 120, background: 'var(--success)' }}><Check size={56} strokeWidth={1.8} /></span><div><h1 style={{ margin: '0 0 12px', fontSize: '1.75rem', fontWeight: 590 }}>Todo listo, Residente</h1><p className="mut" style={{ margin: 0, fontSize: '1rem' }}>Tu Inicio te muestra primero lo que requiere tu atención.</p></div></>}
       </div>
       <Foot nb>
         <Btn onClick={() => (n === 5 ? finish() : setN(n + 1))}>{lab[n]}</Btn>
@@ -107,7 +121,7 @@ function Home({ st, go }) {
   return (
     <>
       <div className="hdr" style={{ paddingBottom: 0 }}>
-        <div className="col" style={{ flex: 1, gap: 2, minWidth: 0 }}><span style={{ fontSize: 30, lineHeight: '36px', whiteSpace: 'nowrap' }}>Hola, Residente</span><span className="t-sm mut">Torre A · Depto 1204</span></div>
+        <div className="col" style={{ flex: 1, gap: 2, minWidth: 0 }}><h1 style={{ margin: 0, fontWeight: 400, fontSize: '1.875rem', lineHeight: '2.25rem' }}>Hola, Residente</h1><span className="t-sm mut">Torre A · Depto 1204</span></div>
         <button className="tile" aria-label="Avisos" onClick={() => go('avisos')} style={{ width: 40, height: 40, border: 0, background: 'var(--muted)', position: 'relative' }}><Bell size={20} /><i style={{ position: 'absolute', top: 8, right: 9, width: 8, height: 8, borderRadius: 4, background: '#e5484d' }} /></button>
         <button className="av" aria-label="Perfil" onClick={() => go('perfil')} style={{ width: 40, height: 40, background: 'none' }}>RD</button>
       </div>
@@ -223,7 +237,7 @@ function PaseCreado({ st, p, tab, toast }) {
   return (
     <>
       <div className="scroll center" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 56px)', gap: 16 }}>
-        <h1 style={{ margin: 0, fontSize: 22, fontWeight: 590 }}>Pase creado</h1>
+        <h1 style={{ margin: 0, fontSize: '1.375rem', fontWeight: 590 }}>Pase creado</h1>
         <p className="t-sm mut" style={{ margin: 0 }}>{x.name} · {x.kind} · Válido {x.long || 'hoy hasta las 23:59'}</p>
         <Qr seed={x.id + x.name} size={160} />
         <div style={{ width: '100%' }}><PinBox label="PIN de visita" pin={x.pin} /></div>
@@ -237,7 +251,7 @@ function PaseRevocado({ st, p, tab, go }) {
   return (
     <>
       <div className="scroll center" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 48px)', gap: 16 }}>
-        <h1 style={{ margin: 0, fontSize: 22, fontWeight: 590 }}>Pase revocado</h1>
+        <h1 style={{ margin: 0, fontSize: '1.375rem', fontWeight: 590 }}>Pase revocado</h1>
         <p className="t-sm mut" style={{ margin: 0 }}>El acceso de {x.name} fue anulado y avisamos a conserjería.</p>
         <Qr seed={x.id + x.name} size={160} dim bad />
         <div className="card s" style={{ width: '100%', padding: '12px 24px' }}><KV k="Pase" v={`${x.name} · ${x.kind}`} /><KV k="Revocado" v={'Hoy, ' + (x.revokedAt || hhmm())} /></div>
@@ -266,7 +280,7 @@ function PaseDetalle({ st, up, p, back, replace, toast }) {
       </div>
       <Foot><Btn v="dark" onClick={() => toast('Pase compartido')}>Compartir</Btn>{act && <Btn v="danger" onClick={() => setAsk(true)}>Revocar pase</Btn>}</Foot>
       {ask && <Sheet onClose={() => setAsk(false)}>
-        <h2 style={{ margin: 0, fontSize: 16, fontWeight: 510 }}>¿Revocar el pase de {x.name}?</h2>
+        <h2 style={{ margin: 0, fontSize: '1rem', fontWeight: 510 }}>¿Revocar el pase de {x.name}?</h2>
         <p className="t-xs mut" style={{ margin: '0 0 8px' }}>El QR y el PIN dejarán de funcionar de inmediato. Esta acción no se puede deshacer.</p>
         <Btn v="danger" onClick={revoke}>Sí, revocar</Btn><Btn v="dark" onClick={() => setAsk(false)}>Cancelar</Btn></Sheet>}
     </>)
@@ -297,7 +311,7 @@ function Encomiendas({ st, up, back, deep, toast }) {
 /* ---------- Finanzas ---------- */
 const PayRow = ({ c, onClick }) => (
   <button className="row" onClick={onClick} style={{ gap: 12, background: '#3a3c3a', border: 0, borderRadius: 16, padding: 16, textAlign: 'left', width: '100%' }}>
-    <Tile icon={Receipt} /><div className="col" style={{ flex: 1 }}><span className="t-base" style={{ fontSize: 16, fontWeight: 400 }}>{c.concept}</span><span className="t-xs mut">Pagado {c.short} · {c.m}</span></div><span className="t-base">{money(c.v)}</span>
+    <Tile icon={Receipt} /><div className="col" style={{ flex: 1 }}><span className="t-base" style={{ fontSize: '1rem', fontWeight: 400 }}>{c.concept}</span><span className="t-xs mut">Pagado {c.short} · {c.m}</span></div><span className="t-base">{money(c.v)}</span>
   </button>)
 
 function Finanzas({ st, go }) {
@@ -309,19 +323,19 @@ function Finanzas({ st, go }) {
         {total > 0 ? <>
           <div className="card col" style={{ gap: 12 }}>
             <div className="row" style={{ justifyContent: 'space-between' }}><span className="t-sm mut">Saldo de noviembre</span><Dot c="#f59e0b" t="Por vencer" /></div>
-            <div style={{ fontSize: 36, lineHeight: '44px', fontWeight: 590 }}>{money(total)}</div>
+            <div style={{ fontSize: '2.25rem', lineHeight: '2.75rem', fontWeight: 590 }}>{money(total)}</div>
             <div className="row t-sm mut" style={{ gap: 8 }}><Cal size={16} />Vence el 10 de diciembre de 2026</div>
             <Btn onClick={() => go('confPago', { method: 'Tarjeta ····4821' })}>Pagar con tarjeta ····4821</Btn>
             <button className="lnk" style={{ height: 28 }} onClick={() => go('pagar')}>Usar otro método</button>
           </div>
           <div className="card col" style={{ gap: 12 }}>
-            <div className="row" style={{ justifyContent: 'space-between' }}><span className="t-base" style={{ fontSize: 16 }}>Detalle del cobro</span><button className="lnk" onClick={() => go('detalleCobro')}>Ver todo</button></div>
+            <div className="row" style={{ justifyContent: 'space-between' }}><span className="t-base" style={{ fontSize: '1rem' }}>Detalle del cobro</span><button className="lnk" onClick={() => go('detalleCobro')}>Ver todo</button></div>
             {st.bills.map(b => { const I = ICONS[b.i]; return <div key={b.k} className="row" style={{ gap: 12 }}><Tile icon={I} size={40} ico={18} /><div className="col" style={{ flex: 1 }}><span className="t-sm" style={{ fontWeight: 510 }}>{b.k}</span><span className="t-xs mut">{b.s}</span></div><span className="t-base">{money(b.v)}</span></div> })}
             <div className="hr" /><div className="row" style={{ justifyContent: 'space-between' }}><span className="t-base">Total a pagar</span><span className="t-base">{money(total)}</span></div>
           </div></> :
           <div className="card col" style={{ gap: 12 }}>
             <div className="row" style={{ justifyContent: 'space-between' }}><span className="t-sm mut">Estás al día</span><Dot c="#16a34a" t="Al día" /></div>
-            <div style={{ fontSize: 36, lineHeight: '44px', fontWeight: 590 }}>$0</div>
+            <div style={{ fontSize: '2.25rem', lineHeight: '2.75rem', fontWeight: 590 }}>$0</div>
             <div className="row t-sm mut" style={{ gap: 8 }}><Cal size={16} />Próximo cobro: 10 de diciembre de 2026</div>
           </div>}
         <div className="row" style={{ justifyContent: 'space-between', marginBottom: -12 }}><span className="sec" style={{ color: 'var(--content)' }}>Pagos anteriores</span><button className="lnk" onClick={() => go('historial')}>Ver historial</button></div>
@@ -331,14 +345,14 @@ function Finanzas({ st, go }) {
 
 function DetalleCobro({ st, back, go }) {
   const total = st.bills.reduce((a, b) => a + b.v, 0)
-  const G = (title, g) => <div className="card col" style={{ gap: 14 }}><span className="t-base" style={{ fontSize: 16 }}>{title}</span>{st.bills.filter(b => b.g === g).map(b => { const I = ICONS[b.i]; return <div key={b.k} className="row" style={{ gap: 12 }}><Tile icon={I} size={36} ico={16} /><div className="col" style={{ flex: 1 }}><span className="t-sm">{b.k}</span><span className="t-xs mut">{b.l}</span></div><span className="t-sm" style={{ fontWeight: 510 }}>{money(b.v)}</span></div> })}</div>
+  const G = (title, g) => <div className="card col" style={{ gap: 14 }}><span className="t-base" style={{ fontSize: '1rem' }}>{title}</span>{st.bills.filter(b => b.g === g).map(b => { const I = ICONS[b.i]; return <div key={b.k} className="row" style={{ gap: 12 }}><Tile icon={I} size={36} ico={16} /><div className="col" style={{ flex: 1 }}><span className="t-sm">{b.k}</span><span className="t-xs mut">{b.l}</span></div><span className="t-sm" style={{ fontWeight: 510 }}>{money(b.v)}</span></div> })}</div>
   return (
     <>
       <Header title="Detalle del cobro" onBack={back} />
       <div className="scroll" style={{ paddingTop: 0, gap: 16 }}>
         <span className="t-xs mut">Noviembre 2026 · Torre A, Depto 1204</span>
         {G('Gastos del edificio', 0)}{G('Consumos individuales', 1)}
-        <div className="card col" style={{ gap: 14 }}><span className="t-base" style={{ fontSize: 16 }}>Multas e intereses</span><div className="row" style={{ gap: 12 }}><Tile icon={CircleCheck} size={36} ico={16} /><div className="col" style={{ flex: 1 }}><span className="t-sm">Sin cargos este mes</span><span className="t-xs mut">Pagaste a tiempo</span></div><span className="t-sm" style={{ fontWeight: 510 }}>$0</span></div></div>
+        <div className="card col" style={{ gap: 14 }}><span className="t-base" style={{ fontSize: '1rem' }}>Multas e intereses</span><div className="row" style={{ gap: 12 }}><Tile icon={CircleCheck} size={36} ico={16} /><div className="col" style={{ flex: 1 }}><span className="t-sm">Sin cargos este mes</span><span className="t-xs mut">Pagaste a tiempo</span></div><span className="t-sm" style={{ fontWeight: 510 }}>$0</span></div></div>
         <div className="card row" style={{ justifyContent: 'space-between' }}><span className="t-base">Total a pagar</span><span className="t-base">{money(total)}</span></div>
       </div>
       {total > 0 && <Foot><Btn onClick={() => go('pagar')}>Pagar {money(total)}</Btn></Foot>}</>)
@@ -366,7 +380,7 @@ function Pagar({ st, back, go }) {
     <>
       <Header title="Pagar" onBack={back} />
       <div className="scroll" style={{ paddingTop: 4, gap: 20 }}>
-        <div className="col" style={{ gap: 4 }}><span className="t-xs mut">Total a pagar</span><span style={{ fontSize: 36, lineHeight: '44px', fontWeight: 590 }}>{money(total)}</span><span className="t-xs mut">Gastos comunes · Noviembre 2026</span></div>
+        <div className="col" style={{ gap: 4 }}><span className="t-xs mut">Total a pagar</span><span style={{ fontSize: '2.25rem', lineHeight: '2.75rem', fontWeight: 590 }}>{money(total)}</span><span className="t-xs mut">Gastos comunes · Noviembre 2026</span></div>
         <span className="t-sm" style={{ marginBottom: -8 }}>Elige cómo pagar</span>
         <div className="col" style={{ gap: 12 }}>
           {opts.map(([k, I, t, s]) => <button key={k} className={'opt' + (m === k ? ' on' : '')} onClick={() => setM(k)}><Tile icon={I} size={44} ico={20} /><span className="col" style={{ flex: 1, gap: 2 }}><span className="t-base" style={{ fontWeight: 400 }}>{t}</span><span className="t-xs mut">{s}</span></span><span className={'radio' + (m === k ? ' on' : '')} /></button>)}
@@ -383,7 +397,7 @@ function ConfPago({ st, p, back, replace }) {
     <>
       <Header title="Confirmar pago" onBack={back} />
       <div className="scroll" style={{ paddingTop: 4, gap: 16 }}>
-        <div className="card col" style={{ gap: 4 }}><span className="t-base" style={{ fontSize: 16, fontWeight: 400, marginBottom: 8 }}>Resumen</span>
+        <div className="card col" style={{ gap: 4 }}><span className="t-base" style={{ fontSize: '1rem', fontWeight: 400, marginBottom: 8 }}>Resumen</span>
           <KV k="Gastos comunes noviembre" v={money(total)} /><KV k="Método de pago" v={p.method} /><KV k="Comisión" v="$0" /><div className="hr" /><div className="kv"><b>Total a pagar</b><b>{money(total)}</b></div></div>
         <div className="row t-xs mut" style={{ gap: 8 }}><Lock size={16} />{card ? 'El monto se cargará de inmediato a tu tarjeta.' : 'Recibirás los datos de la transferencia a continuación.'}</div>
       </div>
@@ -400,7 +414,7 @@ function Procesando({ st, up, p, replace }) {
     }, 1800)
     return () => clearTimeout(t)
   }, [])
-  return <div className="scroll center" style={{ justifyContent: 'center', gap: 16 }}><div className="spin" style={{ width: 48, height: 48 }} /><div className="t-lg" style={{ marginTop: 8 }}>Procesando tu pago</div><div className="t-xs mut">No cierres la app. Esto toma unos segundos.</div></div>
+  return <div className="scroll center" role="status" aria-live="polite" style={{ justifyContent: 'center', gap: 16 }}><div className="spin" aria-hidden="true" style={{ width: 48, height: 48 }} /><div className="t-lg" style={{ marginTop: 8 }}>Procesando tu pago</div><div className="t-xs mut">No cierres la app. Esto toma unos segundos.</div></div>
 }
 
 function PagoOk({ st, p, tab, toast }) {
@@ -409,8 +423,8 @@ function PagoOk({ st, p, tab, toast }) {
   return (
     <>
       <div className="scroll center" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 48px)', gap: 12 }}>
-        <Success /><h1 style={{ margin: '12px 0 0', fontSize: 22, fontWeight: 590 }}>Pago realizado</h1>
-        <div style={{ fontSize: 36, lineHeight: '44px', fontWeight: 590 }}>{money(c.v)}</div>
+        <Success /><h1 style={{ margin: '12px 0 0', fontSize: '1.375rem', fontWeight: 590 }}>Pago realizado</h1>
+        <div style={{ fontSize: '2.25rem', lineHeight: '2.75rem', fontWeight: 590 }}>{money(c.v)}</div>
         <p className="t-xs mut" style={{ margin: 0 }}>Gastos comunes de noviembre 2026</p>
         <div className="card s" style={{ width: '100%', padding: '12px 24px', marginTop: 8 }}><KV k="N° de comprobante" v={c.ref} /><KV k="Fecha" v={c.date} /><KV k="Método" v={c.method} /></div>
       </div>
@@ -425,9 +439,9 @@ function Comprobante({ st, p, back, toast }) {
     <>
       <Header title="Comprobante" onBack={back} />
       <div className="scroll" style={{ paddingTop: 4, gap: 16 }}>
-        <div className="card center col" style={{ gap: 8 }}><span className="tile" style={{ width: 40, height: 40, background: 'var(--success)' }}><Check size={22} /></span><span className="t-sm mut">Pago aprobado</span><span style={{ fontSize: 36, lineHeight: '44px', fontWeight: 590 }}>{money(c.v)}</span></div>
+        <div className="card center col" style={{ gap: 8 }}><span className="tile" style={{ width: 40, height: 40, background: 'var(--success)' }}><Check size={22} /></span><span className="t-sm mut">Pago aprobado</span><span style={{ fontSize: '2.25rem', lineHeight: '2.75rem', fontWeight: 590 }}>{money(c.v)}</span></div>
         <div className="card"><KV k="N° de comprobante" v={c.ref} /><KV k="Fecha" v={c.date} /><KV k="Método" v={c.method} /><KV k="Departamento" v="Torre A · 1204" /></div>
-        <div className="card"><KV k="Gasto común y fondo" v={money(g)} /><KV k="Agua y gas" v={money(c.v - g)} /><div className="hr" /><div className="kv" style={{ fontSize: 16 }}><b>Total pagado</b><b>{money(c.v)}</b></div></div>
+        <div className="card"><KV k="Gasto común y fondo" v={money(g)} /><KV k="Agua y gas" v={money(c.v - g)} /><div className="hr" /><div className="kv" style={{ fontSize: '1rem' }}><b>Total pagado</b><b>{money(c.v)}</b></div></div>
       </div>
       <Foot><Btn v="dark" onClick={() => toast('Comprobante compartido')}>Compartir</Btn><Btn v="inv" onClick={() => toast('PDF descargado')}>Descargar PDF</Btn></Foot></>)
 }
@@ -445,12 +459,12 @@ function Servicios({ st, go, p }) {
         <Tabs items={[['res', 'Reservas'], ['sol', 'Solicitudes']]} value={t} onChange={setT} />
         {t === 'res' ? <>
           {next && <div className="col" style={{ gap: 12 }}><p className="sec">Mi próxima reserva</p>
-            <div className="sum alert"><Tile icon={Cal} pri /><span className="b"><span className="t-xs mut">{next.space}</span><span className="t-base" style={{ fontSize: 18 }}>{dShort(dt(next.date))}</span><span className="t-xs mut">{next.from} – {next.to} · Gratis</span></span><ChevronRight size={16} color="#c5c5c5" /></div></div>}
+            <div className="sum alert"><Tile icon={Cal} pri /><span className="b"><span className="t-xs mut">{next.space}</span><span className="t-base" style={{ fontSize: '1.125rem' }}>{dShort(dt(next.date))}</span><span className="t-xs mut">{next.from} – {next.to} · Gratis</span></span><ChevronRight size={16} color="#c5c5c5" /></div></div>}
           <div className="col" style={{ gap: 12 }}><p className="sec">Reservar un espacio</p>
             {spaces.map(([I, n, s]) => (
               <button key={n} onClick={() => go('reservar')} style={{ background: 'var(--muted)', border: 0, borderRadius: 24, overflow: 'hidden', textAlign: 'left', padding: 0, width: '100%' }}>
                 <div style={{ height: 112, background: 'var(--elevated)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><I size={44} strokeWidth={1.4} /></div>
-                <div className="col" style={{ padding: 16, gap: 8 }}><div className="row" style={{ justifyContent: 'space-between' }}><span className="t-base" style={{ fontSize: 16, fontWeight: 400 }}>{n}</span><Dot c="#16a34a" t="Disponible" /></div><span className="t-xs mut">{s}</span></div>
+                <div className="col" style={{ padding: 16, gap: 8 }}><div className="row" style={{ justifyContent: 'space-between' }}><span className="t-base" style={{ fontSize: '1rem', fontWeight: 400 }}>{n}</span><Dot c="#16a34a" t="Disponible" /></div><span className="t-xs mut">{s}</span></div>
               </button>))}
           </div></> :
           <div className="col" style={{ gap: 12 }}>
@@ -483,7 +497,7 @@ function Reservar({ st, back, go }) {
       <Header title="Reservar quincho" onBack={back} />
       <div className="scroll" style={{ paddingTop: 0, gap: 16 }}>
         <div className="row t-xs mut" style={{ gap: 8 }}><Users size={16} />Hasta 20 personas · 09:00 a 23:00 · Gratis</div>
-        <div style={{ fontSize: 16, fontWeight: 510 }}>{cap(MESES[date.getMonth()])} {date.getFullYear()}</div>
+        <div style={{ fontSize: '1rem', fontWeight: 510 }}>{cap(MESES[date.getMonth()])} {date.getFullYear()}</div>
         <div className="days" role="listbox" aria-label="Elige un día">{days.map(d => <button key={key(d)} role="option" aria-selected={key(d) === key(date)} disabled={d < TODAY} className={'day' + (key(d) === key(date) ? ' on' : '')} onClick={() => { setDate(d); setBlock(null) }}><span>{cap(DIAS[d.getDay()].slice(0, 3))}</span><b>{d.getDate()}</b></button>)}</div>
         <span className="t-sm mut">Elige un bloque</span>
         <div className="col" style={{ gap: 12, marginTop: -4 }}>
@@ -508,7 +522,7 @@ function ConfReserva({ p, up, back, replace }) {
     <>
       <Header title="Confirmar reserva" onBack={back} />
       <div className="scroll" style={{ paddingTop: 4, gap: 16 }}>
-        <div className="card col" style={{ gap: 4 }}><span className="t-base" style={{ fontSize: 18, fontWeight: 400, marginBottom: 8 }}>Resumen</span>
+        <div className="card col" style={{ gap: 4 }}><span className="t-base" style={{ fontSize: '1.125rem', fontWeight: 400, marginBottom: 8 }}>Resumen</span>
           <KV k="Espacio" v="Quincho" /><KV k="Fecha" v={`${dShort(d)} ${d.getFullYear()}`} /><KV k="Horario" v={`${b[1]} – ${b[2]}`} /><KV k="Departamento" v="Torre A · 1204" /><KV k="Costo" v="Gratis" /></div>
         <div className="row t-xs mut" style={{ gap: 8 }}><Info size={16} />Puedes cancelar hasta 24 horas antes, sin costo.</div>
       </div>
@@ -522,7 +536,7 @@ function ReservaOk({ st, p, tab }) {
   return (
     <>
       <div className="scroll center" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 56px)', gap: 16 }}>
-        <Success /><h1 style={{ margin: '8px 0 0', fontSize: 22, fontWeight: 590 }}>Reserva confirmada</h1>
+        <Success /><h1 style={{ margin: '8px 0 0', fontSize: '1.375rem', fontWeight: 590 }}>Reserva confirmada</h1>
         <p className="t-sm mut" style={{ margin: 0 }}>Quincho · {dShort(d)} · {r.from} – {r.to}</p>
         <div className="card s" style={{ width: '100%', padding: '12px 24px' }}><KV k="N° de reserva" v={r.ref} /><KV k="Costo" v="Gratis" /><KV k="Cancelación" v={`Hasta el ${DIAS[c.getDay()].slice(0, 3)} ${c.getDate()} ${MESES[c.getMonth()].slice(0, 3)}, ${r.from}`} /></div>
       </div>
@@ -536,8 +550,8 @@ function SolCat({ back, go }) {
     <>
       <Header title="Nueva solicitud" onBack={back} />
       <div className="scroll" style={{ paddingTop: 0, gap: 16 }}>
-        <span className="t-base" style={{ fontSize: 18, fontWeight: 510 }}>¿Qué necesitas?</span>
-        {CATS.map(([I, c]) => <button key={c} className="sum" style={{ padding: '16px', minHeight: 72 }} onClick={() => go('solForm', { cat: c })}><Tile icon={I} size={40} ico={20} /><span className="t-sm" style={{ flex: 1, fontSize: 16, lineHeight: '24px' }}>{c}</span><ChevronRight size={16} color="#c5c5c5" /></button>)}
+        <span className="t-base" style={{ fontSize: '1.125rem', fontWeight: 510 }}>¿Qué necesitas?</span>
+        {CATS.map(([I, c]) => <button key={c} className="sum" style={{ padding: '16px', minHeight: 72 }} onClick={() => go('solForm', { cat: c })}><Tile icon={I} size={40} ico={20} /><span className="t-sm" style={{ flex: 1, fontSize: '1rem', lineHeight: '1.5rem' }}>{c}</span><ChevronRight size={16} color="#c5c5c5" /></button>)}
       </div></>)
 }
 function SolForm({ p, up, back, replace }) {
@@ -557,7 +571,7 @@ function SolForm({ p, up, back, replace }) {
         <span className="chip on" style={{ alignSelf: 'flex-start' }}>{p.cat}</span>
         <div><label className="lbl" htmlFor="as" style={{ marginBottom: 8 }}>Asunto</label><input id="as" className="field" placeholder="Ej: Luz quemada en pasillo piso 12" value={sub} onChange={e => setSub(e.target.value)} /><p className="help">Resume el problema en una frase</p></div>
         <div><label className="lbl" htmlFor="ds" style={{ marginBottom: 8 }}>Descripción</label><textarea id="ds" className="field" rows={4} placeholder="¿Qué pasó y dónde?" value={desc} onChange={e => setDesc(e.target.value)} style={{ resize: 'none' }} /><p className="help">Cuéntanos qué pasó y dónde.</p></div>
-        <button onClick={() => setFoto(!foto)} className="row" style={{ justifyContent: 'center', gap: 12, height: 88, border: '1px dashed var(--border-strong)', borderRadius: 16, background: 'none', fontSize: 14 }}><Camera size={20} />{foto ? 'Foto agregada ✓' : 'Agregar foto (opcional)'}</button>
+        <button onClick={() => setFoto(!foto)} className="row" style={{ justifyContent: 'center', gap: 12, height: 88, border: '1px dashed var(--border-strong)', borderRadius: 16, background: 'none', fontSize: '0.875rem' }}><Camera size={20} />{foto ? 'Foto agregada ✓' : 'Agregar foto (opcional)'}</button>
       </div>
       <Foot><Btn disabled={sub.trim().length < 3} onClick={send}>Enviar solicitud</Btn></Foot></>)
 }
@@ -567,7 +581,7 @@ function SolOk({ st, p, tab, replace }) {
   return (
     <>
       <div className="scroll center" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 48px)', gap: 12 }}>
-        <Success /><h1 style={{ margin: '12px 0 0', fontSize: 22, fontWeight: 590 }}>Solicitud enviada</h1>
+        <Success /><h1 style={{ margin: '12px 0 0', fontSize: '1.375rem', fontWeight: 590 }}>Solicitud enviada</h1>
         <p className="t-xs mut" style={{ margin: 0 }}>Te avisaremos cuando cambie su estado.</p>
         <div className="card s" style={{ width: '100%', padding: '12px 24px', marginTop: 8 }}><KV k="N° de solicitud" v={r.ref} /><KV k="Categoría" v={SHORT[r.cat]} /><KV k="Estado" v="Recibida" /><KV k="Respuesta estimada" v="En 48 horas" /></div>
       </div>
@@ -623,7 +637,7 @@ function Ajustes({ st, up, back }) {
       </div></>)
 }
 function Perfil({ st, up, back, go, tab, toast, reset }) {
-  const R = ({ icon, t, onClick, right, red }) => <button onClick={onClick} className="row" style={{ gap: 12, background: 'var(--muted)', border: 0, borderRadius: 16, padding: '0 16px', height: 56, width: '100%', textAlign: 'left', color: red ? '#f08a87' : undefined }}><Tile icon={icon} size={32} ico={16} /><span className="t-sm" style={{ flex: 1, fontSize: 15 }}>{t}</span>{right || (!red && <ChevronRight size={16} color="#c5c5c5" />)}</button>
+  const R = ({ icon, t, onClick, right, red }) => <button onClick={onClick} className="row" style={{ gap: 12, background: 'var(--muted)', border: 0, borderRadius: 16, padding: '0 16px', height: 56, width: '100%', textAlign: 'left', color: red ? '#f08a87' : undefined }}><Tile icon={icon} size={32} ico={16} /><span className="t-sm" style={{ flex: 1, fontSize: '0.9375rem' }}>{t}</span>{right || (!red && <ChevronRight size={16} color="#c5c5c5" />)}</button>
   const soon = () => toast('Disponible en la versión final')
   return (
     <>
@@ -632,10 +646,35 @@ function Perfil({ st, up, back, go, tab, toast, reset }) {
         <div className="card col center" style={{ gap: 8, padding: 24, borderRadius: 24 }}><span className="av" style={{ width: 48, height: 48 }}>RD</span><span className="t-base">Residente Demo</span><span className="t-xs mut">Torre A · Depto 1204</span></div>
         <R icon={UserRound} t="Mis datos" onClick={soon} />
         <R icon={Bell} t="Notificaciones" onClick={() => go('ajustes')} />
-        <div className="row" style={{ gap: 12, background: 'var(--muted)', borderRadius: 16, padding: '0 16px', height: 56 }}><Tile icon={ShieldCheck} size={32} ico={16} /><span className="t-sm" style={{ flex: 1, fontSize: 15 }}>Ingreso con Face ID</span><Switch label="Ingreso con Face ID" on={!!st.sw.face} onChange={() => up(s => ({ sw: { ...s.sw, face: !s.sw.face } }))} /></div>
+        <div className="row" style={{ gap: 12, background: 'var(--muted)', borderRadius: 16, padding: '0 16px', height: 56 }}><Tile icon={ShieldCheck} size={32} ico={16} /><span className="t-sm" style={{ flex: 1, fontSize: '0.9375rem' }}>Ingreso con Face ID</span><Switch label="Ingreso con Face ID" on={!!st.sw.face} onChange={() => up(s => ({ sw: { ...s.sw, face: !s.sw.face } }))} /></div>
+        <R icon={Accessibility} t="Accesibilidad" onClick={() => go('a11y')} />
         <R icon={Cal} t="Mis reservas" onClick={() => tab('serv')} />
         <R icon={Info} t="Ayuda" onClick={soon} />
         <R icon={UserRound} t="Cerrar sesión" red onClick={reset} />
         <span className="t-xs sub center" style={{ textAlign: 'center' }}>Cerrar sesión reinicia la demo para el siguiente participante.</span>
+      </div></>)
+}
+
+function Accesib({ st, up, back }) {
+  const A = st.a11y || { size: 'n', contrast: 'normal', motion: 'normal' }
+  const set = o => up(s => ({ a11y: { ...(s.a11y || { size: 'n', contrast: 'normal', motion: 'normal' }), ...o } }))
+  const sizes = [['n', 'Normal', 16], ['l', 'Grande', 18], ['xl', 'Muy grande', 20]]
+  return (
+    <>
+      <Header title="Accesibilidad" onBack={back} />
+      <div className="scroll" style={{ paddingTop: 0, gap: 20 }}>
+        <div role="radiogroup" aria-label="Tamaño del texto" className="col" style={{ gap: 12 }}>
+          <span className="t-sm mut">Tamaño del texto</span>
+          {sizes.map(([k, l, px]) => (
+            <button key={k} role="radio" aria-checked={A.size === k} className={'opt' + (A.size === k ? ' on' : '')} onClick={() => set({ size: k })}>
+              <span style={{ fontSize: px / 16 + 'rem', width: 44, textAlign: 'center', fontWeight: 510 }}>Aa</span>
+              <span className="t-base" style={{ flex: 1, fontWeight: 400 }}>{l}</span><span className={'radio' + (A.size === k ? ' on' : '')} />
+            </button>))}
+        </div>
+        <div className="card s" style={{ padding: '0 16px' }}>
+          <div className="row" style={{ minHeight: 68, gap: 12 }}><div className="col" style={{ flex: 1 }}><span className="t-base" style={{ fontWeight: 400 }}>Alto contraste</span><span className="t-xs mut">Textos y bordes más marcados</span></div><Switch label="Alto contraste" on={A.contrast === 'alto'} onChange={() => set({ contrast: A.contrast === 'alto' ? 'normal' : 'alto' })} /></div>
+          <div className="row" style={{ minHeight: 68, gap: 12, borderTop: '1px solid var(--border)' }}><div className="col" style={{ flex: 1 }}><span className="t-base" style={{ fontWeight: 400 }}>Reducir movimiento</span><span className="t-xs mut">Menos animaciones</span></div><Switch label="Reducir movimiento" on={A.motion === 'reducir'} onChange={() => set({ motion: A.motion === 'reducir' ? 'normal' : 'reducir' })} /></div>
+        </div>
+        <p className="t-xs mut" style={{ margin: 0 }}>También respetamos la configuración de tu teléfono.</p>
       </div></>)
 }
