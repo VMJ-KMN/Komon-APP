@@ -22,7 +22,7 @@ export const Foot = ({ children, nb }) => <div className={'foot' + (nb ? ' nb' :
 export const Btn = ({ v = '', children, ...p }) => <button className={'btn ' + v} {...p}>{children}</button>
 
 export const Sheet = ({ children, onClose }) => (
-  <div className="sheet-bg" onClick={onClose}><div className="sheet" onClick={e => e.stopPropagation()}>{children}</div></div>
+  <div className="sheet-bg" onClick={onClose}><div className="sheet" onClick={e => e.stopPropagation()}><i style={{ width: 36, height: 4, borderRadius: 2, background: '#6b6d6b', alignSelf: 'center', marginTop: -12 }} />{children}</div></div>
 )
 export const Switch = ({ on, onChange, label }) => (
   <button role="switch" aria-checked={on} aria-label={label} className={'sw' + (on ? ' on' : '')} onClick={onChange}><i /></button>
@@ -86,3 +86,5 @@ export function Calendar({ value, onChange }) {
     </div>
   )
 }
+
+export const Dot = ({ c, t }) => <span className="t-xs upper row" style={{ gap: 6, whiteSpace: 'nowrap' }}><i style={{ width: 8, height: 8, borderRadius: 4, background: c }} />{t}</span>

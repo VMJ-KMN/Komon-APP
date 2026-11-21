@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react'
-import { House, ScanQrCode, Package, Wallet, LayoutGrid, QrCode, Calendar as Cal, ClipboardList, Receipt, Bell, Utensils, Users, CircleAlert, ArrowUpRight, ArrowUpLeft, Clock, Building2, Shield, Droplet, Flame, Landmark, Lock, Camera, Wrench, MessageCircle, CircleHelp, CreditCard, Info, Plus, ChevronRight, Check, Wifi } from 'lucide-react'
-import { Header, TabHeader, Foot, Btn, Sheet, Switch, Tabs, Tile, Sum, KV, PinBox, Success, Qr, Calendar, TODAY, MESES, DIAS, key, cap, dShort, money, initials } from './ui.jsx'
-import { initial, BLOCKS, STEPS } from './data.js'
+import { House, ScanQrCode, Package, Wallet, LayoutGrid, QrCode, Calendar as Cal, ClipboardList, Receipt, Bell, Utensils, Users, CircleAlert, ArrowUpRight, ArrowUpLeft, Clock, Building2, Shield, Droplet, Flame, Landmark, Lock, Camera, Wrench, MessageCircle, CircleHelp, CreditCard, Info, Plus, ChevronRight, Check, Settings, Megaphone, TriangleAlert, CircleCheck, UserRound, ShieldCheck, LogOut } from 'lucide-react'
+import { Header, TabHeader, Foot, Btn, Sheet, Switch, Tabs, Tile, Sum, KV, PinBox, Success, Qr, Calendar, Dot, TODAY, MESES, DIAS, key, cap, dShort, money, initials } from './ui.jsx'
+import { initial, BLOCKS, STEPS, SHORT } from './data.js'
 
-const LS = 'serenity-demo-v2'
+const LS = 'serenity-demo-v3'
 const load = () => { try { const s = JSON.parse(localStorage.getItem(LS)); if (s) return s } catch (e) {} return initial() }
 const dt = s => new Date(s)
 const hhmm = () => { const d = new Date(); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') }
 const NAV = ['home', 'accesos', 'enc', 'fin', 'serv']
+const CATICON = { 'Mantención de áreas comunes': Wrench, 'Problema en mi departamento': House, 'Convivencia o ruidos': MessageCircle, 'Consulta o sugerencia': CircleHelp }
+const ICONS = { building: Building2, shield: Shield, drop: Droplet, flame: Flame }
 
 export default function App() {
   const [st, setSt] = useState(load)
@@ -27,8 +29,9 @@ export default function App() {
   const A = { st, up, go, back, tab, replace, toast: setToast, reset, p: cur.p || {}, deep: stack.length > 1 }
 
   const Screens = { onb: Onb, home: Home, accesos: Accesos, nuevoPase: NuevoPase, paseCreado: PaseCreado, pase: PaseDetalle, paseRev: PaseRevocado,
-    enc: Encomiendas, fin: Finanzas, pagar: Pagar, proc: Procesando, comp: Comprobante, serv: Servicios, reservar: Reservar, confReserva: ConfReserva, reservaOk: ReservaOk,
-    solCat: SolCat, solForm: SolForm, solOk: SolOk, sol: SolDetalle, avisos: Avisos, perfil: Perfil }
+    enc: Encomiendas, fin: Finanzas, detalleCobro: DetalleCobro, historial: HistorialPagos, pagar: Pagar, confPago: ConfPago, proc: Procesando, pagoOk: PagoOk, comp: Comprobante,
+    serv: Servicios, reservar: Reservar, confReserva: ConfReserva, reservaOk: ReservaOk,
+    solCat: SolCat, solForm: SolForm, solOk: SolOk, sol: SolDetalle, avisos: Avisos, ajustes: Ajustes, perfil: Perfil }
   const S = Screens[cur.s]
   const showNav = NAV.includes(cur.s)
   const nPass = st.passes.filter(p => p.status === 'vigente').length
@@ -88,12 +91,12 @@ function Onb({ st, up, tab }) {
 }
 
 /* ---------- Inicio ---------- */
-function Home({ st, go, tab }) {
+function Home({ st, go }) {
   const pk = st.pkgs.filter(x => x.status === 'porteria')
   const total = st.bills.reduce((a, b) => a + b.v, 0)
   const act = st.passes.filter(p => p.status === 'vigente')
   const rsv = st.reservas.slice().sort((a, b) => dt(a.date) - dt(b.date))[0]
-  const open = st.reqs.filter(r => r.status < 3)
+  const open = st.reqs.filter(r => r.status < 2)
   const nt = st.notices[0]
   const qa = [[QrCode, 'Nuevo pase', () => go('nuevoPase'), 1], [Cal, 'Reservar', () => go('reservar')], [ClipboardList, 'Solicitud', () => go('solCat')], [Receipt, 'Pagar', () => go('pagar')]]
   return (
@@ -110,58 +113,73 @@ function Home({ st, go, tab }) {
         {(total > 0 || pk.length > 0) && <div className="col" style={{ gap: 12 }}>
           <p className="sec">Requiere tu atención</p>
           {total > 0 && <Sum alert icon={Receipt} label="Saldo por pagar" value={money(total)} detail="Vence el 10 de diciembre" onClick={() => go('fin')} />}
-          {pk.length > 0 && <Sum icon={Package} label="Encomiendas" value={`${pk.length} por retirar`} detail={pk.map(p => p.from).join(' · ')} onClick={() => go('enc')} />}
+          {pk.length > 0 && <Sum icon={Package} label="Encomiendas" value={`${pk.length} por retirar`} detail={[...new Set(pk.map(p => p.from))].join(' · ')} onClick={() => go('enc')} />}
         </div>}
-        {nt && <div className="col" style={{ gap: 12 }}><p className="sec">Aviso destacado</p><Notice n={nt} onClick={() => go('avisos')} /></div>}
+        {nt && <div className="col" style={{ gap: 12 }}><p className="sec">Aviso destacado</p><Notice n={{ ...nt, eyebrow: 'AVISOS', date: null }} action onClick={() => go('avisos')} /></div>}
         <div className="col" style={{ gap: 12 }}>
           <p className="sec">Tu actividad</p>
           <Sum icon={QrCode} label="Visitas vigentes" value={`${act.length} ${act.length === 1 ? 'pase activo' : 'pases activos'}`} detail={act[0] ? `${act[0].name} · ${act[0].when}` : 'Sin pases activos'} onClick={() => go('accesos')} />
-          <Sum icon={Utensils} label="Próxima reserva" value={rsv ? `${rsv.space} · ${dShort(dt(rsv.date)).toLowerCase()}` : 'Sin reservas'} detail={rsv ? `${rsv.from} – ${rsv.to}` : 'Reserva un espacio'} onClick={() => go('serv', {})} />
+          <Sum icon={Utensils} label="Próxima reserva" value={rsv ? `${rsv.space} · ${dShort(dt(rsv.date)).toLowerCase()}` : 'Sin reservas'} detail={rsv ? `${rsv.from} – ${rsv.to}` : 'Reserva un espacio'} onClick={() => go('serv')} />
           <Sum icon={ClipboardList} label="Mis solicitudes" value={`${open.length} en revisión`} detail={open[0] ? open[0].title : 'Todo al día'} onClick={() => go('serv', { tab: 'sol' })} />
         </div>
       </div></>)
 }
 
-function Notice({ n, onClick }) {
-  const pri = n.pri
+function Notice({ n, onClick, action }) {
+  const pri = n.kind === 'urg'
+  const Ic = pri ? CircleAlert : n.kind === 'com' ? Megaphone : Wrench
   return (
     <div role="button" onClick={onClick} className="col" style={{ gap: 8, padding: 20, borderRadius: 16, background: pri ? 'var(--primary)' : 'var(--muted)', cursor: 'pointer' }}>
-      <div className="row" style={{ gap: 8 }}>
-        <CircleAlert size={20} color={pri ? '#fff' : '#f59e0b'} /><span className="t-sm" style={{ flex: 1, fontWeight: 510 }}>{n.eyebrow}</span>
-        {pri && <span className="tile" style={{ width: 40, height: 40, background: 'var(--content)', color: 'var(--surface)' }}><ArrowUpRight size={20} /></span>}
+      <div className="row" style={{ gap: 8, minHeight: 20 }}>
+        <Ic size={20} /><span className="t-sm" style={{ flex: 1, fontWeight: 510 }}>{n.eyebrow}</span>
+        {n.date && <span className="t-xs" style={{ color: pri ? 'rgba(255,255,255,.85)' : 'var(--content-muted)' }}>{n.date}</span>}
+        {action && <span className="tile" style={{ width: 40, height: 40, background: 'var(--content)', color: 'var(--surface)' }}><ArrowUpRight size={20} /></span>}
       </div>
       <div className="t-lg">{n.t}</div>
       <div className="t-sm" style={{ opacity: .9 }}>{n.s}</div>
     </div>)
 }
 
+function ManCard({ n }) {
+  return (
+    <div className="card s col" style={{ gap: 12 }}>
+      <div className="row" style={{ gap: 12, alignItems: 'flex-start' }}><Wrench size={22} style={{ marginTop: 2 }} /><span className="t-base" style={{ flex: 1, fontWeight: 400 }}>{n.t}</span><span className="tag">{n.badge}</span></div>
+      <div className="col" style={{ gap: 4 }}><span className="t-xs mut">{n.date}</span>{n.time && <span className="t-xs mut">{n.time}</span>}{n.s && <span className="t-xs" style={{ marginTop: 8 }}>{n.s}</span>}</div>
+    </div>)
+}
+
 /* ---------- Accesos ---------- */
+const STC = { usado: '#818181', revocado: '#dc2626', expirado: '#818181' }
 function Accesos({ st, go }) {
   const [t, setT] = useState('v')
-  const list = st.passes.filter(p => (t === 'v' ? p.status === 'vigente' : p.status !== 'vigente'))
-  const nv = st.passes.filter(p => p.status === 'vigente').length
+  const vig = st.passes.filter(p => p.status === 'vigente'), hist = st.passes.filter(p => p.status !== 'vigente')
   return (
     <>
       <TabHeader title="Accesos" />
       <div className="scroll nav-pad" style={{ paddingTop: 12 }}>
-        <Tabs items={[['v', 'Vigentes', nv], ['h', 'Historial']]} value={t} onChange={setT} />
-        {list.length === 0 && <div className="card center col" style={{ gap: 8 }}><span className="t-base">{t === 'v' ? 'No tienes pases vigentes' : 'Aún no hay historial'}</span><span className="t-sm mut">{t === 'v' ? 'Crea uno para tu próxima visita.' : 'Tus pases usados o revocados aparecerán aquí.'}</span></div>}
-        {list.map(p => (
-          <div key={p.id} className="card col" style={{ gap: 16, opacity: t === 'h' ? .85 : 1 }}>
+        <Tabs items={[['v', 'Vigentes', vig.length], ['h', 'Historial']]} value={t} onChange={setT} />
+        {t === 'v' && vig.length === 0 && <div className="col center" style={{ gap: 12, paddingTop: 24 }}>
+          <span className="tile" style={{ width: 96, height: 96 }}><QrCode size={40} strokeWidth={1.6} /></span>
+          <span className="t-lg" style={{ marginTop: 8 }}>No tienes pases vigentes</span>
+          <span className="t-sm mut" style={{ maxWidth: 260 }}>Crea un pase para que tus visitas entren sin llamar a conserjería.</span>
+          <div style={{ height: 8 }} /><Btn onClick={() => go('nuevoPase')}>Crear pase</Btn></div>}
+        {t === 'v' && vig.map(p => (
+          <div key={p.id} className="card col" style={{ gap: 16 }}>
             <div className="row" style={{ gap: 12 }}>
               <span className="av" style={{ width: 48, height: 48 }}>{initials(p.name)}</span>
-              <div className="col" style={{ gap: 4, minWidth: 0 }}>
-                <span className="t-lg" style={{ fontWeight: 400 }}>{p.name}</span>
-                <span className="tag" style={{ alignSelf: 'flex-start' }}>{p.kind} • <Clock size={12} /> {p.when}</span>
-              </div>
+              <div className="col" style={{ gap: 4, minWidth: 0 }}><span className="t-base" style={{ fontWeight: 400 }}>{p.name}</span><span className="tag" style={{ alignSelf: 'flex-start' }}>{p.kind} • <Clock size={12} /> {p.when}</span></div>
             </div>
-            {t === 'v' ? <>
-              <PinBox label="PIN de visita" pin={p.pin} />
-              <div className="row" style={{ gap: 12 }}><Btn v="inv" onClick={() => go('pase', { id: p.id })}>Ver</Btn><Btn v="danger" onClick={() => go('pase', { id: p.id, ask: true })}>Revocar</Btn></div></>
-              : <div className="row" style={{ justifyContent: 'space-between' }}><span className="t-sm mut">{p.created}</span><span className={'tag'} style={{ color: p.status === 'revocado' ? '#f08a87' : undefined }}>{p.status === 'revocado' ? 'Revocado' : 'Usado'}</span></div>}
+            <PinBox label="PIN de visita" pin={p.pin} />
+            <div className="row" style={{ gap: 12 }}><Btn v="inv" onClick={() => go('pase', { id: p.id })}>Ver</Btn><Btn v="danger" onClick={() => go('pase', { id: p.id, ask: true })}>Revocar</Btn></div>
           </div>))}
+        {t === 'h' && hist.map(p => (
+          <button key={p.id} onClick={() => go('pase', { id: p.id })} className="row" style={{ gap: 12, background: '#3a3c3a', border: 0, borderRadius: 16, padding: 16, textAlign: 'left', width: '100%', alignItems: 'flex-start' }}>
+            <span className="av" style={{ width: 40, height: 40 }}>{initials(p.name)}</span>
+            <div className="col" style={{ flex: 1, gap: 6, minWidth: 0 }}><span className="t-base" style={{ fontWeight: 400 }}>{p.name}</span><span className="tag" style={{ alignSelf: 'flex-start' }}>{p.kind} • <Clock size={12} /> {p.when}</span></div>
+            <Dot c={STC[p.status]} t={p.status} />
+          </button>))}
       </div>
-      {t === 'v' && <button className="fab" onClick={() => go('nuevoPase')}><Plus size={22} /> Nuevo pase</button>}
+      {t === 'v' && vig.length > 0 && <button className="fab" onClick={() => go('nuevoPase')}><Plus size={22} /> Nuevo pase</button>}
     </>)
 }
 
@@ -178,7 +196,7 @@ function NuevoPase({ up, back, replace }) {
     const week = new Date(TODAY.getTime() + 7 * 864e5)
     const valid = dur === '1 día' ? 'Hoy, 23:59' : dur === '1 semana' ? `${week.getDate()} ${MESES[week.getMonth()].slice(0, 3)}, 23:59` : `${date.getDate()} ${MESES[date.getMonth()].slice(0, 3)}, 23:59`
     const long = dur === '1 día' ? 'hoy hasta las 23:59' : `hasta el ${valid.replace(', ', ' a las ')}`
-    up(s => ({ passes: [{ id, name: n, kind, when: dur === 'Elegir fecha' ? dShort(date) : cap(dur).replace('Día', 'Día'), pin, rut: rut || '—', created: 'Hoy, ' + hhmm(), valid, long, status: 'vigente' }, ...s.passes] }))
+    up(s => ({ passes: [{ id, name: n, kind, when: dur === 'Elegir fecha' ? dShort(date) : dur === '1 día' ? '1 Día' : '1 Semana', pin, rut: rut || '—', created: 'Hoy, ' + hhmm(), valid, long, status: 'vigente' }, ...s.passes] }))
     replace('paseCreado', { id })
   }
   return (
@@ -208,33 +226,6 @@ function PaseCreado({ st, p, tab, toast }) {
       <Foot nb><Btn v="inv" onClick={() => toast('Pase enviado a ' + x.name)}>Compartir pase</Btn><Btn v="dark" onClick={() => tab('accesos')}>Listo</Btn></Foot></>)
 }
 
-function PaseDetalle({ st, up, p, back, replace, toast }) {
-  const [ask, setAsk] = useState(!!p.ask)
-  const x = st.passes.find(q => q.id === p.id)
-  if (!x) return null
-  const act = x.status === 'vigente'
-  const revoke = () => { up(s => ({ passes: s.passes.map(q => (q.id === x.id ? { ...q, status: 'revocado', revokedAt: hhmm() } : q)) })); replace('paseRev', { id: x.id }) }
-  const stColor = act ? 'var(--primary)' : x.status === 'revocado' ? 'var(--danger)' : 'var(--content-subtle)'
-  return (
-    <>
-      <Header title="Pase de visita" onBack={back} />
-      <div className="scroll" style={{ paddingTop: 4 }}>
-        <div className="card col center" style={{ gap: 16, alignItems: 'stretch' }}>
-          <div className="row" style={{ gap: 12 }}><span className="av" style={{ width: 48, height: 48 }}>{initials(x.name)}</span>
-            <div className="col"><span className="t-base">{x.name}</span><span className="t-xs upper row" style={{ gap: 6 }}><i style={{ width: 8, height: 8, borderRadius: 4, background: stColor }} />{x.status}</span></div></div>
-          <div style={{ alignSelf: 'center' }}><Qr seed={x.id + x.name} size={160} dim={!act} /></div>
-          <PinBox label="PIN de visita" pin={x.pin} />
-        </div>
-        <div className="card"><KV k="RUT" v={x.rut} /><KV k="Tipo" v={x.kind} /><KV k="Creado" v={x.created} /><KV k="Vence" v={x.valid || '—'} /></div>
-      </div>
-      <Foot><Btn v="dark" onClick={() => toast('Pase compartido')}>Compartir</Btn>{act && <Btn v="danger" onClick={() => setAsk(true)}>Revocar pase</Btn>}</Foot>
-      {ask && <Sheet onClose={() => setAsk(false)}>
-        <h2 style={{ margin: 0, fontSize: 22, fontWeight: 590 }}>¿Revocar este pase?</h2>
-        <p className="t-sm mut" style={{ margin: '0 0 8px' }}>{x.name} ya no podrá ingresar con este código y avisaremos a conserjería.</p>
-        <Btn v="danger" onClick={revoke}>Sí, revocar</Btn><Btn v="dark" onClick={() => setAsk(false)}>Cancelar</Btn></Sheet>}
-    </>)
-}
-
 function PaseRevocado({ st, p, tab, go }) {
   const x = st.passes.find(q => q.id === p.id)
   if (!x) return null
@@ -249,28 +240,61 @@ function PaseRevocado({ st, p, tab, go }) {
       <Foot nb><Btn v="dark" onClick={() => tab('nuevoPase')}>Crear otro pase</Btn><Btn v="inv" onClick={() => tab('accesos')}>Volver a Accesos</Btn></Foot></>)
 }
 
+function PaseDetalle({ st, up, p, back, replace, toast }) {
+  const [ask, setAsk] = useState(!!p.ask)
+  const x = st.passes.find(q => q.id === p.id)
+  if (!x) return null
+  const act = x.status === 'vigente'
+  const revoke = () => { up(s => ({ passes: s.passes.map(q => (q.id === x.id ? { ...q, status: 'revocado', revokedAt: hhmm() } : q)) })); replace('paseRev', { id: x.id }) }
+  const stColor = act ? 'var(--primary)' : STC[x.status]
+  return (
+    <>
+      <Header title="Pase de visita" onBack={back} />
+      <div className="scroll" style={{ paddingTop: 4 }}>
+        <div className="card col" style={{ gap: 16, alignItems: 'stretch' }}>
+          <div className="row" style={{ gap: 12 }}><span className="av" style={{ width: 48, height: 48 }}>{initials(x.name)}</span>
+            <div className="col"><span className="t-base">{x.name}</span><Dot c={stColor} t={x.status} /></div></div>
+          <div style={{ alignSelf: 'center' }}><Qr seed={x.id + x.name} size={140} dim={!act} /></div>
+          <PinBox label="PIN de visita" pin={x.pin} />
+        </div>
+        <div className="card"><KV k="RUT" v={x.rut} /><KV k="Tipo" v={x.kind} /><KV k="Creado" v={x.created} /><KV k="Vence" v={x.valid || '—'} /></div>
+      </div>
+      <Foot><Btn v="dark" onClick={() => toast('Pase compartido')}>Compartir</Btn>{act && <Btn v="danger" onClick={() => setAsk(true)}>Revocar pase</Btn>}</Foot>
+      {ask && <Sheet onClose={() => setAsk(false)}>
+        <h2 style={{ margin: 0, fontSize: 16, fontWeight: 510 }}>¿Revocar el pase de {x.name}?</h2>
+        <p className="t-xs mut" style={{ margin: '0 0 8px' }}>El QR y el PIN dejarán de funcionar de inmediato. Esta acción no se puede deshacer.</p>
+        <Btn v="danger" onClick={revoke}>Sí, revocar</Btn><Btn v="dark" onClick={() => setAsk(false)}>Cancelar</Btn></Sheet>}
+    </>)
+}
+
 /* ---------- Encomiendas ---------- */
 function Encomiendas({ st, up, back, deep, toast }) {
   const [t, setT] = useState('p')
   const lp = st.pkgs.filter(p => p.status === 'porteria'), lr = st.pkgs.filter(p => p.status === 'retirado')
   const list = t === 'p' ? lp : lr
   const confirm = id => { up(s => ({ pkgs: s.pkgs.map(q => (q.id === id ? { ...q, status: 'retirado' } : q)) })); toast('Retiro confirmado') }
+  const del = id => up(s => ({ pkgs: s.pkgs.filter(q => q.id !== id) }))
   return (
     <>
       {deep ? <Header title="Encomiendas" onBack={back} /> : <TabHeader title="Encomiendas" />}
       <div className="scroll nav-pad" style={{ paddingTop: 12 }}>
         <Tabs items={[['p', 'En portería', lp.length], ['r', 'Retirados', lr.length]]} value={t} onChange={setT} />
-        {list.length === 0 && <div className="card center col" style={{ gap: 8 }}><span className="t-base">{t === 'p' ? 'No tienes encomiendas en portería' : 'Aún no has retirado encomiendas'}</span></div>}
+        {list.length === 0 && <div className="card center col" style={{ gap: 8 }}><span className="t-base">{t === 'p' ? 'No tienes encomiendas en portería' : 'No hay encomiendas retiradas'}</span></div>}
         {list.map(p => (
           <div key={p.id} className="card col" style={{ gap: 12 }}>
-            <div className="col" style={{ gap: 4 }}><div className="row" style={{ gap: 12 }}><Package size={22} /><span className="t-lg" style={{ fontWeight: 400 }}>{p.from}</span></div><span className="t-xs mut">{p.info}</span></div>
-            {t === 'p' ? <><PinBox label="PIN de retiro" pin={p.pin} /><Btn v="inv" onClick={() => confirm(p.id)}>Confirmar Retiro</Btn></> : <span className="tag" style={{ alignSelf: 'flex-start' }}>Retirado</span>}
+            <div className="col" style={{ gap: 4 }}><div className="row" style={{ gap: 12 }}><Package size={22} /><span className="t-base" style={{ fontWeight: 400 }}>{p.from}</span></div><span className="t-xs mut">{p.info}</span></div>
+            <PinBox label="PIN de retiro" pin={p.pin} />
+            {t === 'p' ? <Btn v="inv" onClick={() => confirm(p.id)}>Confirmar Retiro</Btn> : <Btn v="dark" onClick={() => del(p.id)}>Borrar de la lista</Btn>}
           </div>))}
       </div></>)
 }
 
 /* ---------- Finanzas ---------- */
-const ICONS = { building: Building2, shield: Shield, drop: Droplet, flame: Flame }
+const PayRow = ({ c, onClick }) => (
+  <button className="row" onClick={onClick} style={{ gap: 12, background: '#3a3c3a', border: 0, borderRadius: 16, padding: 16, textAlign: 'left', width: '100%' }}>
+    <Tile icon={Receipt} /><div className="col" style={{ flex: 1 }}><span className="t-base" style={{ fontSize: 16, fontWeight: 400 }}>{c.concept}</span><span className="t-xs mut">Pagado {c.short} · {c.m}</span></div><span className="t-base">{money(c.v)}</span>
+  </button>)
+
 function Finanzas({ st, go }) {
   const total = st.bills.reduce((a, b) => a + b.v, 0)
   return (
@@ -279,27 +303,56 @@ function Finanzas({ st, go }) {
       <div className="scroll nav-pad" style={{ paddingTop: 12 }}>
         {total > 0 ? <>
           <div className="card col" style={{ gap: 12 }}>
-            <div className="row" style={{ justifyContent: 'space-between' }}><span className="t-sm mut">Saldo de noviembre</span><span className="t-xs upper row" style={{ gap: 8 }}><i style={{ width: 8, height: 8, borderRadius: 4, background: '#f59e0b' }} />Por vencer</span></div>
+            <div className="row" style={{ justifyContent: 'space-between' }}><span className="t-sm mut">Saldo de noviembre</span><Dot c="#f59e0b" t="Por vencer" /></div>
             <div style={{ fontSize: 36, lineHeight: '44px', fontWeight: 590 }}>{money(total)}</div>
             <div className="row t-sm mut" style={{ gap: 8 }}><Cal size={16} />Vence el 10 de diciembre de 2026</div>
-            <div style={{ height: 4 }} /><Btn onClick={() => go('proc', { method: 'Tarjeta ····4821' })}>Pagar con tarjeta ····4821</Btn>
-            <button className="lnk" style={{ height: 32 }} onClick={() => go('pagar')}>Usar otro método</button>
+            <Btn onClick={() => go('confPago', { method: 'Tarjeta ····4821' })}>Pagar con tarjeta ····4821</Btn>
+            <button className="lnk" style={{ height: 28 }} onClick={() => go('pagar')}>Usar otro método</button>
           </div>
           <div className="card col" style={{ gap: 12 }}>
-            <div className="row" style={{ justifyContent: 'space-between' }}><span className="t-base" style={{ fontSize: 18 }}>Detalle del cobro</span><span className="lnk">Ver todo</span></div>
-            {st.bills.map(b => { const I = ICONS[b.i]; return <div key={b.k} className="row" style={{ gap: 12 }}><Tile icon={I} size={40} ico={18} /><div className="col" style={{ flex: 1 }}><span className="t-sm" style={{ fontWeight: 510, fontSize: 15 }}>{b.k}</span><span className="t-xs mut">{b.s}</span></div><span className="t-base">{money(b.v)}</span></div> })}
-            <div className="hr" /><div className="row" style={{ justifyContent: 'space-between' }}><span className="t-lg" style={{ fontWeight: 510 }}>Total a pagar</span><span className="t-lg" style={{ fontWeight: 510 }}>{money(total)}</span></div>
+            <div className="row" style={{ justifyContent: 'space-between' }}><span className="t-base" style={{ fontSize: 16 }}>Detalle del cobro</span><button className="lnk" onClick={() => go('detalleCobro')}>Ver todo</button></div>
+            {st.bills.map(b => { const I = ICONS[b.i]; return <div key={b.k} className="row" style={{ gap: 12 }}><Tile icon={I} size={40} ico={18} /><div className="col" style={{ flex: 1 }}><span className="t-sm" style={{ fontWeight: 510 }}>{b.k}</span><span className="t-xs mut">{b.s}</span></div><span className="t-base">{money(b.v)}</span></div> })}
+            <div className="hr" /><div className="row" style={{ justifyContent: 'space-between' }}><span className="t-base">Total a pagar</span><span className="t-base">{money(total)}</span></div>
           </div></> :
-          <div className="card center col" style={{ gap: 12 }}><Success size={64} /><span className="t-lg">Estás al día</span><span className="t-sm mut">No tienes pagos pendientes.</span></div>}
-        <div className="row" style={{ justifyContent: 'space-between', marginBottom: -12 }}><span className="sec" style={{ color: 'var(--content)' }}>Pagos anteriores</span><span className="lnk">Ver historial</span></div>
-        {st.paid.map(c => (
-          <button key={c.id} className="row" onClick={() => go('comp', { id: c.id, view: true })} style={{ gap: 12, background: '#3a3c3a', border: 0, borderRadius: 16, padding: 16, textAlign: 'left', width: '100%' }}>
-            <Tile icon={Receipt} pri={false} /><div className="col" style={{ flex: 1 }}><span className="t-base" style={{ fontSize: 18, fontWeight: 400 }}>{c.concept}</span><span className="t-xs mut">Pagado {c.short} · {c.method.split(' ')[0]}</span></div><span className="t-base">{money(c.v)}</span>
-          </button>))}
+          <div className="card col" style={{ gap: 12 }}>
+            <div className="row" style={{ justifyContent: 'space-between' }}><span className="t-sm mut">Estás al día</span><Dot c="#16a34a" t="Al día" /></div>
+            <div style={{ fontSize: 36, lineHeight: '44px', fontWeight: 590 }}>$0</div>
+            <div className="row t-sm mut" style={{ gap: 8 }}><Cal size={16} />Próximo cobro: 10 de diciembre de 2026</div>
+          </div>}
+        <div className="row" style={{ justifyContent: 'space-between', marginBottom: -12 }}><span className="sec" style={{ color: 'var(--content)' }}>Pagos anteriores</span><button className="lnk" onClick={() => go('historial')}>Ver historial</button></div>
+        {st.paid.slice(0, total > 0 ? 2 : 3).map(c => <PayRow key={c.id} c={c} onClick={() => go('comp', { id: c.id })} />)}
       </div></>)
 }
 
-function Pagar({ st, back, go, replace }) {
+function DetalleCobro({ st, back, go }) {
+  const total = st.bills.reduce((a, b) => a + b.v, 0)
+  const G = (title, g) => <div className="card col" style={{ gap: 14 }}><span className="t-base" style={{ fontSize: 16 }}>{title}</span>{st.bills.filter(b => b.g === g).map(b => { const I = ICONS[b.i]; return <div key={b.k} className="row" style={{ gap: 12 }}><Tile icon={I} size={36} ico={16} /><div className="col" style={{ flex: 1 }}><span className="t-sm">{b.k}</span><span className="t-xs mut">{b.l}</span></div><span className="t-sm" style={{ fontWeight: 510 }}>{money(b.v)}</span></div> })}</div>
+  return (
+    <>
+      <Header title="Detalle del cobro" onBack={back} />
+      <div className="scroll" style={{ paddingTop: 0, gap: 16 }}>
+        <span className="t-xs mut">Noviembre 2026 · Torre A, Depto 1204</span>
+        {G('Gastos del edificio', 0)}{G('Consumos individuales', 1)}
+        <div className="card col" style={{ gap: 14 }}><span className="t-base" style={{ fontSize: 16 }}>Multas e intereses</span><div className="row" style={{ gap: 12 }}><Tile icon={CircleCheck} size={36} ico={16} /><div className="col" style={{ flex: 1 }}><span className="t-sm">Sin cargos este mes</span><span className="t-xs mut">Pagaste a tiempo</span></div><span className="t-sm" style={{ fontWeight: 510 }}>$0</span></div></div>
+        <div className="card row" style={{ justifyContent: 'space-between' }}><span className="t-base">Total a pagar</span><span className="t-base">{money(total)}</span></div>
+      </div>
+      {total > 0 && <Foot><Btn onClick={() => go('pagar')}>Pagar {money(total)}</Btn></Foot>}</>)
+}
+
+function HistorialPagos({ st, back, go }) {
+  const [f, setF] = useState('t')
+  const list = st.paid.filter(c => f === 't' || (f === 'p' && !c.mora) || (f === 'm' && c.mora))
+  return (
+    <>
+      <Header title="Historial de pagos" onBack={back} />
+      <div className="scroll" style={{ paddingTop: 0, gap: 16 }}>
+        <div className="chips">{[['t', 'Todos'], ['p', 'Pagados'], ['m', 'Con mora']].map(([k, l]) => <button key={k} className={'chip' + (f === k ? ' on' : '')} onClick={() => setF(k)}>{l}</button>)}</div>
+        <span className="t-sm mut" style={{ marginBottom: -8 }}>2026</span>
+        {list.map(c => <PayRow key={c.id} c={c} onClick={() => go('comp', { id: c.id })} />)}
+      </div></>)
+}
+
+function Pagar({ st, back, go }) {
   const total = st.bills.reduce((a, b) => a + b.v, 0)
   const [m, setM] = useState('card')
   if (!total) return <><Header title="Pagar" onBack={back} /><div className="scroll"><p className="t-sm mut">No tienes pagos pendientes.</p></div></>
@@ -308,38 +361,66 @@ function Pagar({ st, back, go, replace }) {
     <>
       <Header title="Pagar" onBack={back} />
       <div className="scroll" style={{ paddingTop: 4, gap: 20 }}>
-        <div className="col" style={{ gap: 4 }}><span className="t-sm mut">Total a pagar</span><span style={{ fontSize: 36, lineHeight: '44px', fontWeight: 590 }}>{money(total)}</span><span className="t-sm mut">Gastos comunes · Noviembre 2026</span></div>
-        <span className="lbl" style={{ margin: 0, color: 'var(--content)' }}>Elige cómo pagar</span>
-        <div className="col" style={{ gap: 12, marginTop: -4 }}>
+        <div className="col" style={{ gap: 4 }}><span className="t-xs mut">Total a pagar</span><span style={{ fontSize: 36, lineHeight: '44px', fontWeight: 590 }}>{money(total)}</span><span className="t-xs mut">Gastos comunes · Noviembre 2026</span></div>
+        <span className="t-sm" style={{ marginBottom: -8 }}>Elige cómo pagar</span>
+        <div className="col" style={{ gap: 12 }}>
           {opts.map(([k, I, t, s]) => <button key={k} className={'opt' + (m === k ? ' on' : '')} onClick={() => setM(k)}><Tile icon={I} size={44} ico={20} /><span className="col" style={{ flex: 1, gap: 2 }}><span className="t-base" style={{ fontWeight: 400 }}>{t}</span><span className="t-xs mut">{s}</span></span><span className={'radio' + (m === k ? ' on' : '')} /></button>)}
         </div>
         <div className="row t-xs mut" style={{ gap: 8 }}><Lock size={16} />Pago seguro. No guardamos los datos de tu tarjeta.</div>
       </div>
-      <Foot><Btn onClick={() => replace('proc', { method: m === 'card' ? 'Tarjeta ····4821' : 'Transferencia' })}>Continuar</Btn></Foot></>)
+      <Foot><Btn onClick={() => go('confPago', { method: m === 'card' ? 'Tarjeta ····4821' : 'Transferencia' })}>Continuar</Btn></Foot></>)
+}
+
+function ConfPago({ st, p, back, replace }) {
+  const total = st.bills.reduce((a, b) => a + b.v, 0)
+  const card = p.method.startsWith('Tarjeta')
+  return (
+    <>
+      <Header title="Confirmar pago" onBack={back} />
+      <div className="scroll" style={{ paddingTop: 4, gap: 16 }}>
+        <div className="card col" style={{ gap: 4 }}><span className="t-base" style={{ fontSize: 16, fontWeight: 400, marginBottom: 8 }}>Resumen</span>
+          <KV k="Gastos comunes noviembre" v={money(total)} /><KV k="Método de pago" v={p.method} /><KV k="Comisión" v="$0" /><div className="hr" /><div className="kv"><b>Total a pagar</b><b>{money(total)}</b></div></div>
+        <div className="row t-xs mut" style={{ gap: 8 }}><Lock size={16} />{card ? 'El monto se cargará de inmediato a tu tarjeta.' : 'Recibirás los datos de la transferencia a continuación.'}</div>
+      </div>
+      <Foot><Btn v="dark" onClick={back}>Cambiar método</Btn><Btn onClick={() => replace('proc', { method: p.method })}>Pagar {money(total)}</Btn></Foot></>)
 }
 
 function Procesando({ st, up, p, replace }) {
   useEffect(() => {
     const t = setTimeout(() => {
-      const id = 'c' + Date.now(), total = st.bills.reduce((a, b) => a + b.v, 0)
-      const d = TODAY
-      up(s => ({ bills: [], paid: [{ id, concept: 'Noviembre 2026', v: total, date: `${d.getDate()} ${MESES[d.getMonth()].slice(0, 3)} ${d.getFullYear()}, ${hhmm()}`, short: `${d.getDate()} ${MESES[d.getMonth()].slice(0, 3)}`, method: p.method, ref: 'SRN-001482' }, ...s.paid] }))
-      replace('comp', { id })
-    }, 1700)
+      const id = 'c' + Date.now(), total = st.bills.reduce((a, b) => a + b.v, 0), d = TODAY
+      const mm = MESES[d.getMonth()].slice(0, 3)
+      up(s => ({ bills: [], paid: [{ id, concept: 'Noviembre 2026', v: total, date: `${d.getDate()} ${mm} ${d.getFullYear()}, ${hhmm()}`, short: `${d.getDate()} ${mm}`, method: p.method, m: p.method.split(' ')[0], ref: 'SRN-001482' }, ...s.paid] }))
+      replace('pagoOk', { id })
+    }, 1800)
     return () => clearTimeout(t)
   }, [])
-  return <div className="scroll center" style={{ justifyContent: 'center', gap: 20 }}><div className="spin" /><div className="t-base">Procesando tu pago…</div><div className="t-sm mut">No cierres la aplicación</div></div>
+  return <div className="scroll center" style={{ justifyContent: 'center', gap: 16 }}><div className="spin" style={{ width: 48, height: 48 }} /><div className="t-lg" style={{ marginTop: 8 }}>Procesando tu pago</div><div className="t-xs mut">No cierres la app. Esto toma unos segundos.</div></div>
 }
 
-function Comprobante({ st, p, tab, back, toast }) {
+function PagoOk({ st, p, tab, toast }) {
+  const c = st.paid.find(x => x.id === p.id)
+  if (!c) return null
+  return (
+    <>
+      <div className="scroll center" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 48px)', gap: 12 }}>
+        <Success /><h1 style={{ margin: '12px 0 0', fontSize: 22, fontWeight: 590 }}>Pago realizado</h1>
+        <div style={{ fontSize: 36, lineHeight: '44px', fontWeight: 590 }}>{money(c.v)}</div>
+        <p className="t-xs mut" style={{ margin: 0 }}>Gastos comunes de noviembre 2026</p>
+        <div className="card s" style={{ width: '100%', padding: '12px 24px', marginTop: 8 }}><KV k="N° de comprobante" v={c.ref} /><KV k="Fecha" v={c.date} /><KV k="Método" v={c.method} /></div>
+      </div>
+      <Foot nb><Btn v="inv" onClick={() => toast('Comprobante descargado')}>Descargar comprobante</Btn><Btn v="dark" onClick={() => tab('fin')}>Volver a Finanzas</Btn></Foot></>)
+}
+
+function Comprobante({ st, p, back, toast }) {
   const c = st.paid.find(x => x.id === p.id)
   if (!c) return null
   const g = Math.round(c.v * 0.7578 / 50) * 50
   return (
     <>
-      <Header title="Comprobante" onBack={() => (p.view ? back() : tab('fin'))} />
+      <Header title="Comprobante" onBack={back} />
       <div className="scroll" style={{ paddingTop: 4, gap: 16 }}>
-        <div className="card center col" style={{ gap: 8 }}><Success size={48} /><span className="t-sm mut" style={{ marginTop: 4 }}>Pago aprobado</span><span style={{ fontSize: 36, lineHeight: '44px', fontWeight: 590 }}>{money(c.v)}</span></div>
+        <div className="card center col" style={{ gap: 8 }}><span className="tile" style={{ width: 40, height: 40, background: 'var(--success)' }}><Check size={22} /></span><span className="t-sm mut">Pago aprobado</span><span style={{ fontSize: 36, lineHeight: '44px', fontWeight: 590 }}>{money(c.v)}</span></div>
         <div className="card"><KV k="N° de comprobante" v={c.ref} /><KV k="Fecha" v={c.date} /><KV k="Método" v={c.method} /><KV k="Departamento" v="Torre A · 1204" /></div>
         <div className="card"><KV k="Gasto común y fondo" v={money(g)} /><KV k="Agua y gas" v={money(c.v - g)} /><div className="hr" /><div className="kv" style={{ fontSize: 16 }}><b>Total pagado</b><b>{money(c.v)}</b></div></div>
       </div>
@@ -350,7 +431,8 @@ function Comprobante({ st, p, tab, back, toast }) {
 function Servicios({ st, go, p }) {
   const [t, setT] = useState(p.tab || 'res')
   const next = st.reservas.slice().sort((a, b) => dt(a.date) - dt(b.date))[0]
-  const spaces = [[Utensils, 'Quincho', 'Hasta 20 personas · 09:00 a 23:00', true], [Users, 'Sala multiuso', 'Hasta 30 personas · 09:00 a 22:00', false]]
+  const spaces = [[Utensils, 'Quincho', 'Hasta 20 personas · 09:00 a 23:00'], [Users, 'Sala multiuso', 'Hasta 30 personas · 09:00 a 22:00']]
+  const SC = ['#f59e0b', 'var(--primary)', '#16a34a']
   return (
     <>
       <TabHeader title="Servicios" />
@@ -358,23 +440,26 @@ function Servicios({ st, go, p }) {
         <Tabs items={[['res', 'Reservas'], ['sol', 'Solicitudes']]} value={t} onChange={setT} />
         {t === 'res' ? <>
           {next && <div className="col" style={{ gap: 12 }}><p className="sec">Mi próxima reserva</p>
-            <button className="sum alert" onClick={() => toast0()} style={{ cursor: 'default' }}><Tile icon={Cal} pri /><span className="b"><span className="t-xs mut">{next.space}</span><span className="t-base" style={{ fontSize: 18 }}>{dShort(dt(next.date))}</span><span className="t-xs mut">{next.from} – {next.to} · Gratis</span></span><ChevronRight size={16} color="#c5c5c5" /></button></div>}
+            <div className="sum alert"><Tile icon={Cal} pri /><span className="b"><span className="t-xs mut">{next.space}</span><span className="t-base" style={{ fontSize: 18 }}>{dShort(dt(next.date))}</span><span className="t-xs mut">{next.from} – {next.to} · Gratis</span></span><ChevronRight size={16} color="#c5c5c5" /></div></div>}
           <div className="col" style={{ gap: 12 }}><p className="sec">Reservar un espacio</p>
-            {spaces.map(([I, n, s, ok]) => (
+            {spaces.map(([I, n, s]) => (
               <button key={n} onClick={() => go('reservar')} style={{ background: 'var(--muted)', border: 0, borderRadius: 24, overflow: 'hidden', textAlign: 'left', padding: 0, width: '100%' }}>
                 <div style={{ height: 112, background: 'var(--elevated)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><I size={44} strokeWidth={1.4} /></div>
-                <div className="col" style={{ padding: '16px 16px 16px', gap: 8 }}><div className="row" style={{ justifyContent: 'space-between' }}><span className="t-base" style={{ fontSize: 18, fontWeight: 400 }}>{n}</span><span className="t-xs upper row" style={{ gap: 8 }}><i style={{ width: 8, height: 8, borderRadius: 4, background: '#16a34a' }} />Disponible</span></div><span className="t-xs mut">{s}</span></div>
+                <div className="col" style={{ padding: 16, gap: 8 }}><div className="row" style={{ justifyContent: 'space-between' }}><span className="t-base" style={{ fontSize: 16, fontWeight: 400 }}>{n}</span><Dot c="#16a34a" t="Disponible" /></div><span className="t-xs mut">{s}</span></div>
               </button>))}
           </div></> :
           <div className="col" style={{ gap: 12 }}>
-            {st.reqs.length === 0 && <div className="card center col"><span className="t-base">Sin solicitudes</span></div>}
-            {st.reqs.map(r => <Sum key={r.id} icon={ClipboardList} label={r.cat} value={r.title} detail={`${r.status === 3 ? 'Resuelta' : STEPS[r.status]} · ${r.created}`} onClick={() => go('sol', { id: r.id })} />)}
+            <p className="sec">Mis solicitudes</p>
+            {st.reqs.map(r => { const I = CATICON[r.cat] || Wrench; return (
+              <button key={r.id} onClick={() => go('sol', { id: r.id })} className="card s col" style={{ gap: 12, border: 0, textAlign: 'left', width: '100%' }}>
+                <div className="row" style={{ gap: 12, alignItems: 'flex-start' }}><Tile icon={I} size={40} ico={18} /><div className="col" style={{ flex: 1 }}><span className="t-base" style={{ fontWeight: 400 }}>{r.title}</span><span className="t-xs mut">N° {r.ref} · {r.created}</span></div><Dot c={SC[r.status]} t={['Recibida', 'En revisión', 'Resuelta'][r.status]} /></div>
+                <span className="t-xs mut">{r.desc}</span>
+              </button>) })}
           </div>}
       </div>
       {t === 'sol' && <button className="fab" onClick={() => go('solCat')}><Plus size={22} /> Nueva solicitud</button>}
     </>)
 }
-const toast0 = () => {}
 
 function occ(date, name, st) {
   if (st.reservas.some(r => key(dt(r.date)) === key(date) && r.block === name)) return 'Reservado'
@@ -393,13 +478,13 @@ function Reservar({ st, back, go }) {
       <Header title="Reservar quincho" onBack={back} />
       <div className="scroll" style={{ paddingTop: 0, gap: 16 }}>
         <div className="row t-xs mut" style={{ gap: 8 }}><Users size={16} />Hasta 20 personas · 09:00 a 23:00 · Gratis</div>
-        <div style={{ fontSize: 18, fontWeight: 510 }}>{cap(MESES[date.getMonth()])} {date.getFullYear()}</div>
+        <div style={{ fontSize: 16, fontWeight: 510 }}>{cap(MESES[date.getMonth()])} {date.getFullYear()}</div>
         <div className="days" role="listbox" aria-label="Elige un día">{days.map(d => <button key={key(d)} role="option" aria-selected={key(d) === key(date)} disabled={d < TODAY} className={'day' + (key(d) === key(date) ? ' on' : '')} onClick={() => { setDate(d); setBlock(null) }}><span>{cap(DIAS[d.getDay()].slice(0, 3))}</span><b>{d.getDate()}</b></button>)}</div>
-        <span className="sec">Elige un bloque</span>
+        <span className="t-sm mut">Elige un bloque</span>
         <div className="col" style={{ gap: 12, marginTop: -4 }}>
           {BLOCKS.map(([n, a, b]) => { const o = occ(date, n, st); return (
             <button key={n} disabled={!!o} className={'opt' + (block === n ? ' on' : '')} onClick={() => setBlock(n)}>
-              <span className="col" style={{ flex: 1, gap: 2 }}><span className="t-base" style={{ fontWeight: 400, fontSize: 18 }}>{n}</span><span className="t-xs mut">{a} – {b}</span></span>
+              <span className="col" style={{ flex: 1, gap: 2 }}><span className="t-base" style={{ fontWeight: 400 }}>{n}</span><span className="t-xs mut">{a} – {b}</span></span>
               {o ? <span className="t-sm mut">{o}</span> : <span className={'radio' + (block === n ? ' on' : '')} />}
             </button>) })}
         </div>
@@ -455,8 +540,9 @@ function SolForm({ p, up, back, replace }) {
   const [desc, setDesc] = useState('')
   const [foto, setFoto] = useState(false)
   const send = () => {
-    const id = 's' + Date.now(), ref = 'SOL-' + String(Math.floor(Math.random() * 900) + 100).padStart(4, '0')
-    up(s => ({ reqs: [{ id, cat: p.cat, title: sub.trim(), status: 0, created: 'Hoy', ref }, ...s.reqs] }))
+    const id = 's' + Date.now()
+    const ref = String(236 + (Date.now() % 1000) % 50).padStart(4, '0')
+    up(s => ({ reqs: [{ id, cat: p.cat, title: sub.trim(), desc: desc.trim() || 'Sin descripción.', status: 0, created: 'Hoy', ref, log: ['Hoy, ' + hhmm()] }, ...s.reqs] }))
     replace('solOk', { id })
   }
   return (
@@ -475,42 +561,71 @@ function SolOk({ st, p, tab, replace }) {
   if (!r) return null
   return (
     <>
-      <div className="scroll center" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 56px)', gap: 16 }}>
-        <Success /><h1 style={{ margin: '8px 0 0', fontSize: 22, fontWeight: 590 }}>Solicitud enviada</h1>
-        <p className="t-sm mut" style={{ margin: 0 }}>{r.cat}</p>
-        <div className="card s" style={{ width: '100%', padding: '12px 24px' }}><KV k="N° de solicitud" v={r.ref} /><KV k="Asunto" v={r.title} /><KV k="Estado" v="Recibida" /><KV k="Respuesta estimada" v="Hasta 48 horas" /></div>
+      <div className="scroll center" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 48px)', gap: 12 }}>
+        <Success /><h1 style={{ margin: '12px 0 0', fontSize: 22, fontWeight: 590 }}>Solicitud enviada</h1>
+        <p className="t-xs mut" style={{ margin: 0 }}>Te avisaremos cuando cambie su estado.</p>
+        <div className="card s" style={{ width: '100%', padding: '12px 24px', marginTop: 8 }}><KV k="N° de solicitud" v={r.ref} /><KV k="Categoría" v={SHORT[r.cat]} /><KV k="Estado" v="Recibida" /><KV k="Respuesta estimada" v="En 48 horas" /></div>
       </div>
-      <Foot nb><Btn v="inv" onClick={() => replace('sol', { id: r.id, fresh: true })}>Ver estado</Btn><Btn v="dark" onClick={() => tab('home')}>Volver al inicio</Btn></Foot></>)
+      <Foot nb><Btn v="inv" onClick={() => replace('sol', { id: r.id, fresh: true })}>Ver mi solicitud</Btn><Btn v="dark" onClick={() => tab('serv', { tab: 'sol' })}>Volver a Servicios</Btn></Foot></>)
 }
-function SolDetalle({ st, up, p, back, tab }) {
+function SolDetalle({ st, up, p, back, tab, toast }) {
   const r = st.reqs.find(x => x.id === p.id)
   if (!r) return null
+  const I = CATICON[r.cat] || Wrench, SC = ['#f59e0b', 'var(--primary)', '#16a34a']
+  const stepName = ['Recibida', 'En revisión', 'Resuelta']
   return (
     <>
-      <Header title="Estado de solicitud" onBack={p.fresh ? () => tab('serv', { tab: 'sol' }) : back} />
-      <div className="scroll" style={{ paddingTop: 4 }}>
-        <div className="card col" style={{ gap: 4 }}><span className="t-xs mut">{r.cat} · {r.created} · {r.ref}</span><span className="t-lg">{r.title}</span></div>
-        <div className="card"><span className="t-base" style={{ display: 'block', marginBottom: 16 }}>Seguimiento</span>
-          <div className="tl">{STEPS.map((s, i) => <div key={s} className={'it ' + (i < r.status ? 'done' : i === r.status ? 'cur' : '')}><b /><div className="t-base" style={{ fontWeight: 400, color: i > r.status ? 'var(--content-subtle)' : undefined }}>{s}</div>{i === r.status && r.status < 3 && <div className="t-xs mut">Estado actual</div>}</div>)}</div></div>
-        {r.status < 3 && <button className="lnk" style={{ color: 'var(--content-subtle)' }} onClick={() => up(s => ({ reqs: s.reqs.map(q => (q.id === r.id ? { ...q, status: q.status + 1 } : q)) }))}>Demo: avanzar estado (moderador)</button>}
-      </div></>)
+      <Header title={`Solicitud ${r.ref}`} onBack={p.fresh ? () => tab('serv', { tab: 'sol' }) : back} />
+      <div className="scroll" style={{ paddingTop: 4, gap: 16 }}>
+        <div className="card s col" style={{ gap: 12 }}>
+          <div className="row" style={{ gap: 12, alignItems: 'flex-start' }}><Tile icon={I} size={40} ico={18} /><div className="col" style={{ flex: 1 }}><span className="t-base" style={{ fontWeight: 400 }}>{r.title}</span><span className="t-xs mut">N° {r.ref} · {r.created}</span></div><Dot c={SC[r.status]} t={stepName[r.status]} /></div>
+          <span className="t-xs mut">{r.desc}</span></div>
+        <div className="card"><span className="t-base" style={{ display: 'block', marginBottom: 16, fontWeight: 400 }}>Seguimiento</span>
+          <div className="tl">{stepName.map((s, i) => <div key={s} className={'it ' + (i < r.status || (i === 2 && r.status === 2) ? 'done' : i === r.status ? 'cur' : '')}><b />
+            <div className="t-sm" style={{ fontWeight: 510, color: i > r.status ? 'var(--content-muted)' : undefined }}>{s}</div>
+            <div className="t-xs mut">{(r.log || [])[i] || 'Pendiente'}</div></div>)}</div></div>
+        {r.status < 2 && <button className="lnk" style={{ color: 'var(--content-subtle)', fontWeight: 400 }} onClick={() => up(s => ({ reqs: s.reqs.map(q => (q.id === r.id ? { ...q, status: q.status + 1, log: [...(q.log || []), 'Hoy, ' + hhmm()] } : q)) }))}>Demo: avanzar estado (moderador)</button>}
+      </div>
+      <Foot><Btn v="dark" onClick={() => toast('Mensaje a administración: disponible en la versión final')}>Escribir a administración</Btn></Foot></>)
 }
 
 /* ---------- Avisos / Perfil ---------- */
-function Avisos({ st, back }) {
+function Avisos({ st, back, go }) {
+  const [t, setT] = useState('t')
+  const mans = st.notices.filter(n => n.kind === 'man'), avs = st.notices.filter(n => n.kind !== 'man')
   return (
-    <><Header title="Avisos" onBack={back} /><div className="scroll" style={{ paddingTop: 4, gap: 12 }}>{st.notices.map(n => <Notice key={n.id} n={n} onClick={() => {}} />)}</div></>)
+    <>
+      <div className="hdr in"><button className="back" aria-label="Atrás" onClick={back}><ArrowUpLeft size={22} /></button><h1>Avisos</h1><button className="tile" aria-label="Ajustes de notificaciones" onClick={() => go('ajustes')} style={{ width: 40, height: 40, border: 0, background: 'var(--muted)' }}><Settings size={20} /></button></div>
+      <div className="scroll" style={{ paddingTop: 4, gap: 16 }}>
+        <Tabs items={[['t', 'Todos', st.notices.length], ['m', 'Mantención', mans.length]]} value={t} onChange={setT} />
+        {t === 't' && avs.map(n => <Notice key={n.id} n={n} />)}
+        {(t === 't' ? mans.length > 0 : true) && <p className="sec" style={{ marginBottom: -4 }}>Mantenciones</p>}
+        {mans.map(n => <ManCard key={n.id} n={n} />)}
+      </div></>)
 }
-function Perfil({ st, up, back, reset }) {
-  const rows = [['pases', 'Pases y visitas'], ['paq', 'Encomiendas'], ['fin', 'Gastos comunes']]
+function Ajustes({ st, up, back }) {
+  const rows = [['pases', 'Pases y visitas', 'Cuando llega o sale una visita'], ['paq', 'Encomiendas', 'Cuando llega un paquete'], ['fin', 'Gastos comunes', 'Vencimientos y comprobantes']]
+  return (
+    <>
+      <Header title="Notificaciones" onBack={back} />
+      <div className="scroll" style={{ paddingTop: 0 }}>
+        <div className="card s" style={{ padding: '0 16px' }}>{rows.map(([k, l, s], i) => <div key={k} className="row" style={{ minHeight: 68, gap: 12, borderTop: i ? '1px solid var(--border)' : 0 }}><div className="col" style={{ flex: 1 }}><span className="t-base" style={{ fontWeight: 400 }}>{l}</span><span className="t-xs mut">{s}</span></div><Switch label={l} on={st.sw[k]} onChange={() => up(s => ({ sw: { ...s.sw, [k]: !s.sw[k] } }))} /></div>)}</div>
+      </div></>)
+}
+function Perfil({ st, up, back, go, tab, toast, reset }) {
+  const R = ({ icon, t, onClick, right, red }) => <button onClick={onClick} className="row" style={{ gap: 12, background: 'var(--muted)', border: 0, borderRadius: 16, padding: '0 16px', height: 56, width: '100%', textAlign: 'left', color: red ? '#f08a87' : undefined }}><Tile icon={icon} size={32} ico={16} /><span className="t-sm" style={{ flex: 1, fontSize: 15 }}>{t}</span>{right || (!red && <ChevronRight size={16} color="#c5c5c5" />)}</button>
+  const soon = () => toast('Disponible en la versión final')
   return (
     <>
       <Header title="Perfil" onBack={back} />
-      <div className="scroll" style={{ paddingTop: 4 }}>
-        <div className="card s row" style={{ gap: 16 }}><span className="av" style={{ width: 56, height: 56 }}>RD</span><div className="col"><span className="t-base">Residente</span><span className="t-sm mut">Torre A · Depto 1204</span></div></div>
-        <p className="sec" style={{ marginBottom: -12 }}>Notificaciones</p>
-        <div className="card s" style={{ padding: '0 16px' }}>{rows.map(([k, l], i) => <div key={k} className="row" style={{ minHeight: 60, gap: 12, borderTop: i ? '1px solid var(--border)' : 0 }}><span className="t-base" style={{ flex: 1, fontWeight: 400 }}>{l}</span><Switch label={l} on={st.sw[k]} onChange={() => up(s => ({ sw: { ...s.sw, [k]: !s.sw[k] } }))} /></div>)}</div>
-        <p className="sec" style={{ marginBottom: -12 }}>Prototipo</p>
-        <Btn v="dark" onClick={reset}>Restablecer demo</Btn>
+      <div className="scroll" style={{ paddingTop: 4, gap: 12 }}>
+        <div className="card col center" style={{ gap: 8, padding: 24, borderRadius: 24 }}><span className="av" style={{ width: 48, height: 48 }}>RD</span><span className="t-base">Residente Demo</span><span className="t-xs mut">Torre A · Depto 1204</span></div>
+        <R icon={UserRound} t="Mis datos" onClick={soon} />
+        <R icon={Bell} t="Notificaciones" onClick={() => go('ajustes')} />
+        <div className="row" style={{ gap: 12, background: 'var(--muted)', borderRadius: 16, padding: '0 16px', height: 56 }}><Tile icon={ShieldCheck} size={32} ico={16} /><span className="t-sm" style={{ flex: 1, fontSize: 15 }}>Ingreso con Face ID</span><Switch label="Ingreso con Face ID" on={!!st.sw.face} onChange={() => up(s => ({ sw: { ...s.sw, face: !s.sw.face } }))} /></div>
+        <R icon={Cal} t="Mis reservas" onClick={() => tab('serv')} />
+        <R icon={Info} t="Ayuda" onClick={soon} />
+        <R icon={UserRound} t="Cerrar sesión" red onClick={reset} />
+        <span className="t-xs sub center" style={{ textAlign: 'center' }}>Cerrar sesión reinicia la demo para el siguiente participante.</span>
       </div></>)
 }
