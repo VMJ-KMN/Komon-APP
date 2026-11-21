@@ -22,7 +22,7 @@ export const Foot = ({ children, nb }) => <div className={'foot' + (nb ? ' nb' :
 export const Btn = ({ v = '', children, ...p }) => <button className={'btn ' + v} {...p}>{children}</button>
 
 export const Sheet = ({ children, onClose }) => (
-  <div className="sheet-bg" onClick={onClose}><div className="sheet" onClick={e => e.stopPropagation()}><i style={{ width: 36, height: 4, borderRadius: 2, background: '#6b6d6b', alignSelf: 'center', marginTop: -12 }} />{children}</div></div>
+  <div className="sheet-bg" onClick={onClose}><div className="sheet" onClick={e => e.stopPropagation()}><i style={{ width: 36, height: 4, borderRadius: 2, background: 'var(--line)', alignSelf: 'center', marginTop: -12 }} />{children}</div></div>
 )
 export const Switch = ({ on, onChange, label }) => (
   <button role="switch" aria-checked={on} aria-label={label} className={'sw' + (on ? ' on' : '')} onClick={onChange}><i /></button>
@@ -36,7 +36,7 @@ export const Sum = ({ icon, label, value, detail, onClick, alert }) => (
   <button className={'sum' + (alert ? ' alert' : '')} onClick={onClick}>
     <Tile icon={icon} pri={alert} />
     <span className="b"><span className="t-xs mut">{label}</span><span className="t-base">{value}</span><span className="t-xs mut">{detail}</span></span>
-    <ChevronRight size={16} color="#c5c5c5" />
+    <ChevronRight size={16} color="var(--content-muted)" />
   </button>
 )
 export const KV = ({ k, v }) => <div className="kv"><span>{k}</span><b>{v}</b></div>

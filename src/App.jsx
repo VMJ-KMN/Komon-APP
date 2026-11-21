@@ -18,11 +18,18 @@ export default function App() {
   useEffect(() => { try { localStorage.setItem(LS, JSON.stringify(st)) } catch (e) {} }, [st])
   useEffect(() => { if (toast) { const t = setTimeout(() => setToast(null), 2400); return () => clearTimeout(t) } }, [toast])
   const cur = stack[stack.length - 1]
-  const A11 = st.a11y || { size: 'n', contrast: 'normal', motion: 'normal' }
+  const A11 = { size: 'n', contrast: 'normal', motion: 'normal', theme: 'oscuro', ...(st.a11y || {}) }
+  const [sysLight, setSysLight] = useState(() => window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches)
+  useEffect(() => {
+    const m = window.matchMedia('(prefers-color-scheme: light)'), f = e => setSysLight(e.matches)
+    m.addEventListener('change', f); return () => m.removeEventListener('change', f)
+  }, [])
+  const theme = A11.theme === 'auto' ? (sysLight ? 'claro' : 'oscuro') : A11.theme
   useEffect(() => {
     const r = document.documentElement
-    r.dataset.size = A11.size; r.dataset.contrast = A11.contrast; r.dataset.motion = A11.motion
-  }, [A11.size, A11.contrast, A11.motion])
+    r.dataset.size = A11.size; r.dataset.contrast = A11.contrast; r.dataset.motion = A11.motion; r.dataset.theme = theme
+    const mt = document.querySelector('meta[name=theme-color]'); if (mt) mt.setAttribute('content', theme === 'claro' ? '#f6f6f4' : '#1b1d1b')
+  }, [A11.size, A11.contrast, A11.motion, theme])
   const [live, setLive] = useState('')
   useEffect(() => {
     setToast(null)
@@ -91,7 +98,7 @@ function Onb({ st, up, tab }) {
       <div className="hdr" style={{ justifyContent: 'space-between', paddingTop: 'calc(env(safe-area-inset-top) + 20px)' }}>
         <div style={{ width: 72 }}>{n > 0 && n < 5 && <button className="back" aria-label="Atrás" onClick={() => setN(n - 1)} style={{ background: 'none', border: 0, height: 40, display: 'flex', alignItems: 'center' }}><ArrowUpLeft size={22} /></button>}</div>
         {n >= 1 && n <= 4 && <div className="row" style={{ gap: 8 }} aria-label={`Paso ${n} de 4`}>{[1, 2, 3, 4].map(i => <span key={i} style={{ width: i === n ? 24 : 8, height: 8, borderRadius: 4, background: i === n ? '#f3f3f3' : '#444544' }} />)}</div>}
-        <div style={{ width: 72, textAlign: 'right' }}>{n >= 1 && n <= 4 && <button className="lnk" style={{ color: '#c5c5c5', height: 40 }} onClick={() => setN(5)}>Omitir</button>}</div>
+        <div style={{ width: 72, textAlign: 'right' }}>{n >= 1 && n <= 4 && <button className="lnk" style={{ color: 'var(--content-muted)', height: 40 }} onClick={() => setN(5)}>Omitir</button>}</div>
       </div>
       <div className="scroll col center" style={{ justifyContent: 'center', gap: 24 }}>
         {n === 0 && <><img src="/logo-komon.svg" alt="Komón" width="150" height="139" style={{ display: 'block' }} />
@@ -148,11 +155,11 @@ function Notice({ n, onClick, action }) {
   const pri = n.kind === 'urg'
   const Ic = pri ? CircleAlert : n.kind === 'com' ? Megaphone : Wrench
   return (
-    <div role="button" onClick={onClick} className="col" style={{ gap: 8, padding: 20, borderRadius: 16, background: pri ? 'var(--primary)' : 'var(--muted)', cursor: 'pointer' }}>
+    <div role="button" onClick={onClick} className="col" style={{ gap: 8, padding: 20, borderRadius: 16, background: pri ? 'var(--primary)' : 'var(--muted)', color: pri ? '#fff' : undefined, cursor: 'pointer' }}>
       <div className="row" style={{ gap: 8, minHeight: 20 }}>
         <Ic size={20} /><span className="t-sm" style={{ flex: 1, fontWeight: 510 }}>{n.eyebrow}</span>
         {n.date && <span className="t-xs" style={{ color: pri ? 'rgba(255,255,255,.85)' : 'var(--content-muted)' }}>{n.date}</span>}
-        {action && <span className="tile" style={{ width: 40, height: 40, background: 'var(--content)', color: 'var(--surface)' }}><ArrowUpRight size={20} /></span>}
+        {action && <span className="tile" style={{ width: 40, height: 40, background: pri ? '#f3f3f3' : 'var(--content)', color: pri ? '#1b1d1b' : 'var(--surface)' }}><ArrowUpRight size={20} /></span>}
       </div>
       <div className="t-lg">{n.t}</div>
       <div className="t-sm" style={{ opacity: .9 }}>{n.s}</div>
@@ -192,7 +199,7 @@ function Accesos({ st, go }) {
             <div className="row" style={{ gap: 12 }}><Btn v="inv" onClick={() => go('pase', { id: p.id })}>Ver</Btn><Btn v="danger" onClick={() => go('pase', { id: p.id, ask: true })}>Revocar</Btn></div>
           </div>))}
         {t === 'h' && hist.map(p => (
-          <button key={p.id} onClick={() => go('pase', { id: p.id })} className="row" style={{ gap: 12, background: '#3a3c3a', border: 0, borderRadius: 16, padding: 16, textAlign: 'left', width: '100%', alignItems: 'flex-start' }}>
+          <button key={p.id} onClick={() => go('pase', { id: p.id })} className="row" style={{ gap: 12, background: 'var(--card-alt)', border: 0, borderRadius: 16, padding: 16, textAlign: 'left', width: '100%', alignItems: 'flex-start' }}>
             <span className="av" style={{ width: 40, height: 40 }}>{initials(p.name)}</span>
             <div className="col" style={{ flex: 1, gap: 6, minWidth: 0 }}><span className="t-base" style={{ fontWeight: 400 }}>{p.name}</span><span className="tag" style={{ alignSelf: 'flex-start' }}>{p.kind} • <Clock size={12} /> {p.when}</span></div>
             <Dot c={STC[p.status]} t={p.status} />
@@ -316,7 +323,7 @@ function Encomiendas({ st, up, back, deep, toast }) {
 
 /* ---------- Finanzas ---------- */
 const PayRow = ({ c, onClick }) => (
-  <button className="row" onClick={onClick} style={{ gap: 12, background: '#3a3c3a', border: 0, borderRadius: 16, padding: 16, textAlign: 'left', width: '100%' }}>
+  <button className="row" onClick={onClick} style={{ gap: 12, background: 'var(--card-alt)', border: 0, borderRadius: 16, padding: 16, textAlign: 'left', width: '100%' }}>
     <Tile icon={Receipt} /><div className="col" style={{ flex: 1 }}><span className="t-base" style={{ fontSize: '1rem', fontWeight: 400 }}>{c.concept}</span><span className="t-xs mut">Pagado {c.short} · {c.m}</span></div><span className="t-base">{money(c.v)}</span>
   </button>)
 
@@ -331,7 +338,7 @@ function Finanzas({ st, go }) {
             <div className="row" style={{ justifyContent: 'space-between' }}><span className="t-sm mut">Saldo de noviembre</span>{(st.sim && st.sim.vencido) ? <Dot c="#dc2626" t="Vencido" /> : <Dot c="#f59e0b" t="Por vencer" />}</div>
             <div style={{ fontSize: '2.25rem', lineHeight: '2.75rem', fontWeight: 590 }}>{money(total)}</div>
             <div className="row t-sm mut" style={{ gap: 8 }}><Cal size={16} />{(st.sim && st.sim.vencido) ? 'Venció el 10 de noviembre de 2026' : 'Vence el 10 de diciembre de 2026'}</div>
-            {(st.sim && st.sim.vencido) && <div className="row t-xs" style={{ gap: 8, color: '#f08a87', alignItems: 'flex-start' }}><TriangleAlert size={16} style={{ flexShrink: 0 }} />Tu pago está atrasado. Págalo hoy para evitar intereses por mora.</div>}
+            {(st.sim && st.sim.vencido) && <div className="row t-xs" style={{ gap: 8, color: 'var(--err)', alignItems: 'flex-start' }}><TriangleAlert size={16} style={{ flexShrink: 0 }} />Tu pago está atrasado. Págalo hoy para evitar intereses por mora.</div>}
             <Btn onClick={() => go('confPago', { method: 'Tarjeta ····4821' })}>Pagar con tarjeta ····4821</Btn>
             <button className="lnk" style={{ height: 28 }} onClick={() => go('pagar')}>Usar otro método</button>
           </div>
@@ -467,7 +474,7 @@ function Servicios({ st, go, p }) {
         <Tabs items={[['res', 'Reservas'], ['sol', 'Solicitudes']]} value={t} onChange={setT} />
         {t === 'res' ? <>
           {next && <div className="col" style={{ gap: 12 }}><p className="sec">Mi próxima reserva</p>
-            <div className="sum alert"><Tile icon={Cal} pri /><span className="b"><span className="t-xs mut">{next.space}</span><span className="t-base" style={{ fontSize: '1.125rem' }}>{dShort(dt(next.date))}</span><span className="t-xs mut">{next.from} – {next.to} · Gratis</span></span><ChevronRight size={16} color="#c5c5c5" /></div></div>}
+            <div className="sum alert"><Tile icon={Cal} pri /><span className="b"><span className="t-xs mut">{next.space}</span><span className="t-base" style={{ fontSize: '1.125rem' }}>{dShort(dt(next.date))}</span><span className="t-xs mut">{next.from} – {next.to} · Gratis</span></span><ChevronRight size={16} color="var(--content-muted)" /></div></div>}
           <div className="col" style={{ gap: 12 }}><p className="sec">Reservar un espacio</p>
             {spaces.map(([I, n, s]) => (
               <button key={n} onClick={() => go('reservar')} style={{ background: 'var(--muted)', border: 0, borderRadius: 24, overflow: 'hidden', textAlign: 'left', padding: 0, width: '100%' }}>
@@ -559,7 +566,7 @@ function SolCat({ back, go }) {
       <Header title="Nueva solicitud" onBack={back} />
       <div className="scroll" style={{ paddingTop: 0, gap: 16 }}>
         <span className="t-base" style={{ fontSize: '1.125rem', fontWeight: 510 }}>¿Qué necesitas?</span>
-        {CATS.map(([I, c]) => <button key={c} className="sum" style={{ padding: '16px', minHeight: 72 }} onClick={() => go('solForm', { cat: c })}><Tile icon={I} size={40} ico={20} /><span className="t-sm" style={{ flex: 1, fontSize: '1rem', lineHeight: '1.5rem' }}>{c}</span><ChevronRight size={16} color="#c5c5c5" /></button>)}
+        {CATS.map(([I, c]) => <button key={c} className="sum" style={{ padding: '16px', minHeight: 72 }} onClick={() => go('solForm', { cat: c })}><Tile icon={I} size={40} ico={20} /><span className="t-sm" style={{ flex: 1, fontSize: '1rem', lineHeight: '1.5rem' }}>{c}</span><ChevronRight size={16} color="var(--content-muted)" /></button>)}
       </div></>)
 }
 function SolForm({ p, up, back, replace }) {
@@ -653,7 +660,7 @@ function Ajustes({ st, up, back }) {
 function Perfil({ st, up, back, go, reset }) {
   const [taps, setTaps] = useState(0)
   const mod = taps >= 5
-  const R = ({ icon, t, onClick, last }) => <button onClick={onClick} className="row" style={{ gap: 12, background: 'none', border: 0, borderTop: last === 0 ? 0 : '1px solid var(--border)', padding: '0 4px', minHeight: 60, width: '100%', textAlign: 'left' }}><Tile icon={icon} size={36} ico={18} /><span className="t-base" style={{ flex: 1, fontWeight: 400 }}>{t}</span><ChevronRight size={18} color="#c5c5c5" /></button>
+  const R = ({ icon, t, onClick, last }) => <button onClick={onClick} className="row" style={{ gap: 12, background: 'none', border: 0, borderTop: last === 0 ? 0 : '1px solid var(--border)', padding: '0 4px', minHeight: 60, width: '100%', textAlign: 'left' }}><Tile icon={icon} size={36} ico={18} /><span className="t-base" style={{ flex: 1, fontWeight: 400 }}>{t}</span><ChevronRight size={18} color="var(--content-muted)" /></button>
   const sim = k => () => up(s => ({ sim: { ...(s.sim || {}), [k]: !(s.sim && s.sim[k]) } }))
   return (
     <>
@@ -666,10 +673,10 @@ function Perfil({ st, up, back, go, reset }) {
         <div className="card" style={{ padding: '0 12px' }}>
           <R last={0} icon={UserRound} t="Mis datos" onClick={() => go('datos')} />
           <R icon={Bell} t="Notificaciones" onClick={() => go('ajustes')} />
-          <R icon={Accessibility} t="Accesibilidad" onClick={() => go('a11y')} />
+          <R icon={Accessibility} t="Apariencia y accesibilidad" onClick={() => go('a11y')} />
           <R icon={Info} t="Ayuda" onClick={() => go('ayuda')} />
         </div>
-        <button className="lnk" style={{ alignSelf: 'center', color: '#f08a87', minHeight: 44 }} onClick={reset}>Cerrar sesión</button>
+        <button className="lnk" style={{ alignSelf: 'center', color: 'var(--err)', minHeight: 44 }} onClick={reset}>Cerrar sesión</button>
         {mod && <div className="card col" style={{ gap: 4, padding: '12px 16px' }}>
           <span className="t-xs sub row" style={{ gap: 6 }}><FlaskConical size={14} />Modo moderador</span>
           <div className="row" style={{ minHeight: 52, gap: 12 }}><span className="t-sm" style={{ flex: 1 }}>El próximo pago falla</span><Switch label="El próximo pago falla" on={!!(st.sim && st.sim.fail)} onChange={sim('fail')} /></div>
@@ -680,13 +687,20 @@ function Perfil({ st, up, back, go, reset }) {
 }
 
 function Accesib({ st, up, back }) {
-  const A = st.a11y || { size: 'n', contrast: 'normal', motion: 'normal' }
-  const set = o => up(s => ({ a11y: { ...(s.a11y || { size: 'n', contrast: 'normal', motion: 'normal' }), ...o } }))
+  const A = { size: 'n', contrast: 'normal', motion: 'normal', theme: 'oscuro', ...(st.a11y || {}) }
+  const set = o => up(s => ({ a11y: { ...(s.a11y || {}), ...o } }))
   const sizes = [['n', 'Normal', 16], ['l', 'Grande', 18], ['xl', 'Muy grande', 20]]
   return (
     <>
-      <Header title="Accesibilidad" onBack={back} />
+      <Header title="Apariencia" onBack={back} />
       <div className="scroll" style={{ paddingTop: 0, gap: 20 }}>
+        <div role="radiogroup" aria-label="Tema" className="col" style={{ gap: 12 }}>
+          <span className="t-sm mut">Tema</span>
+          <div className="tabs" style={{ marginBottom: 0 }}>
+            {[['oscuro', 'Oscuro'], ['claro', 'Claro'], ['auto', 'Automático']].map(([k, l]) => <button key={k} role="radio" aria-checked={A.theme === k} className={A.theme === k ? 'on' : ''} style={{ flex: 1 }} onClick={() => set({ theme: k })}>{l}</button>)}
+          </div>
+          <span className="t-xs mut">Automático sigue la configuración de tu teléfono.</span>
+        </div>
         <div role="radiogroup" aria-label="Tamaño del texto" className="col" style={{ gap: 12 }}>
           <span className="t-sm mut">Tamaño del texto</span>
           {sizes.map(([k, l, px]) => (
