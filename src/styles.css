@@ -42,7 +42,7 @@ svg{flex:none}
 .card.s{border-radius:var(--r-2xl);padding:16px}
 .card.sel{border:1px solid var(--focus)}
 .tile{border-radius:9999px;background:var(--elevated);display:flex;align-items:center;justify-content:center;flex:none}
-.tile.pri{background:var(--primary)}
+.tile.pri{background:var(--primary);color:#fff}
 .sum{width:100%;display:flex;align-items:center;gap:12px;text-align:left;background:var(--muted);border:0;border-radius:var(--r-2xl);padding:16px}
 .sum.alert{border:1px solid var(--focus)}
 .sum .b{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
