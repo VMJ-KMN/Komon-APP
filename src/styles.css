@@ -79,8 +79,8 @@ svg{flex:none}
 .hr{border-top:1px solid var(--border);margin:8px 0}
 .qr{background:var(--qr);border-radius:var(--r-3xl);padding:20px;display:inline-flex;position:relative}
 .fade{position:absolute;left:0;right:0;bottom:0;height:120px;background:linear-gradient(to bottom,color-mix(in srgb,var(--surface) 0%,transparent),var(--surface) 55%);pointer-events:none;z-index:5}
-.nav{position:absolute;left:24px;right:24px;bottom:calc(env(safe-area-inset-bottom) + var(--navb));background:var(--nav);border-radius:9999px;padding:8px;display:flex;align-items:center;justify-content:center;z-index:6}
-.nav button{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;border-radius:16px;position:relative;color:var(--content-subtle);font-size:10px;line-height:12px;font-weight:510;min-width:44px}
+.nav{position:absolute;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom) + var(--navb));background:var(--nav);border-radius:9999px;padding:8px 10px;display:flex;align-items:center;justify-content:space-between;z-index:6}
+.nav button{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 6px;border-radius:16px;position:relative;color:var(--content-subtle);font-size:10px;line-height:12px;font-weight:510;min-width:52px}
 .nav button.on{background:var(--muted);color:var(--content);padding:8px 22px;border-radius:69px}
 .nav .bd{position:absolute;top:0;left:calc(50% + 4px);background:var(--primary);border:0;color:#fff;border-radius:9999px;min-width:18px;height:18px;padding:0;display:flex;align-items:center;justify-content:center;font-size:10px;line-height:12px}
 .nav .dot{position:absolute;top:4px;left:calc(50% + 6px);width:10px;height:10px;border-radius:5px;background:#e5484d;border:0}
