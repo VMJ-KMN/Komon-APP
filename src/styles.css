@@ -98,9 +98,10 @@ svg{flex:none}
 .radio.on{border-color:var(--primary)}.radio.on:after{content:'';width:10px;height:10px;border-radius:5px;background:var(--primary)}
 .opt{width:100%;text-align:left;border:1px solid transparent;background:var(--muted);border-radius:var(--r-2xl);padding:16px;display:flex;align-items:center;gap:12px}
 .opt.on{border-color:var(--focus)}.opt:disabled{opacity:.5}
-.days{display:flex;gap:8px;overflow-x:auto;margin:0 -24px;padding:0 24px;scrollbar-width:none}
+.days{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x mandatory}
+.days .day:nth-child(7n+1){scroll-snap-align:start}
 .days::-webkit-scrollbar{display:none}
-.day{flex:none;width:46px;height:64px;border-radius:23px;border:1px solid var(--border);background:transparent;color:var(--content);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:0.75rem}
+.day{flex:none;width:calc((100% - 48px) / 7);min-width:38px;height:64px;border-radius:9999px;border:1px solid var(--border);background:transparent;color:var(--content);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:0.75rem}
 .day b{font-size:1rem;font-weight:510}.day.on{background:var(--primary);border-color:var(--primary);color:#fff}.day:disabled{opacity:.35}
 .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}
 .cal span{font-size:0.75rem;color:var(--content-subtle);padding:6px 0}
@@ -145,3 +146,4 @@ html[data-theme=claro][data-contrast=alto]{
   --content-muted:#1b1d1b;--content-subtle:#333533;--border:#555755;--border-strong:#1b1d1b;--elevated:#c8c8c4;--primary:#b8401f;--focus:#8a2a10;--err:#8f1a10;--line:#1b1d1b
 }
 html[data-theme=claro][data-contrast=alto] .card,html[data-theme=claro][data-contrast=alto] .sum,html[data-theme=claro][data-contrast=alto] .opt{outline:1px solid #1b1d1b}
+.wk{width:44px;height:44px;border-radius:9999px;border:1px solid var(--border);background:none;display:flex;align-items:center;justify-content:center;color:var(--content)}.wk:disabled{opacity:.35}

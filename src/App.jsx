@@ -503,17 +503,20 @@ function occ(date, name, st) {
   return null
 }
 function Reservar({ st, back, go }) {
-  const start = new Date(2026, 10, 16)
-  const days = Array.from({ length: 28 }, (_, i) => new Date(start.getTime() + i * 864e5))
+  const days = Array.from({ length: 28 }, (_, i) => new Date(TODAY.getTime() + i * 864e5))
   const [date, setDate] = useState(new Date(2026, 10, 22))
   const [block, setBlock] = useState(null)
+  const strip = React.useRef(null)
+  const [pg, setPg] = useState(0)
+  const move = d => { const el = strip.current; if (el) el.scrollBy({ left: d * el.clientWidth + d * 8, behavior: 'smooth' }) }
   return (
     <>
       <Header title="Reservar quincho" onBack={back} />
       <div className="scroll" style={{ paddingTop: 0, gap: 16 }}>
         <div className="row t-xs mut" style={{ gap: 8 }}><Users size={16} />Hasta 20 personas · 09:00 a 23:00 · Gratis</div>
-        <div style={{ fontSize: '1rem', fontWeight: 510 }}>{cap(MESES[date.getMonth()])} {date.getFullYear()}</div>
-        <div className="days" role="listbox" aria-label="Elige un día">{days.map(d => <button key={key(d)} role="option" aria-selected={key(d) === key(date)} disabled={d < TODAY} className={'day' + (key(d) === key(date) ? ' on' : '')} onClick={() => { setDate(d); setBlock(null) }}><span>{cap(DIAS[d.getDay()].slice(0, 3))}</span><b>{d.getDate()}</b></button>)}</div>
+        <div className="row" style={{ justifyContent: 'space-between' }}><span style={{ fontSize: '1rem', fontWeight: 510 }}>{cap(MESES[date.getMonth()])} {date.getFullYear()}</span>
+          <span className="row" style={{ gap: 8 }}><button className="wk" aria-label="Semana anterior" disabled={pg === 0} onClick={() => move(-1)}><ChevronRight size={18} style={{ transform: 'rotate(180deg)' }} /></button><button className="wk" aria-label="Semana siguiente" disabled={pg >= 3} onClick={() => move(1)}><ChevronRight size={18} /></button></span></div>
+        <div className="days" ref={strip} onScroll={e => setPg(Math.round(e.currentTarget.scrollLeft / (e.currentTarget.clientWidth + 8)))} role="listbox" aria-label="Elige un día">{days.map(d => <button key={key(d)} role="option" aria-selected={key(d) === key(date)} disabled={d < TODAY} className={'day' + (key(d) === key(date) ? ' on' : '')} onClick={() => { setDate(d); setBlock(null) }}><span>{cap(DIAS[d.getDay()].slice(0, 3))}</span><b>{d.getDate()}</b></button>)}</div>
         <span className="t-sm mut">Elige un bloque</span>
         <div className="col" style={{ gap: 12, marginTop: -4 }}>
           {BLOCKS.map(([n, a, b]) => { const o = occ(date, n, st); return (
