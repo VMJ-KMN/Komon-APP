@@ -40,13 +40,28 @@ export default function App() {
     return () => clearTimeout(t)
   }, [cur.s])
 
+  // Botón/gesto "atrás" del teléfono: cada pantalla apilada es una entrada del historial
+  const hd = React.useRef(0), skip = React.useRef(0)
+  useEffect(() => {
+    const need = stack.length - 1
+    if (need > hd.current) { for (let i = hd.current; i < need; i++) history.pushState({ k: i + 1 }, ''); hd.current = need }
+    else if (need < hd.current) { const d = hd.current - need; hd.current = need; skip.current += 1; history.go(-d) }
+  }, [stack.length])
+  useEffect(() => {
+    const f = () => {
+      if (skip.current > 0) { skip.current -= 1; return }
+      if (hd.current > 0) { hd.current -= 1; setStack(a => (a.length > 1 ? a.slice(0, -1) : a)) }
+    }
+    window.addEventListener('popstate', f); return () => window.removeEventListener('popstate', f)
+  }, [])
   const up = f => setSt(s => ({ ...s, ...f(s) }))
   const go = (s, p = {}) => setStack(a => [...a, { s, p }])
-  const back = () => setStack(a => (a.length > 1 ? a.slice(0, -1) : a))
+  const back = () => setStack(a => (a.length > 1 ? a.slice(0, -1) : [{ s: 'home' }]))
   const tab = (s, p = {}) => setStack([{ s, p }])
+  const under = (base, s, p = {}) => setStack([{ s: base[0], p: base[1] || {} }, { s, p }])
   const replace = (s, p = {}) => setStack(a => [...a.slice(0, -1), { s, p }])
   const reset = () => { setSt(s => ({ ...initial(), sim: s.sim, a11y: s.a11y })); setStack([{ s: 'onb' }]) }
-  const A = { st, up, go, back, tab, replace, toast: setToast, reset, p: cur.p || {}, deep: stack.length > 1 }
+  const A = { st, up, go, back, tab, replace, toast: setToast, reset, under, p: cur.p || {}, deep: stack.length > 1 }
 
   const Screens = { onb: Onb, home: Home, accesos: Accesos, nuevoPase: NuevoPase, paseCreado: PaseCreado, pase: PaseDetalle, paseRev: PaseRevocado,
     enc: Encomiendas, fin: Finanzas, detalleCobro: DetalleCobro, historial: HistorialPagos, pagar: Pagar, confPago: ConfPago, proc: Procesando, pagoOk: PagoOk, comp: Comprobante,
@@ -259,7 +274,7 @@ function PaseCreado({ st, p, tab, toast }) {
       <Foot nb><Btn v="inv" onClick={() => toast('Pase enviado a ' + x.name)}>Compartir pase</Btn><Btn v="dark" onClick={() => tab('accesos')}>Listo</Btn></Foot></>)
 }
 
-function PaseRevocado({ st, p, tab, go }) {
+function PaseRevocado({ st, p, tab, under }) {
   const x = st.passes.find(q => q.id === p.id)
   if (!x) return null
   return (
@@ -270,7 +285,7 @@ function PaseRevocado({ st, p, tab, go }) {
         <Qr seed={x.id + x.name} size={160} dim bad />
         <div className="card s" style={{ width: '100%', padding: '12px 24px' }}><KV k="Pase" v={`${x.name} · ${x.kind}`} /><KV k="Revocado" v={'Hoy, ' + (x.revokedAt || hhmm())} /></div>
       </div>
-      <Foot nb><Btn v="dark" onClick={() => tab('nuevoPase')}>Crear otro pase</Btn><Btn v="inv" onClick={() => tab('accesos')}>Volver a Accesos</Btn></Foot></>)
+      <Foot nb><Btn v="dark" onClick={() => under(['accesos'], 'nuevoPase')}>Crear otro pase</Btn><Btn v="inv" onClick={() => tab('accesos')}>Volver a Accesos</Btn></Foot></>)
 }
 
 function PaseDetalle({ st, up, p, back, replace, toast }) {
@@ -606,7 +621,7 @@ function SolForm({ p, up, back, replace }) {
       </div>
       <Foot><Btn onClick={send}>Enviar solicitud</Btn></Foot></>)
 }
-function SolOk({ st, p, tab, replace }) {
+function SolOk({ st, p, tab, under }) {
   const r = st.reqs.find(x => x.id === p.id)
   if (!r) return null
   return (
@@ -616,7 +631,7 @@ function SolOk({ st, p, tab, replace }) {
         <p className="t-xs mut" style={{ margin: 0 }}>Te avisaremos cuando cambie su estado.</p>
         <div className="card s" style={{ width: '100%', padding: '12px 24px', marginTop: 8 }}><KV k="N° de solicitud" v={r.ref} /><KV k="Categoría" v={SHORT[r.cat]} /><KV k="Estado" v="Recibida" /><KV k="Respuesta estimada" v="En 48 horas" /></div>
       </div>
-      <Foot nb><Btn v="inv" onClick={() => replace('sol', { id: r.id, fresh: true })}>Ver mi solicitud</Btn><Btn v="dark" onClick={() => tab('serv', { tab: 'sol' })}>Volver a Servicios</Btn></Foot></>)
+      <Foot nb><Btn v="inv" onClick={() => under(['serv', { tab: 'sol' }], 'sol', { id: r.id, fresh: true })}>Ver mi solicitud</Btn><Btn v="dark" onClick={() => tab('serv', { tab: 'sol' })}>Volver a Servicios</Btn></Foot></>)
 }
 function SolDetalle({ st, up, p, back, tab, go }) {
   const r = st.reqs.find(x => x.id === p.id)
@@ -771,7 +786,7 @@ function Hint({ id, err, children }) {
   return err ? <p id={id} className="errtxt" role="alert"><CircleAlert size={14} />{err}</p> : <p id={id} className="help">{children}</p>
 }
 
-function PagoFallido({ st, p, go, replace, tab }) {
+function PagoFallido({ st, p, go, replace, tab, back }) {
   return (
     <>
       <div className="scroll center" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 48px)', gap: 12 }}>
@@ -780,7 +795,7 @@ function PagoFallido({ st, p, go, replace, tab }) {
         <p className="t-sm mut" style={{ margin: 0, maxWidth: 300 }}>Tu banco rechazó la operación. No se hizo ningún cargo a tu {p.method.startsWith('Tarjeta') ? 'tarjeta' : 'cuenta'}.</p>
         <div className="card s" style={{ width: '100%', padding: '12px 24px', marginTop: 8 }}><KV k="Método" v={p.method} /><KV k="Motivo" v="Rechazado por el emisor" /></div>
       </div>
-      <Foot nb><Btn onClick={() => replace('confPago', { method: p.method })}>Reintentar pago</Btn><Btn v="dark" onClick={() => replace('pagar')}>Usar otro método</Btn><button className="lnk" style={{ height: 28 }} onClick={() => tab('fin')}>Volver a Finanzas</button></Foot></>)
+      <Foot nb><Btn onClick={() => replace('confPago', { method: p.method })}>Reintentar pago</Btn><Btn v="dark" onClick={back}>Usar otro método</Btn><button className="lnk" style={{ height: 28 }} onClick={() => tab('fin')}>Volver a Finanzas</button></Foot></>)
 }
 
 function Datos({ back }) {
@@ -833,7 +848,7 @@ function Correo({ st, p, back, replace }) {
       <Foot><Btn onClick={send}>Enviar correo</Btn></Foot></>)
 }
 
-function CorreoOk({ st, p, tab, replace }) {
+function CorreoOk({ st, p, tab, under }) {
   const r = p.id && st.reqs.find(x => x.id === p.id)
   return (
     <>
@@ -841,5 +856,5 @@ function CorreoOk({ st, p, tab, replace }) {
         <Success /><h1 style={{ margin: '12px 0 0', fontSize: '1.375rem', fontWeight: 590 }}>Correo enviado</h1>
         <p className="t-sm mut" style={{ margin: 0, maxWidth: 300 }}>La administración te responderá a residente@komon.cl en un plazo de 48 horas hábiles.</p>
       </div>
-      <Foot nb>{r && <Btn v="inv" onClick={() => replace('sol', { id: r.id, fresh: true })}>Volver a mi solicitud</Btn>}<Btn v={r ? 'dark' : 'inv'} onClick={() => tab('home')}>Volver al inicio</Btn></Foot></>)
+      <Foot nb>{r && <Btn v="inv" onClick={() => under(['serv', { tab: 'sol' }], 'sol', { id: r.id, fresh: true })}>Volver a mi solicitud</Btn>}<Btn v={r ? 'dark' : 'inv'} onClick={() => tab('home')}>Volver al inicio</Btn></Foot></>)
 }
