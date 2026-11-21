@@ -147,3 +147,5 @@ html[data-theme=claro][data-contrast=alto]{
 }
 html[data-theme=claro][data-contrast=alto] .card,html[data-theme=claro][data-contrast=alto] .sum,html[data-theme=claro][data-contrast=alto] .opt{outline:1px solid #1b1d1b}
 .wk{width:44px;height:44px;border-radius:9999px;border:1px solid var(--border);background:none;display:flex;align-items:center;justify-content:center;color:var(--content)}.wk:disabled{opacity:.35}
+html[data-theme=claro] .btn.inv{background:#3a3c3a;color:#fff}
+html[data-theme=claro][data-contrast=alto] .btn.inv{background:#1b1d1b}
