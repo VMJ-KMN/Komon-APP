@@ -69,7 +69,7 @@ export default function App() {
         <nav className="nav" aria-label="Principal">
           {items.map(([k, I, l, b]) => (
             <button key={k} className={act === k ? 'on' : ''} onClick={() => tab(k)} aria-current={act === k ? 'page' : undefined}>
-              <I size={20} strokeWidth={2} />{l}
+              {act === k ? <FilledIcon k={k} /> : <I size={20} strokeWidth={2} />}{l}
               {b === 'dot' ? st.bills.length > 0 && <i className="dot" /> : b > 0 && <span className="bd">{b}</span>}
             </button>))}
         </nav></>}
@@ -718,6 +718,18 @@ function Accesib({ st, up, back }) {
         </div>
         <p className="t-xs mut" style={{ margin: 0 }}>También respetamos la configuración de tu teléfono.</p>
       </div></>)
+}
+
+function FilledIcon({ k }) {
+  const bg = 'var(--muted)'
+  const P = {
+    home: <><path d="M12 2.6 3.6 9.4a1.5 1.5 0 0 0-.6 1.2V20a1.5 1.5 0 0 0 1.5 1.5H9V15.5h6v6h4.5A1.5 1.5 0 0 0 21 20v-9.4a1.5 1.5 0 0 0-.6-1.2Z" fill="currentColor" stroke="currentColor" strokeWidth="1" strokeLinejoin="round" /></>,
+    accesos: <><path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" /><rect x="7" y="7" width="4" height="4" rx="1" fill="currentColor" /><rect x="13" y="7" width="4" height="4" rx="1" fill="currentColor" /><rect x="7" y="13" width="4" height="4" rx="1" fill="currentColor" /><rect x="13" y="13" width="4" height="4" rx="1" fill="currentColor" /></>,
+    enc: <><path d="M12 2.4 3.9 6.7a1.5 1.5 0 0 0-.8 1.3v8.1a1.5 1.5 0 0 0 .8 1.3l8.1 4.4a1.5 1.5 0 0 0 1.4 0l7.8-4.3a1.5 1.5 0 0 0 .8-1.3V8a1.5 1.5 0 0 0-.8-1.3L13.4 2.4a1.5 1.5 0 0 0-1.4 0Z" fill="currentColor" stroke="currentColor" strokeWidth="1" strokeLinejoin="round" /><path d="M3.4 7.2 12 12l8.6-4.8M12 12v9.6" fill="none" stroke={bg} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></>,
+    fin: <><path d="M5.5 3.5H17a1.5 1.5 0 0 1 0 3H5.5a1 1 0 0 1 0-3Z" fill="currentColor" /><rect x="2.5" y="6" width="19" height="15" rx="3" fill="currentColor" /><circle cx="16.8" cy="13.5" r="1.6" fill={bg} /></>,
+    serv: <><rect x="3" y="3" width="8" height="8" rx="2" fill="currentColor" /><rect x="13" y="3" width="8" height="8" rx="2" fill="currentColor" /><rect x="3" y="13" width="8" height="8" rx="2" fill="currentColor" /><rect x="13" y="13" width="8" height="8" rx="2" fill="currentColor" /></>,
+  }
+  return <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">{P[k]}</svg>
 }
 
 function Hint({ id, err, children }) {
