@@ -631,7 +631,7 @@ function Servicios({ st, go, p }) {
             <p className="sec">Mis solicitudes</p>
             {st.reqs.map(r => { const I = CATICON[r.cat] || Wrench; return (
               <button key={r.id} onClick={() => go('sol', { id: r.id })} className="card s col" style={{ gap: 12, border: 0, textAlign: 'left', width: '100%' }}>
-                <div className="row" style={{ gap: 12, alignItems: 'flex-start' }}><Tile icon={I} size={40} ico={18} /><div className="col" style={{ flex: 1 }}><span className="t-base" style={{ fontWeight: 400 }}>{r.title}</span><span className="t-xs mut">N° {r.ref} · {r.created}</span></div><Dot c={SC[r.status]} t={['Recibida', 'En revisión', 'Resuelta'][r.status]} /></div>
+                <div className="row" style={{ gap: 12, alignItems: 'flex-start' }}><Tile icon={I} size={40} ico={18} /><div className="col" style={{ flex: 1 }}><span className="t-base" style={{ fontWeight: 400 }}>{r.title}</span><span className="t-xs mut">N° {r.ref} · {r.created}{r.prio != null ? ` · Importancia ${PRIO[r.prio][0].toLowerCase()}` : ''}</span></div><Dot c={SC[r.status]} t={['Recibida', 'En revisión', 'Resuelta'][r.status]} /></div>
                 <span className="t-xs mut">{r.desc}</span>
               </button>) })}
           </div>}
@@ -708,6 +708,7 @@ function ReservaOk({ st, p, tab }) {
 }
 
 /* ---------- Solicitudes ---------- */
+const PRIO = [['Baja', '#16a34a'], ['Media', '#f59e0b'], ['Alta', '#e5484d']]
 const CATS = [[Wrench, 'Mantención de áreas comunes'], [House, 'Problema en mi departamento'], [MessageCircle, 'Convivencia o ruidos'], [CircleHelp, 'Consulta o sugerencia']]
 function SolCat({ back, go }) {
   return (
@@ -722,6 +723,7 @@ function SolForm({ p, up, back, replace }) {
   const [sub, setSub] = useState('')
   const [desc, setDesc] = useState('')
   const [foto, setFoto] = useState(false)
+  const [prio, setPrio] = useState(1)
   const [er, setEr] = useState({})
   const send = () => {
     const e = {}
@@ -731,7 +733,7 @@ function SolForm({ p, up, back, replace }) {
     if (Object.keys(e).length) { setTimeout(() => document.querySelector('[aria-invalid="true"]')?.focus(), 60); return }
     const id = 's' + Date.now()
     const ref = String(236 + (Date.now() % 1000) % 50).padStart(4, '0')
-    up(s => ({ reqs: [{ id, cat: p.cat, title: sub.trim(), desc: desc.trim() || 'Sin descripción.', status: 0, created: 'Hoy', ref, log: ['Hoy, ' + hhmm()] }, ...s.reqs] }))
+    up(s => ({ reqs: [{ id, cat: p.cat, title: sub.trim(), desc: desc.trim() || 'Sin descripción.', status: 0, prio, created: 'Hoy', ref, log: ['Hoy, ' + hhmm()] }, ...s.reqs] }))
     replace('solOk', { id })
   }
   return (
@@ -741,6 +743,9 @@ function SolForm({ p, up, back, replace }) {
         <span className="chip on" style={{ alignSelf: 'flex-start' }}>{p.cat}</span>
         <div><label className="lbl" htmlFor="as" style={{ marginBottom: 8 }}>Asunto</label><input id="as" className={'field' + (er.sub ? ' bad' : '')} aria-invalid={!!er.sub} aria-describedby="as-h" placeholder="Ej: Luz quemada en pasillo piso 12" value={sub} onChange={e => { setSub(e.target.value); setEr(x => ({ ...x, sub: null })) }} /><Hint id="as-h" err={er.sub}>Resume el problema en una frase</Hint></div>
         <div><label className="lbl" htmlFor="ds" style={{ marginBottom: 8 }}>Descripción</label><textarea id="ds" className={'field' + (er.desc ? ' bad' : '')} aria-invalid={!!er.desc} aria-describedby="ds-h" rows={4} placeholder="¿Qué pasó y dónde?" value={desc} onChange={e => { setDesc(e.target.value); setEr(x => ({ ...x, desc: null })) }} style={{ resize: 'none' }} /><Hint id="ds-h" err={er.desc}>Cuéntanos qué pasó y dónde.</Hint></div>
+        <div><span className="lbl" id="pr-l" style={{ marginBottom: 8, display: 'block' }}>Importancia</span>
+          <div className="row" role="radiogroup" aria-labelledby="pr-l" style={{ gap: 8 }}>{PRIO.map(([l, c], i) => <button key={l} role="radio" aria-checked={prio === i} className={'chip' + (prio === i ? ' on' : '')} style={{ flex: 1, justifyContent: 'center', gap: 8 }} onClick={() => setPrio(i)}><i style={{ width: 8, height: 8, borderRadius: 4, background: c, flex: 'none' }} />{l}</button>)}</div>
+          <Hint id="pr-h">{['Puede esperar unos días.', 'Conviene resolverlo pronto.', 'Afecta tu seguridad o uso diario.'][prio]}</Hint></div>
         <button onClick={() => setFoto(!foto)} className="row" style={{ justifyContent: 'center', gap: 12, height: 88, border: '1px dashed var(--border-strong)', borderRadius: 16, background: 'none', fontSize: '0.875rem' }}><Camera size={20} />{foto ? 'Foto agregada ✓' : 'Agregar foto (opcional)'}</button>
       </div>
       <Foot><Btn onClick={send}>Enviar solicitud</Btn></Foot></>)
@@ -753,7 +758,7 @@ function SolOk({ st, p, tab, under }) {
       <div className="scroll center" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 48px)', gap: 12 }}>
         <Success /><h1 style={{ margin: '12px 0 0', fontSize: '1.375rem', fontWeight: 590 }}>Solicitud enviada</h1>
         <p className="t-xs mut" style={{ margin: 0 }}>Te avisaremos cuando cambie su estado.</p>
-        <div className="card s" style={{ width: '100%', padding: '12px 24px', marginTop: 8 }}><KV k="N° de solicitud" v={r.ref} /><KV k="Categoría" v={SHORT[r.cat]} /><KV k="Estado" v="Recibida" /><KV k="Respuesta estimada" v="En 48 horas" /></div>
+        <div className="card s" style={{ width: '100%', padding: '12px 24px', marginTop: 8 }}><KV k="N° de solicitud" v={r.ref} /><KV k="Categoría" v={SHORT[r.cat]} /><KV k="Importancia" v={PRIO[r.prio ?? 1][0]} /><KV k="Estado" v="Recibida" /><KV k="Respuesta estimada" v="En 48 horas" /></div>
       </div>
       <Foot nb><Btn v="inv" onClick={() => under(['serv', { tab: 'sol' }], 'sol', { id: r.id, fresh: true })}>Ver mi solicitud</Btn><Btn v="dark" onClick={() => tab('serv', { tab: 'sol' })}>Volver a Servicios</Btn></Foot></>)
 }
@@ -767,7 +772,7 @@ function SolDetalle({ st, up, p, back, tab, go }) {
       <Header title={`Solicitud ${r.ref}`} onBack={p.fresh ? () => tab('serv', { tab: 'sol' }) : back} />
       <div className="scroll" style={{ paddingTop: 4, gap: 16 }}>
         <div className="card s col" style={{ gap: 12 }}>
-          <div className="row" style={{ gap: 12, alignItems: 'flex-start' }}><Tile icon={I} size={40} ico={18} /><div className="col" style={{ flex: 1 }}><span className="t-base" style={{ fontWeight: 400 }}>{r.title}</span><span className="t-xs mut">N° {r.ref} · {r.created}</span></div><Dot c={SC[r.status]} t={stepName[r.status]} /></div>
+          <div className="row" style={{ gap: 12, alignItems: 'flex-start' }}><Tile icon={I} size={40} ico={18} /><div className="col" style={{ flex: 1 }}><span className="t-base" style={{ fontWeight: 400 }}>{r.title}</span><span className="t-xs mut">N° {r.ref} · {r.created}{r.prio != null ? ` · Importancia ${PRIO[r.prio][0].toLowerCase()}` : ''}</span></div><Dot c={SC[r.status]} t={stepName[r.status]} /></div>
           <span className="t-xs mut">{r.desc}</span></div>
         <div className="card"><span className="t-base" style={{ display: 'block', marginBottom: 16, fontWeight: 400 }}>Seguimiento</span>
           <div className="tl">{stepName.map((s, i) => <div key={s} className={'it ' + (i < r.status || (i === 2 && r.status === 2) ? 'done' : i === r.status ? 'cur' : '')}><b />
