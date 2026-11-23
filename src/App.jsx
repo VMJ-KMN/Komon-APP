@@ -275,6 +275,7 @@ function Home({ st, go }) {
     <>
       <div className="scroll nav-pad home" style={{ paddingTop: 0, paddingLeft: 0, paddingRight: 0, gap: 0 }}>
         <div className={'hero' + (iv === 'gris' ? ' g' : '')}>
+          {iv === 'gris' && <div className="twk" aria-hidden="true"><i /><i /><i /><i /></div>}
           <div className="hrow">
             <div className="col" style={{ flex: 1, gap: 2, minWidth: 0 }}><h1>Hola,<br />Residente</h1><span className="t-sm">Torre A · Depto 1204</span></div>
             <button className="tile hbtn" aria-label="Avisos" onClick={() => go('avisos')} style={{ width: 40, height: 40, border: 0, position: 'relative', marginTop: -2 }}><Bell size={20} strokeWidth={1.5} /><i style={{ position: 'absolute', top: 8, right: 9, width: 9, height: 9, borderRadius: 5, background: '#e5484d', boxShadow: '0 0 0 1px #fff' }} /></button>

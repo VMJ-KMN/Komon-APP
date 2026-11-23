@@ -309,3 +309,18 @@ html[data-theme=claro] .phone.home.gris:not(.sb-scrolled) .sbar i{background:#f3
 @keyframes cfb{0%{opacity:1;transform:translate(-50%,-50%) scale(.4)}70%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y) + 40px)) rotate(var(--r)) scale(1)}}
 @media (prefers-reduced-motion:reduce){.scan,.scb,.paybtn,.paybtn em,.pkg,.rchip,.cd.hit,.cf{animation:none!important}.pkg,.rchip,.scb{opacity:1}.cf{display:none}}
 .obs .ob0-sheet h1{min-height:2.4em;display:flex;align-items:center;justify-content:center}
+
+/* Inicio en grises: los puntos naranjas parpadean de forma dispersa */
+.hero.g::before{opacity:.35}
+.hero>.twk{position:absolute;z-index:0;top:0;right:0;bottom:0;width:62%;pointer-events:none;overflow:hidden;
+  -webkit-mask-image:radial-gradient(ellipse 85% 95% at 100% 0,#000 0,transparent 100%);mask-image:radial-gradient(ellipse 85% 95% at 100% 0,#000 0,transparent 100%)}
+.twk i{position:absolute;inset:0;background-image:radial-gradient(circle,var(--primary) 0 1.9px,transparent 2.5px);background-size:28px 28px;opacity:0;
+  animation:twk var(--d) ease-in-out var(--l) infinite;
+  -webkit-mask-image:radial-gradient(circle at 30% 35%,#000 0 22%,transparent 55%),radial-gradient(circle at 75% 70%,#000 0 20%,transparent 50%);
+  mask-image:radial-gradient(circle at 30% 35%,#000 0 22%,transparent 55%),radial-gradient(circle at 75% 70%,#000 0 20%,transparent 50%)}
+.twk i:nth-child(1){--d:3.4s;--l:0s;background-position:right 10px top 14px;-webkit-mask-size:96px 84px;mask-size:96px 84px}
+.twk i:nth-child(2){--d:4.9s;--l:-1.6s;background-position:right 24px top 28px;-webkit-mask-size:120px 100px;mask-size:120px 100px;-webkit-mask-position:40px 20px;mask-position:40px 20px}
+.twk i:nth-child(3){--d:6.3s;--l:-3.1s;background-position:right 24px top 14px;-webkit-mask-size:72px 110px;mask-size:72px 110px;-webkit-mask-position:10px 55px;mask-position:10px 55px}
+.twk i:nth-child(4){--d:4.1s;--l:-2.4s;background-position:right 10px top 28px;-webkit-mask-size:140px 90px;mask-size:140px 90px;-webkit-mask-position:70px 5px;mask-position:70px 5px}
+@keyframes twk{0%,100%{opacity:0}45%,55%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.twk i{animation:none;opacity:.5}}
