@@ -213,9 +213,9 @@ html[data-motion=reducir] .spin{animation-duration:1.6s!important;animation-iter
 .ob0-top::before{width:520px;height:520px;left:50%;top:50%;transform:translate(-50%,-38%)}
 .ob0-top::after{width:340px;height:340px;left:50%;top:50%;transform:translate(-50%,-30%);background:rgba(255,255,255,.06)}
 .ob0-top img{position:relative;z-index:1;animation:okpop .7s var(--ease) both}
-.ob0-sheet{flex:none;position:relative;z-index:2;margin-top:-28px;background:var(--surface);border-radius:28px 28px 0 0;padding:32px 24px calc(env(safe-area-inset-bottom) + var(--sb-bot) + 24px);display:flex;flex-direction:column;gap:12px;text-align:center;animation:rise .5s .1s var(--ease) both;box-shadow:0 -8px 24px rgba(0,0,0,.14)}
+.ob0-sheet{flex:none;position:relative;z-index:2;margin-top:-28px;background:var(--surface);border-radius:28px 28px 0 0;padding:44px 24px calc(env(safe-area-inset-bottom) + var(--sb-bot) + 56px);display:flex;flex-direction:column;gap:16px;text-align:center;animation:rise .5s .1s var(--ease) both;box-shadow:0 -8px 24px rgba(0,0,0,.14)}
 .ob0-sheet h1{margin:0;font-size:1.75rem;line-height:1.2;font-weight:590;text-wrap:balance}
-.ob0-sheet p{margin:0 0 12px;color:var(--content-muted);font-size:1rem;line-height:1.5rem}
+.ob0-sheet p{margin:0 0 20px;color:var(--content-muted);font-size:1rem;line-height:1.5rem}
 .phone:has(.ob0) .sbar{position:absolute;left:0;right:0;top:0;background:transparent}
 .phone:has(.ob0) .sbar,.phone:has(.ob0) .sbar *{color:#fff}
 .phone:has(.ob0) .sbar i{background:#fff!important}
