@@ -241,7 +241,8 @@ html[data-theme=claro] .obic{color:var(--primary)}
 .phone.home .hero{padding-top:calc(env(safe-area-inset-top) + var(--sb-top) + 20px)}
 
 /* Inicio, variante en grises: cabecera con los grises del tema y puntos naranjas que se desvanecen */
-.hero.g{background:var(--muted);color:var(--content)}
+.hero.g{background:color-mix(in srgb,var(--muted) 45%,#000);color:var(--content)}
+html[data-theme=claro] .hero.g{background:color-mix(in srgb,var(--muted) 82%,#000)}
 .hero.g .t-sm{color:var(--content-muted);opacity:1}
 .hero.g .hbtn{background:color-mix(in srgb,var(--content) 9%,transparent)!important;color:var(--content);border:1px solid color-mix(in srgb,var(--content) 16%,transparent)!important}
 .hero.g .glass{background:color-mix(in srgb,var(--content) 6%,transparent);border:1px solid color-mix(in srgb,var(--content) 14%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
