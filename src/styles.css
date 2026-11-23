@@ -222,7 +222,7 @@ html[data-motion=reducir] .spin{animation-duration:1.6s!important;animation-iter
 .phone:has(.ob0) .sbar{position:absolute;left:0;right:0;top:0;background:transparent}
 .phone:has(.ob0) .sbar,.phone:has(.ob0) .sbar *{color:#fff}
 .phone:has(.ob0) .sbar i{background:#fff!important}
-.obic{width:132px;height:132px;border-radius:50%;background:var(--muted);color:var(--primary);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 14px color-mix(in srgb,var(--primary) 11%,transparent),0 14px 34px rgba(0,0,0,.22)}
+.obic{width:132px;height:132px;border-radius:50%;background:var(--muted);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 14px color-mix(in srgb,var(--primary) 11%,transparent),0 14px 34px rgba(0,0,0,.22)}
 
 /* Patrón de puntos de la marca */
 .ob0-top::before{content:"";position:absolute;inset:64px 0 0 0;width:auto;height:auto;border:0;border-radius:0;transform:none;
@@ -234,3 +234,4 @@ html[data-motion=reducir] .spin{animation-duration:1.6s!important;animation-iter
 .hero::before{content:"";position:absolute;z-index:0;top:0;right:0;bottom:0;width:62%;pointer-events:none;
   background-image:radial-gradient(circle,rgba(255,255,255,.5) 0 1.8px,transparent 2.4px);background-size:28px 28px;background-position:right 10px top 14px;
   -webkit-mask-image:linear-gradient(to left,#000 0,transparent 100%);mask-image:linear-gradient(to left,#000 0,transparent 100%)}
+html[data-theme=claro] .obic{color:var(--primary)}
