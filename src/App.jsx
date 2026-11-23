@@ -76,7 +76,7 @@ export default function App() {
   const items = [['home', House, 'Inicio'], ['accesos', ScanQrCode, 'Accesos', nPass], ['enc', Package, 'Encomiendas', nPkg], ['fin', Wallet, 'Finanzas', 'dot'], ['serv', LayoutGrid, 'Servicios']]
 
   return (
-    <div className="stage"><div className="phone">
+    <div className="stage"><div className={'phone' + (cur.s === 'home' ? ' home' : '')}>
       <div className="sbar" aria-hidden="true"><span>9:41</span><span className="ind"><span style={{ display: 'flex', gap: 2, alignItems: 'flex-end' }}>{[4, 6, 8, 10].map(h => <i key={h} style={{ width: 3, height: h, borderRadius: 1, background: '#f3f3f3' }} />)}</span><Wifi size={17} /><span style={{ position: 'relative', width: 27, height: 13 }}><i style={{ position: 'absolute', left: 0, top: 0, width: 24, height: 12, border: '1px solid #c5c5c5', borderRadius: 4 }} /><i style={{ position: 'absolute', left: 2, top: 2, width: 20, height: 8, borderRadius: 2.5, background: '#f3f3f3' }} /><i style={{ position: 'absolute', left: 25, top: 4, width: 2, height: 4, borderRadius: 1, background: '#c5c5c5' }} /></span></span></div>
       <div className={'scr ' + dir.current} key={cur.s + ':' + stack.length}><S {...A} /></div>
       <div className="hind" aria-hidden="true"><i /></div>
@@ -151,15 +151,18 @@ function Home({ st, go }) {
   const qa = [[QrCode, 'Nuevo pase', () => go('nuevoPase'), 1], [Cal, 'Reservar', () => go('reservar')], [ClipboardList, 'Solicitud', () => go('solCat')], [Receipt, 'Pagar', () => go('pagar')]]
   return (
     <>
-      <div className="hdr" style={{ paddingBottom: 0, alignItems: 'flex-start' }}>
-        <div className="col" style={{ flex: 1, gap: 2, minWidth: 0 }}><h1 style={{ margin: 0, fontWeight: 400, fontSize: '1.875rem', lineHeight: '2.25rem' }}>Hola,<br />Residente</h1><span className="t-sm mut">Torre A · Depto 1204</span></div>
-        <button className="tile" aria-label="Avisos" onClick={() => go('avisos')} style={{ width: 40, height: 40, border: 0, background: 'var(--muted)', position: 'relative', marginTop: -2 }}><Bell size={20} /><i style={{ position: 'absolute', top: 8, right: 9, width: 8, height: 8, borderRadius: 4, background: '#e5484d' }} /></button>
-        <button className="av" aria-label="Perfil" onClick={() => go('perfil')} style={{ width: 40, height: 40, background: 'none', overflow: 'hidden', padding: 0, marginTop: -2 }}>{st.photo ? <img src={st.photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : 'RD'}</button>
-      </div>
-      <div className="scroll nav-pad" style={{ paddingTop: 12 }}>
-        <div className="row" style={{ gap: 8, alignItems: 'stretch' }}>
-          {qa.map(([I, l, f, p]) => <button key={l} className="qa" onClick={f}><Tile icon={I} size={40} ico={20} pri={p} />{l}</button>)}
+      <div className="scroll nav-pad home" style={{ paddingTop: 0, paddingLeft: 0, paddingRight: 0, gap: 0 }}>
+        <div className="hero">
+          <div className="hrow">
+            <div className="col" style={{ flex: 1, gap: 2, minWidth: 0 }}><h1>Hola,<br />Residente</h1><span className="t-sm">Torre A · Depto 1204</span></div>
+            <button className="tile hbtn" aria-label="Avisos" onClick={() => go('avisos')} style={{ width: 40, height: 40, border: 0, position: 'relative', marginTop: -2 }}><Bell size={20} /><i style={{ position: 'absolute', top: 8, right: 9, width: 8, height: 8, borderRadius: 4, background: '#ffd84d' }} /></button>
+            <button className="av hbtn" aria-label="Perfil" onClick={() => go('perfil')} style={{ width: 40, height: 40, background: 'none', overflow: 'hidden', padding: 0, marginTop: -2 }}>{st.photo ? <img src={st.photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : 'RD'}</button>
+          </div>
+          <div className="glass row" style={{ gap: 4, alignItems: 'stretch' }}>
+            {qa.map(([I, l, f, p]) => <button key={l} className="qa" onClick={f}><Tile icon={I} size={40} ico={20} pri={p} />{l}</button>)}
+          </div>
         </div>
+        <div className="sheet">
         {(total > 0 || pk.length > 0) && <div className="col" style={{ gap: 12 }}>
           <p className="sec">Requiere tu atención</p>
           {total > 0 && <Sum alert icon={Receipt} label="Saldo por pagar" value={money(total)} detail={(st.sim && st.sim.vencido) ? 'Vencido el 10 de noviembre' : 'Vence el 10 de diciembre'} onClick={() => go('fin')} />}
@@ -171,6 +174,7 @@ function Home({ st, go }) {
           <Sum icon={QrCode} label="Visitas vigentes" value={`${act.length} ${act.length === 1 ? 'pase activo' : 'pases activos'}`} detail={act[0] ? `${act[0].name} · ${act[0].when}` : 'Sin pases activos'} onClick={() => go('accesos')} />
           <Sum icon={Utensils} label="Próxima reserva" value={rsv ? `${rsv.space} · ${dShort(dt(rsv.date)).toLowerCase()}` : 'Sin reservas'} detail={rsv ? `${rsv.from} – ${rsv.to}` : 'Reserva un espacio'} onClick={() => go('serv')} />
           <Sum icon={ClipboardList} label="Mis solicitudes" value={`${open.length} en revisión`} detail={open[0] ? open[0].title : 'Todo al día'} onClick={() => go('serv', { tab: 'sol' })} />
+        </div>
         </div>
       </div></>)
 }
