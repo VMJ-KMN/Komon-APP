@@ -162,7 +162,7 @@ function Home({ st, go }) {
         <div className="hero">
           <div className="hrow">
             <div className="col" style={{ flex: 1, gap: 2, minWidth: 0 }}><h1>Hola,<br />Residente</h1><span className="t-sm">Torre A · Depto 1204</span></div>
-            <button className="tile hbtn" aria-label="Avisos" onClick={() => go('avisos')} style={{ width: 40, height: 40, border: 0, position: 'relative', marginTop: -2 }}><Bell size={20} /><i style={{ position: 'absolute', top: 8, right: 9, width: 9, height: 9, borderRadius: 5, background: '#e5484d', boxShadow: '0 0 0 2px #fff' }} /></button>
+            <button className="tile hbtn" aria-label="Avisos" onClick={() => go('avisos')} style={{ width: 40, height: 40, border: 0, position: 'relative', marginTop: -2 }}><Bell size={20} strokeWidth={1.5} /><i style={{ position: 'absolute', top: 8, right: 9, width: 9, height: 9, borderRadius: 5, background: '#e5484d', boxShadow: '0 0 0 2px #fff' }} /></button>
             <button className="av hbtn" aria-label="Perfil" onClick={() => go('perfil')} style={{ width: 40, height: 40, background: 'none', overflow: 'hidden', padding: 0, marginTop: -2 }}>{st.photo ? <img src={st.photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : 'RD'}</button>
           </div>
           <div className="glass row" style={{ gap: 4, alignItems: 'stretch' }}>
