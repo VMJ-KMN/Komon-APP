@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { House, ScanQrCode, Package, Wallet, LayoutGrid, QrCode, Calendar as Cal, ClipboardList, Receipt, Bell, Utensils, Users, CircleAlert, ArrowUpRight, ArrowUpLeft, Clock, Building2, Shield, Droplet, Flame, Landmark, Lock, Camera, Wrench, MessageCircle, CircleHelp, CreditCard, Info, Plus, ChevronRight, Check, Wifi, Settings, Megaphone, TriangleAlert, CircleCheck, UserRound, ShieldCheck, LogOut, Accessibility, CircleX, Phone, Mail, FlaskConical, Image as ImageIcon, Trash2 } from 'lucide-react'
+import { House, ScanQrCode, Package, Wallet, LayoutGrid, QrCode, Calendar as Cal, ClipboardList, Receipt, Bell, Utensils, Users, CircleAlert, ArrowUpRight, ArrowUpLeft, Clock, Building2, Shield, Droplet, Flame, Landmark, Lock, Camera, Wrench, MessageCircle, CircleHelp, CreditCard, Info, Plus, ChevronRight, Check, Wifi, Settings, Megaphone, TriangleAlert, CircleCheck, UserRound, ShieldCheck, LogOut, Accessibility, CircleX, Phone, Mail, FlaskConical, Image as ImageIcon, Trash2, X } from 'lucide-react'
 import { Header, TabHeader, Foot, Btn, Sheet, Switch, Tabs, Tile, Sum, KV, PinBox, Success, Qr, Calendar, Dot, TODAY, MESES, DIAS, key, cap, dShort, money, initials } from './ui.jsx'
 import { initial, BLOCKS, STEPS, SHORT } from './data.js'
 
@@ -708,6 +708,7 @@ function ReservaOk({ st, p, tab }) {
 }
 
 /* ---------- Solicitudes ---------- */
+const shrink = f => new Promise((ok, no) => { const r = new FileReader(); r.onerror = no; r.onload = () => { const im = new Image(); im.onerror = no; im.onload = () => { const k = Math.min(1, 720 / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); ok(c.toDataURL('image/jpeg', 0.72)) }; im.src = r.result }; r.readAsDataURL(f) })
 const PRIO = [['Baja', '#16a34a'], ['Media', '#f59e0b'], ['Alta', '#e5484d']]
 const CATS = [[Wrench, 'Mantención de áreas comunes'], [House, 'Problema en mi departamento'], [MessageCircle, 'Convivencia o ruidos'], [CircleHelp, 'Consulta o sugerencia']]
 function SolCat({ back, go }) {
@@ -722,7 +723,8 @@ function SolCat({ back, go }) {
 function SolForm({ p, up, back, replace }) {
   const [sub, setSub] = useState('')
   const [desc, setDesc] = useState('')
-  const [foto, setFoto] = useState(false)
+  const [fotos, setFotos] = useState([])
+  const fin = React.useRef(null)
   const [prio, setPrio] = useState(1)
   const [er, setEr] = useState({})
   const send = () => {
@@ -733,7 +735,7 @@ function SolForm({ p, up, back, replace }) {
     if (Object.keys(e).length) { setTimeout(() => document.querySelector('[aria-invalid="true"]')?.focus(), 60); return }
     const id = 's' + Date.now()
     const ref = String(236 + (Date.now() % 1000) % 50).padStart(4, '0')
-    up(s => ({ reqs: [{ id, cat: p.cat, title: sub.trim(), desc: desc.trim() || 'Sin descripción.', status: 0, prio, created: 'Hoy', ref, log: ['Hoy, ' + hhmm()] }, ...s.reqs] }))
+    up(s => ({ reqs: [{ id, cat: p.cat, title: sub.trim(), desc: desc.trim() || 'Sin descripción.', status: 0, prio, fotos, created: 'Hoy', ref, log: ['Hoy, ' + hhmm()] }, ...s.reqs] }))
     replace('solOk', { id })
   }
   return (
@@ -746,7 +748,12 @@ function SolForm({ p, up, back, replace }) {
         <div><span className="lbl" id="pr-l" style={{ marginBottom: 8, display: 'block' }}>Importancia</span>
           <div className="row" role="radiogroup" aria-labelledby="pr-l" style={{ gap: 8 }}>{PRIO.map(([l, c], i) => <button key={l} role="radio" aria-checked={prio === i} className={'chip' + (prio === i ? ' on' : '')} style={{ flex: 1, justifyContent: 'center', gap: 8 }} onClick={() => setPrio(i)}><i style={{ width: 8, height: 8, borderRadius: 4, background: c, flex: 'none' }} />{l}</button>)}</div>
           <Hint id="pr-h">{['Puede esperar unos días.', 'Conviene resolverlo pronto.', 'Afecta tu seguridad o uso diario.'][prio]}</Hint></div>
-        <button onClick={() => setFoto(!foto)} className="row" style={{ justifyContent: 'center', gap: 12, height: 88, border: '1px dashed var(--border-strong)', borderRadius: 16, background: 'none', fontSize: '0.875rem' }}><Camera size={20} />{foto ? 'Foto agregada ✓' : 'Agregar foto (opcional)'}</button>
+        <div><span className="lbl" style={{ marginBottom: 8, display: 'block' }}>Fotos <span className="mut">(opcional · hasta 3)</span></span>
+          <input ref={fin} type="file" accept="image/*" multiple hidden onChange={async e => { const fs = [...e.target.files].slice(0, 3 - fotos.length); e.target.value = ''; const out = []; for (const f of fs) { try { out.push(await shrink(f)) } catch (x) {} } setFotos(a => [...a, ...out].slice(0, 3)) }} />
+          <div className="row" style={{ gap: 8, flexWrap: 'wrap' }}>
+            {fotos.map((u, i) => <div key={i} style={{ position: 'relative', width: 88, height: 88 }}><img src={u} alt={'Foto ' + (i + 1)} style={{ width: 88, height: 88, objectFit: 'cover', borderRadius: 16, display: 'block' }} /><button aria-label={'Quitar foto ' + (i + 1)} onClick={() => setFotos(a => a.filter((_, j) => j !== i))} style={{ position: 'absolute', top: -6, right: -6, width: 24, height: 24, borderRadius: 12, border: 0, background: 'var(--content)', color: 'var(--surface)', display: 'grid', placeItems: 'center' }}><X size={14} /></button></div>)}
+            {fotos.length < 3 && <button onClick={() => fin.current && fin.current.click()} className="col" style={{ alignItems: 'center', justifyContent: 'center', gap: 4, width: fotos.length ? 88 : '100%', height: fotos.length ? 88 : 88, border: '1px dashed var(--border-strong)', borderRadius: 16, background: 'none', fontSize: '0.875rem' }}><Camera size={20} />{fotos.length ? 'Agregar' : 'Tomar o subir foto'}</button>}
+          </div></div>
       </div>
       <Foot><Btn onClick={send}>Enviar solicitud</Btn></Foot></>)
 }
@@ -773,7 +780,8 @@ function SolDetalle({ st, up, p, back, tab, go }) {
       <div className="scroll" style={{ paddingTop: 4, gap: 16 }}>
         <div className="card s col" style={{ gap: 12 }}>
           <div className="row" style={{ gap: 12, alignItems: 'flex-start' }}><Tile icon={I} size={40} ico={18} /><div className="col" style={{ flex: 1 }}><span className="t-base" style={{ fontWeight: 400 }}>{r.title}</span><span className="t-xs mut">N° {r.ref} · {r.created}{r.prio != null ? ` · Importancia ${PRIO[r.prio][0].toLowerCase()}` : ''}</span></div><Dot c={SC[r.status]} t={stepName[r.status]} /></div>
-          <span className="t-xs mut">{r.desc}</span></div>
+          <span className="t-xs mut">{r.desc}</span>
+          {r.fotos && r.fotos.length > 0 && <div className="row" style={{ gap: 8 }}>{r.fotos.map((u, i) => <img key={i} src={u} alt={'Foto ' + (i + 1)} style={{ width: 88, height: 88, objectFit: 'cover', borderRadius: 16 }} />)}</div>}</div>
         <div className="card"><span className="t-base" style={{ display: 'block', marginBottom: 16, fontWeight: 400 }}>Seguimiento</span>
           <div className="tl">{stepName.map((s, i) => <div key={s} className={'it ' + (i < r.status || (i === 2 && r.status === 2) ? 'done' : i === r.status ? 'cur' : '')}><b />
             <div className="t-sm" style={{ fontWeight: 510, color: i > r.status ? 'var(--content-muted)' : undefined }}>{s}</div>
