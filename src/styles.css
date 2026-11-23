@@ -257,3 +257,6 @@ html[data-theme=claro] .phone.home.gris:not(.sb-scrolled) .sbar i{background:#f3
 .phone.home.gris:not(.sb-scrolled) .sbar,.phone.home.gris:not(.sb-scrolled) .sbar *{color:var(--content)}
 .phone.home.gris:not(.sb-scrolled) .sbar i{background:var(--content)!important}
 .phone.home.gris.sb-scrolled .sbar{background:var(--surface)}
+
+.notch{-webkit-mask:radial-gradient(circle 36px at calc(100% - 24px) 24px,transparent 35.5px,#000 36px);mask:radial-gradient(circle 36px at calc(100% - 24px) 24px,transparent 35.5px,#000 36px)}
+.notch-btn{position:absolute;top:2px;right:2px;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;pointer-events:none}

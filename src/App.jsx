@@ -213,15 +213,20 @@ function Home({ st, go }) {
 function Notice({ n, onClick, action }) {
   const pri = n.kind === 'urg'
   const Ic = pri ? CircleAlert : n.kind === 'com' ? Megaphone : Wrench
-  return (
-    <div role="button" onClick={onClick} className="col" style={{ gap: 8, padding: 20, borderRadius: 16, background: pri ? 'var(--primary)' : 'var(--muted)', color: pri ? '#fff' : undefined, cursor: 'pointer' }}>
+  const card = (
+    <div role={action ? undefined : 'button'} onClick={action ? undefined : onClick} className={'col' + (action ? ' notch' : '')} style={{ gap: 8, padding: 20, borderRadius: 16, background: pri ? 'var(--primary)' : 'var(--muted)', color: pri ? '#fff' : undefined, cursor: 'pointer' }}>
       <div className="row" style={{ gap: 8, minHeight: 20 }}>
         <Ic size={20} /><span className="t-sm" style={{ flex: 1, fontWeight: 510 }}>{n.eyebrow}</span>
         {n.date && <span className="t-xs" style={{ color: pri ? 'rgba(255,255,255,.85)' : 'var(--content-muted)' }}>{n.date}</span>}
-        {action && <span className="tile" style={{ width: 40, height: 40, background: pri ? '#f3f3f3' : 'var(--content)', color: pri ? '#1b1d1b' : 'var(--surface)' }}><ArrowUpRight size={20} /></span>}
       </div>
-      <div className="t-lg">{n.t}</div>
+      <div className="t-lg" style={action ? { paddingRight: 36 } : undefined}>{n.t}</div>
       <div className="t-sm" style={{ opacity: .9 }}>{n.s}</div>
+    </div>)
+  if (!action) return card
+  return (
+    <div role="button" onClick={onClick} style={{ position: 'relative', cursor: 'pointer' }}>
+      {card}
+      <span className="notch-btn" style={{ background: pri ? 'var(--primary)' : 'var(--content)', color: pri ? '#fff' : 'var(--surface)' }}><ArrowUpRight size={20} /></span>
     </div>)
 }
 
