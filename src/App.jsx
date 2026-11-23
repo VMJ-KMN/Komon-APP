@@ -76,7 +76,7 @@ export default function App() {
   const items = [['home', House, 'Inicio'], ['accesos', ScanQrCode, 'Accesos', nPass], ['enc', Package, 'Encomiendas', nPkg], ['fin', Wallet, 'Finanzas', 'dot'], ['serv', LayoutGrid, 'Servicios']]
 
   return (
-    <div className="stage"><div className={'phone' + (cur.s === 'home' && !(st.sim && st.sim.inicioOrig) ? ' home' : '')}>
+    <div className="stage"><div className={'phone' + (cur.s === 'home' && (st.sim && st.sim.inicio) !== 'orig' && !(st.sim && st.sim.inicioOrig && !st.sim.inicio) ? ' home' + ((st.sim && st.sim.inicio) === 'gris' ? ' gris' : '') : '')}>
       <div className="sbar" aria-hidden="true"><span>9:41</span><span className="ind"><span style={{ display: 'flex', gap: 2, alignItems: 'flex-end' }}>{[4, 6, 8, 10].map(h => <i key={h} style={{ width: 3, height: h, borderRadius: 1, background: 'var(--content)' }} />)}</span><Wifi size={17} /><span style={{ position: 'relative', width: 27, height: 13 }}><i style={{ position: 'absolute', left: 0, top: 0, width: 24, height: 12, border: '1px solid var(--content-muted)', borderRadius: 4 }} /><i style={{ position: 'absolute', left: 2, top: 2, width: 20, height: 8, borderRadius: 2.5, background: 'var(--content)' }} /><i style={{ position: 'absolute', left: 25, top: 4, width: 2, height: 4, borderRadius: 1, background: 'var(--content-muted)' }} /></span></span></div>
       <div className={'scr ' + dir.current} key={cur.s + ':' + stack.length}><S {...A} /></div>
       <div className="hind" aria-hidden="true"><i /></div>
@@ -163,7 +163,7 @@ function Home({ st, go }) {
     return () => { sc.removeEventListener('scroll', f); ph.classList.remove('sb-scrolled') }
   }, [])
   const qa = [[QrCode, 'Nuevo pase', () => go('nuevoPase'), 1], [Cal, 'Reservar', () => go('reservar')], [ClipboardList, 'Solicitud', () => go('solCat')], [Receipt, 'Pagar', () => go('pagar')]]
-  const orig = !!(st.sim && st.sim.inicioOrig)
+  const iv = (st.sim && st.sim.inicio) || (st.sim && st.sim.inicioOrig ? 'orig' : 'nuevo'), orig = iv === 'orig'
   const main = (<>
         {(total > 0 || pk.length > 0) && <div className="col" style={{ gap: 12 }}>
           <p className="sec">Requiere tu atención</p>
@@ -194,7 +194,7 @@ function Home({ st, go }) {
   return (
     <>
       <div className="scroll nav-pad home" style={{ paddingTop: 0, paddingLeft: 0, paddingRight: 0, gap: 0 }}>
-        <div className="hero">
+        <div className={'hero' + (iv === 'gris' ? ' g' : '')}>
           <div className="hrow">
             <div className="col" style={{ flex: 1, gap: 2, minWidth: 0 }}><h1>Hola,<br />Residente</h1><span className="t-sm">Torre A · Depto 1204</span></div>
             <button className="tile hbtn" aria-label="Avisos" onClick={() => go('avisos')} style={{ width: 40, height: 40, border: 0, position: 'relative', marginTop: -2 }}><Bell size={20} strokeWidth={1.5} /><i style={{ position: 'absolute', top: 8, right: 9, width: 9, height: 9, borderRadius: 5, background: '#e5484d', boxShadow: '0 0 0 1px #fff' }} /></button>
@@ -767,7 +767,8 @@ function Perfil({ st, up, back, go, reset, toast }) {
           <span className="t-xs sub row" style={{ gap: 6 }}><FlaskConical size={14} />Modo moderador</span>
           <div className="row" style={{ minHeight: 52, gap: 12 }}><span className="t-sm" style={{ flex: 1 }}>El próximo pago falla</span><Switch label="El próximo pago falla" on={!!(st.sim && st.sim.fail)} onChange={sim('fail')} /></div>
           <div className="row" style={{ minHeight: 52, gap: 12, borderTop: '1px solid var(--border)' }}><span className="t-sm" style={{ flex: 1 }}>Gasto común vencido</span><Switch label="Gasto común vencido" on={!!(st.sim && st.sim.vencido)} onChange={sim('vencido')} /></div>
-          <div className="row" style={{ minHeight: 52, gap: 12, borderTop: '1px solid var(--border)' }}><span className="t-sm" style={{ flex: 1 }}>Inicio: diseño original</span><Switch label="Inicio: diseño original" on={!!(st.sim && st.sim.inicioOrig)} onChange={sim('inicioOrig')} /></div>
+          <div className="col" style={{ gap: 8, padding: '12px 0', borderTop: '1px solid var(--border)' }}><span className="t-sm">Diseño del Inicio</span>
+            <div className="row" role="radiogroup" aria-label="Diseño del Inicio" style={{ gap: 8 }}>{[['nuevo', 'Naranja'], ['gris', 'Grises'], ['orig', 'Original']].map(([k, l]) => { const cur = (st.sim && st.sim.inicio) || (st.sim && st.sim.inicioOrig ? 'orig' : 'nuevo'); return <button key={k} role="radio" aria-checked={cur === k} className={'chip' + (cur === k ? ' on' : '')} style={{ flex: 1, justifyContent: 'center' }} onClick={() => up(s2 => ({ sim: { ...(s2.sim || {}), inicio: k, inicioOrig: false } }))}>{l}</button> })}</div></div>
           <span className="t-xs sub">«Cerrar sesión» reinicia la demo para el siguiente participante.</span>
         </div>}
       </div>

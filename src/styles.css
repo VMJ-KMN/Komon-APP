@@ -239,3 +239,18 @@ html[data-theme=claro] .obic{color:var(--primary)}
 .phone.home:not(.sb-scrolled) .sbar i{background:#fff!important}
 .phone.home.sb-scrolled .sbar{background:var(--surface)}
 .phone.home .hero{padding-top:calc(env(safe-area-inset-top) + var(--sb-top) + 20px)}
+
+/* Inicio, variante en grises: cabecera con los grises del tema y puntos naranjas que se desvanecen */
+.hero.g{background:var(--muted);color:var(--content)}
+.hero.g .t-sm{color:var(--content-muted);opacity:1}
+.hero.g .hbtn{background:color-mix(in srgb,var(--content) 9%,transparent)!important;color:var(--content);border:1px solid color-mix(in srgb,var(--content) 16%,transparent)!important}
+.hero.g .glass{background:color-mix(in srgb,var(--content) 6%,transparent);border:1px solid color-mix(in srgb,var(--content) 14%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.hero.g .qa{color:var(--content)}
+.hero.g .qa .tile{background:color-mix(in srgb,var(--content) 12%,transparent);color:var(--content)}
+.hero.g .qa .tile.pri{background:var(--primary);color:#fff}
+.hero.g::before{background-image:radial-gradient(circle,var(--primary) 0 1.9px,transparent 2.5px);
+  -webkit-mask-image:radial-gradient(ellipse 85% 95% at 100% 0,#000 0,transparent 100%);mask-image:radial-gradient(ellipse 85% 95% at 100% 0,#000 0,transparent 100%)}
+.phone.home.gris .sbar{background:transparent}
+.phone.home.gris:not(.sb-scrolled) .sbar,.phone.home.gris:not(.sb-scrolled) .sbar *{color:var(--content)}
+.phone.home.gris:not(.sb-scrolled) .sbar i{background:var(--content)!important}
+.phone.home.gris.sb-scrolled .sbar{background:var(--surface)}
