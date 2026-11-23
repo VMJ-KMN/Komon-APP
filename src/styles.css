@@ -324,3 +324,18 @@ html[data-theme=claro] .phone.home.gris:not(.sb-scrolled) .sbar i{background:#f3
 .twk i:nth-child(4){--d:4.1s;--l:-2.4s;background-position:right 10px top 28px;-webkit-mask-size:140px 90px;mask-size:140px 90px;-webkit-mask-position:70px 5px;mask-position:70px 5px}
 @keyframes twk{0%,100%{opacity:0}45%,55%{opacity:1}}
 @media (prefers-reduced-motion:reduce){.twk i{animation:none;opacity:.5}}
+
+/* Onboarding: el patrón de puntos respira y parpadea */
+.ob0-top::before{animation:obp 4.2s ease-in-out infinite}
+.ob0-top::after{display:block;content:"";position:absolute;z-index:0;inset:64px 0 0 0;width:auto;height:auto;border:0;border-radius:0;transform:none;pointer-events:none;background-color:transparent;
+  background-image:radial-gradient(circle,#fff 0 2.4px,transparent 3px);background-size:33px 33px;background-position:center;
+  -webkit-mask-image:radial-gradient(circle at 30% 35%,#000 0 22%,transparent 55%),radial-gradient(circle at 75% 70%,#000 0 20%,transparent 50%),radial-gradient(ellipse 62% 52% at 50% 50%,transparent 0 38%,#000 100%);
+  -webkit-mask-size:130px 110px,130px 110px,100% 100%;-webkit-mask-composite:source-in;
+  mask-image:radial-gradient(circle at 30% 35%,#000 0 22%,transparent 55%),radial-gradient(circle at 75% 70%,#000 0 20%,transparent 50%),radial-gradient(ellipse 62% 52% at 50% 50%,transparent 0 38%,#000 100%);
+  mask-size:130px 110px,130px 110px,100% 100%;mask-composite:intersect;
+  opacity:0;animation:obt 3.3s ease-in-out infinite,obd 11s linear infinite}
+.scn{z-index:1}
+@keyframes obp{0%,100%{opacity:.4}50%{opacity:.9}}
+@keyframes obt{0%,100%{opacity:0}50%{opacity:1}}
+@keyframes obd{from{-webkit-mask-position:0 0,40px 30px,0 0;mask-position:0 0,40px 30px,0 0}to{-webkit-mask-position:130px 110px,170px 140px,0 0;mask-position:130px 110px,170px 140px,0 0}}
+@media (prefers-reduced-motion:reduce){.ob0-top::before,.ob0-top::after{animation:none}.ob0-top::after{opacity:0}}
