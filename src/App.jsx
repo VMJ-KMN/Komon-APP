@@ -77,7 +77,7 @@ export default function App() {
 
   return (
     <div className="stage"><div className={'phone' + (cur.s === 'home' ? ' home' : '')}>
-      <div className="sbar" aria-hidden="true"><span>9:41</span><span className="ind"><span style={{ display: 'flex', gap: 2, alignItems: 'flex-end' }}>{[4, 6, 8, 10].map(h => <i key={h} style={{ width: 3, height: h, borderRadius: 1, background: '#f3f3f3' }} />)}</span><Wifi size={17} /><span style={{ position: 'relative', width: 27, height: 13 }}><i style={{ position: 'absolute', left: 0, top: 0, width: 24, height: 12, border: '1px solid #c5c5c5', borderRadius: 4 }} /><i style={{ position: 'absolute', left: 2, top: 2, width: 20, height: 8, borderRadius: 2.5, background: '#f3f3f3' }} /><i style={{ position: 'absolute', left: 25, top: 4, width: 2, height: 4, borderRadius: 1, background: '#c5c5c5' }} /></span></span></div>
+      <div className="sbar" aria-hidden="true"><span>9:41</span><span className="ind"><span style={{ display: 'flex', gap: 2, alignItems: 'flex-end' }}>{[4, 6, 8, 10].map(h => <i key={h} style={{ width: 3, height: h, borderRadius: 1, background: 'var(--content)' }} />)}</span><Wifi size={17} /><span style={{ position: 'relative', width: 27, height: 13 }}><i style={{ position: 'absolute', left: 0, top: 0, width: 24, height: 12, border: '1px solid var(--content-muted)', borderRadius: 4 }} /><i style={{ position: 'absolute', left: 2, top: 2, width: 20, height: 8, borderRadius: 2.5, background: 'var(--content)' }} /><i style={{ position: 'absolute', left: 25, top: 4, width: 2, height: 4, borderRadius: 1, background: 'var(--content-muted)' }} /></span></span></div>
       <div className={'scr ' + dir.current} key={cur.s + ':' + stack.length}><S {...A} /></div>
       <div className="hind" aria-hidden="true"><i /></div>
       {showNav && <>
@@ -155,7 +155,7 @@ function Home({ st, go }) {
         <div className="hero">
           <div className="hrow">
             <div className="col" style={{ flex: 1, gap: 2, minWidth: 0 }}><h1>Hola,<br />Residente</h1><span className="t-sm">Torre A · Depto 1204</span></div>
-            <button className="tile hbtn" aria-label="Avisos" onClick={() => go('avisos')} style={{ width: 40, height: 40, border: 0, position: 'relative', marginTop: -2 }}><Bell size={20} /><i style={{ position: 'absolute', top: 8, right: 9, width: 8, height: 8, borderRadius: 4, background: '#ffd84d' }} /></button>
+            <button className="tile hbtn" aria-label="Avisos" onClick={() => go('avisos')} style={{ width: 40, height: 40, border: 0, position: 'relative', marginTop: -2 }}><Bell size={20} /><i style={{ position: 'absolute', top: 8, right: 9, width: 8, height: 8, borderRadius: 4, background: '#e5484d' }} /></button>
             <button className="av hbtn" aria-label="Perfil" onClick={() => go('perfil')} style={{ width: 40, height: 40, background: 'none', overflow: 'hidden', padding: 0, marginTop: -2 }}>{st.photo ? <img src={st.photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : 'RD'}</button>
           </div>
           <div className="glass row" style={{ gap: 4, alignItems: 'stretch' }}>
