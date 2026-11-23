@@ -76,7 +76,7 @@ export default function App() {
   const items = [['home', House, 'Inicio'], ['accesos', ScanQrCode, 'Accesos', nPass], ['enc', Package, 'Encomiendas', nPkg], ['fin', Wallet, 'Finanzas', 'dot'], ['serv', LayoutGrid, 'Servicios']]
 
   return (
-    <div className="stage"><div className={'phone' + (cur.s === 'home' && (st.sim && st.sim.inicio) !== 'orig' && !(st.sim && st.sim.inicioOrig && !st.sim.inicio) ? ' home' + ((st.sim && st.sim.inicio) === 'gris' ? ' gris' : '') : '')}>
+    <div className="stage"><div className={'phone' + (cur.s === 'home' && homeVar(st.sim) !== 'orig' ? ' home' + (homeVar(st.sim) === 'gris' ? ' gris' : '') : '')}>
       <div className="sbar" aria-hidden="true"><span>9:41</span><span className="ind"><span style={{ display: 'flex', gap: 2, alignItems: 'flex-end' }}>{[4, 6, 8, 10].map(h => <i key={h} style={{ width: 3, height: h, borderRadius: 1, background: 'var(--content)' }} />)}</span><Wifi size={17} /><span style={{ position: 'relative', width: 27, height: 13 }}><i style={{ position: 'absolute', left: 0, top: 0, width: 24, height: 12, border: '1px solid var(--content-muted)', borderRadius: 4 }} /><i style={{ position: 'absolute', left: 2, top: 2, width: 20, height: 8, borderRadius: 2.5, background: 'var(--content)' }} /><i style={{ position: 'absolute', left: 25, top: 4, width: 2, height: 4, borderRadius: 1, background: 'var(--content-muted)' }} /></span></span></div>
       <div className={'scr ' + dir.current} key={cur.s + ':' + stack.length}><S {...A} /></div>
       <div className="hind" aria-hidden="true"><i /></div>
@@ -243,7 +243,7 @@ function Home({ st, go }) {
     return () => { sc.removeEventListener('scroll', f); ph.classList.remove('sb-scrolled') }
   }, [])
   const qa = [[QrCode, 'Nuevo pase', () => go('nuevoPase'), 1], [Cal, 'Reservar', () => go('reservar')], [ClipboardList, 'Solicitud', () => go('solCat')], [Receipt, 'Pagar', () => go('pagar')]]
-  const iv = (st.sim && st.sim.inicio) || (st.sim && st.sim.inicioOrig ? 'orig' : 'nuevo'), orig = iv === 'orig'
+  const iv = homeVar(st.sim), orig = iv === 'orig'
   const main = (<>
         {(total > 0 || pk.length > 0) && <div className="col" style={{ gap: 12 }}>
           <p className="sec">Requiere tu atención</p>
@@ -708,6 +708,7 @@ function ReservaOk({ st, p, tab }) {
 }
 
 /* ---------- Solicitudes ---------- */
+const homeVar = sim => (sim && sim.inicio) || (sim && sim.inicioOrig ? 'orig' : 'gris')
 const shrink = f => new Promise((ok, no) => { const r = new FileReader(); r.onerror = no; r.onload = () => { const im = new Image(); im.onerror = no; im.onload = () => { const k = Math.min(1, 720 / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); ok(c.toDataURL('image/jpeg', 0.72)) }; im.src = r.result }; r.readAsDataURL(f) })
 const PRIO = [['Baja', '#16a34a'], ['Media', '#f59e0b'], ['Alta', '#e5484d']]
 const CATS = [[Wrench, 'Mantención de áreas comunes'], [House, 'Problema en mi departamento'], [MessageCircle, 'Convivencia o ruidos'], [CircleHelp, 'Consulta o sugerencia']]
@@ -862,7 +863,7 @@ function Perfil({ st, up, back, go, reset, toast }) {
           <div className="row" style={{ minHeight: 52, gap: 12 }}><span className="t-sm" style={{ flex: 1 }}>El próximo pago falla</span><Switch label="El próximo pago falla" on={!!(st.sim && st.sim.fail)} onChange={sim('fail')} /></div>
           <div className="row" style={{ minHeight: 52, gap: 12, borderTop: '1px solid var(--border)' }}><span className="t-sm" style={{ flex: 1 }}>Gasto común vencido</span><Switch label="Gasto común vencido" on={!!(st.sim && st.sim.vencido)} onChange={sim('vencido')} /></div>
           <div className="col" style={{ gap: 8, padding: '12px 0', borderTop: '1px solid var(--border)' }}><span className="t-sm">Diseño del Inicio</span>
-            <div className="row" role="radiogroup" aria-label="Diseño del Inicio" style={{ gap: 8 }}>{[['nuevo', 'Naranja'], ['gris', 'Grises'], ['orig', 'Original']].map(([k, l]) => { const cur = (st.sim && st.sim.inicio) || (st.sim && st.sim.inicioOrig ? 'orig' : 'nuevo'); return <button key={k} role="radio" aria-checked={cur === k} className={'chip' + (cur === k ? ' on' : '')} style={{ flex: 1, justifyContent: 'center' }} onClick={() => up(s2 => ({ sim: { ...(s2.sim || {}), inicio: k, inicioOrig: false } }))}>{l}</button> })}</div></div>
+            <div className="row" role="radiogroup" aria-label="Diseño del Inicio" style={{ gap: 8 }}>{[['nuevo', 'Naranja'], ['gris', 'Grises'], ['orig', 'Original']].map(([k, l]) => { const cur = homeVar(st.sim); return <button key={k} role="radio" aria-checked={cur === k} className={'chip' + (cur === k ? ' on' : '')} style={{ flex: 1, justifyContent: 'center' }} onClick={() => up(s2 => ({ sim: { ...(s2.sim || {}), inicio: k, inicioOrig: false } }))}>{l}</button> })}</div></div>
           <span className="t-xs sub">«Cerrar sesión» reinicia la demo para el siguiente participante.</span>
         </div>}
       </div>
