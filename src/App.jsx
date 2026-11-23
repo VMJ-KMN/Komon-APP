@@ -96,6 +96,66 @@ export default function App() {
 }
 
 /* ---------- Onboarding ---------- */
+function Seg({ k, d }) {
+  return <div className={'obseg' + (d ? ' d' : '')} role="img" aria-label={`Paso ${k} de 4`}>{[1, 2, 3, 4].map(i => <i key={i} className={i < k ? 'on' : i === k ? 'cur' : ''} />)}</div>
+}
+
+function SceneQR() {
+  const cells = []
+  const fnd = (r, c) => { for (const [a, b] of [[0, 0], [0, 4], [4, 0]]) if (r >= a && r < a + 3 && c >= b && c < b + 3) return (r === a + 1 && c === b + 1) ? 0 : 1; return null }
+  for (let r = 0; r < 7; r++) for (let c = 0; c < 7; c++) {
+    const f = fnd(r, c)
+    const on = f !== null ? f === 1 : ((r * 3 + c * 5 + r * c) % 3 !== 0)
+    cells.push(<span key={r + '-' + c} className={on ? 'q on' : 'q'} style={{ animationDelay: (r + c) * 40 + 200 + 'ms' }} />)
+  }
+  return (
+    <div className="scn">
+      <div className="scc" style={{ left: 40, top: 8, width: 160, padding: 18 }}>
+        <div className="qrg">{cells}<i className="scan" /></div>
+        <div className="scl"><b>Pase de visita</b><span>Válido por 2 h</span></div>
+      </div>
+      <span className="scb s1"><Check size={26} strokeWidth={2.4} /></span>
+    </div>)
+}
+
+function ScenePay() {
+  return (
+    <div className="scn">
+      <div className="scc" style={{ left: 18, top: 14, width: 204, padding: 16 }}>
+        <div className="scl" style={{ marginTop: 0 }}><span>Gasto común</span><b style={{ fontSize: '1.5rem' }}>$142.350</b></div>
+        <div className="paybtn"><em className="pa">Pagar</em><em className="pb"><Check size={16} strokeWidth={2.6} /> Pagado</em></div>
+      </div>
+      <div className="scc pkg" style={{ left: 16, top: 166, width: 218, padding: '12px 14px' }}>
+        <span className="pkgi"><Package size={20} /></span>
+        <div className="scl" style={{ marginTop: 0 }}><b style={{ fontSize: '.95rem' }}>Llegó tu encomienda</b><span>Retira en conserjería</span></div>
+      </div>
+    </div>)
+}
+
+function SceneRes() {
+  const cells = []
+  for (let i = 0; i < 21; i++) cells.push(<span key={i} className={i === 12 ? 'cd hit' : 'cd'} />)
+  return (
+    <div className="scn">
+      <div className="scc" style={{ left: 24, top: 14, width: 192, padding: 16 }}>
+        <div className="scl" style={{ marginTop: 0, marginBottom: 10 }}><b style={{ fontSize: '.95rem' }}>Noviembre</b></div>
+        <div className="calg">{cells}</div>
+      </div>
+      <div className="scc chip" style={{ left: 20, top: 168, width: 200, padding: '10px 14px' }}>
+        <span className="pkgi" style={{ background: 'var(--success)' }}><Check size={18} strokeWidth={2.4} /></span>
+        <div className="scl" style={{ marginTop: 0 }}><b style={{ fontSize: '.95rem' }}>Quincho · sáb 21</b><span>13:00 – 17:00</span></div>
+      </div>
+    </div>)
+}
+
+function Confetti() {
+  const cols = ['var(--primary)', 'var(--success)', 'var(--content)', 'color-mix(in srgb,var(--primary) 55%,#fff)']
+  return <>{Array.from({ length: 26 }, (_, i) => {
+    const a = (i / 26) * Math.PI * 2 + (i % 3) * 0.3, d = 70 + (i * 37) % 50
+    return <i key={i} className="cf" style={{ '--x': Math.cos(a) * d + 'px', '--y': Math.sin(a) * d - 10 + 'px', '--r': (i * 83) % 360 + 'deg', background: cols[i % 4], animationDelay: 0.35 + (i % 5) * 0.03 + 's', borderRadius: i % 2 ? '50%' : 2 }} />
+  })}</>
+}
+
 function Onb({ st, up, tab }) {
   const [n, setN] = useState(0)
   const [sw, setSw] = useState(st.sw)
@@ -116,6 +176,10 @@ function Onb({ st, up, tab }) {
   const lab = ['Comenzar', 'Siguiente', 'Siguiente', 'Siguiente', 'Activar y continuar', 'Ir al Inicio']
   const rows = [['pases', 'Pases y visitas', 'Cuando llega o sale una visita'], ['paq', 'Encomiendas', 'Cuando llega un paquete'], ['fin', 'Gastos comunes', 'Vencimientos y comprobantes']]
   const I = n <= 3 ? slides[n][0] : null
+  const tx = React.useRef(null)
+  const sw0 = e => { tx.current = e.touches[0].clientX }
+  const sw1 = e => { if (tx.current == null) return; const dx = e.changedTouches[0].clientX - tx.current; tx.current = null; if (dx < -60 && n < 4) adv(n + 1); else if (dx > 60 && n > 0) prev() }
+  const Scene = [null, SceneQR, ScenePay, SceneRes][n]
   const Dots = ({ k }) => <div className="row" style={{ gap: 8, justifyContent: 'center' }} role="img" aria-label={`Paso ${k} de 4`}>{[1, 2, 3, 4].map(i => <span key={i} style={{ width: i === k ? 24 : 8, height: 8, borderRadius: 4, background: i === k ? 'var(--primary)' : 'var(--elevated)', transition: 'width .25s var(--ease), background-color .25s' }} />)}</div>
   if (n === 0) return (
     <div className="ob0">
@@ -126,11 +190,27 @@ function Onb({ st, up, tab }) {
         <Btn onClick={() => adv(1)}>Comenzar</Btn>
       </div>
     </div>)
+  if (n >= 1 && n <= 3) return (
+    <div className="ob0 obs" key={n} onTouchStart={sw0} onTouchEnd={sw1}>
+      <div className="ob0-top" style={{ paddingTop: 56 }}>
+        <div className="obbar">
+          <button aria-label="Atrás" onClick={prev}><ArrowUpLeft size={22} /></button>
+          <Seg k={n} />
+          <button className="skip" onClick={() => adv(5)}>Omitir</button>
+        </div>
+        <Scene />
+      </div>
+      <div className="ob0-sheet obtx">
+        <h1>{slides[n][1]}</h1>
+        <p>{slides[n][2]}</p>
+        <Btn onClick={() => adv(n + 1)}>{lab[n]}</Btn>
+      </div>
+    </div>)
   return (
     <>
       <div className="hdr" style={{ justifyContent: 'space-between', paddingTop: 'calc(env(safe-area-inset-top) + 20px)' }}>
         <div style={{ width: 72 }}>{n > 0 && <button className="back" aria-label="Atrás" onClick={prev} style={{ background: 'none', border: 0, height: 40, display: 'flex', alignItems: 'center' }}><ArrowUpLeft size={22} /></button>}</div>
-        <div />
+        <div style={{ flex: 1, padding: '0 8px' }}>{n === 4 && <Seg k={4} d />}</div>
         <div style={{ width: 72, textAlign: 'right' }}>{n >= 1 && n <= 4 && <button className="lnk" style={{ color: 'var(--content-muted)', height: 40 }} onClick={() => adv(5)}>Omitir</button>}</div>
       </div>
       <div key={n} className="scroll col center" style={{ justifyContent: "center", gap: 24 }}>
@@ -139,7 +219,7 @@ function Onb({ st, up, tab }) {
             <h1 style={{ margin: 0, fontSize: '1.75rem', lineHeight: 1.2, fontWeight: 590 }}>{slides[n][1]}</h1><p className="mut" style={{ margin: 0, fontSize: '1rem', lineHeight: '1.5rem' }}>{slides[n][2]}</p></div><Dots k={n} /></>}
         {n === 4 && <div style={{ width: '100%' }}><h1 style={{ margin: '0 0 12px', fontSize: '1.75rem', fontWeight: 590 }}>Avisos que importan</h1><p className="mut" style={{ margin: '0 0 24px', fontSize: '1rem' }}>Elige de qué quieres enterarte. Puedes cambiarlo después en tu perfil.</p>
           <div className="card s" style={{ padding: '0 16px', textAlign: 'left' }}>{rows.map(([k, l, s], i) => <div key={k} className="row" style={{ minHeight: 68, gap: 12, borderTop: i ? '1px solid var(--border)' : 0 }}><div style={{ flex: 1 }}><div className="t-base">{l}</div><div className="t-sm mut">{s}</div></div><Switch label={l} on={sw[k]} onChange={() => setSw({ ...sw, [k]: !sw[k] })} /></div>)}</div><div style={{ marginTop: 24 }}><Dots k={4} /></div></div>}
-        {n === 5 && <><span className="tile" style={{ width: 120, height: 120, background: 'var(--success)' }}><Check size={56} strokeWidth={1.8} /></span><div><h1 style={{ margin: '0 0 12px', fontSize: '1.75rem', fontWeight: 590 }}>Todo listo, Residente</h1><p className="mut" style={{ margin: 0, fontSize: '1rem' }}>Tu Inicio te muestra primero lo que requiere tu atención.</p></div></>}
+        {n === 5 && <><div className="obdone"><Confetti /><svg viewBox="0 0 120 120" width="120" height="120"><circle className="dc" cx="60" cy="60" r="56" /><path className="dk" d="M36 62l17 17 31-36" /></svg></div><div><h1 style={{ margin: '0 0 12px', fontSize: '1.75rem', fontWeight: 590 }}>Todo listo, Residente</h1><p className="mut" style={{ margin: 0, fontSize: '1rem' }}>Tu Inicio te muestra primero lo que requiere tu atención.</p></div></>}
       </div>
       <Foot nb>
         <Btn onClick={() => (n === 5 ? finish() : adv(n + 1))}>{lab[n]}</Btn>

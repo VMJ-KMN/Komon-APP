@@ -257,3 +257,55 @@ html[data-theme=claro] .phone.home.gris:not(.sb-scrolled) .sbar i{background:#f3
 .phone.home.gris:not(.sb-scrolled) .sbar,.phone.home.gris:not(.sb-scrolled) .sbar *{color:var(--content)}
 .phone.home.gris:not(.sb-scrolled) .sbar i{background:var(--content)!important}
 .phone.home.gris.sb-scrolled .sbar{background:var(--surface)}
+
+/* Onboarding animado */
+.obs .ob0-sheet{min-height:352px}
+.obbar{position:absolute;left:0;right:0;top:54px;padding:0 16px;display:flex;align-items:center;gap:12px;z-index:3}
+.obbar button{background:none;border:0;color:#fff;height:36px;min-width:44px;display:flex;align-items:center;justify-content:center;font:inherit;font-size:.9rem;cursor:pointer;padding:0}
+.obbar .skip{opacity:.85}
+.obseg{display:flex;gap:6px;flex:1}
+.obseg i{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.32);position:relative;overflow:hidden;display:block}
+.obseg i.on{background:#fff}
+.obseg i.cur::after{content:"";position:absolute;inset:0;background:#fff;transform-origin:left;animation:segfill .7s var(--ease) both}
+.obseg.d i{background:var(--elevated)}.obseg.d i.on{background:var(--primary)}.obseg.d i.cur::after{background:var(--primary)}
+@keyframes segfill{from{transform:scaleX(0)}}
+.obtx>*{animation:inU .55s var(--ease) both}.obtx>h1{animation-delay:.12s}.obtx>p{animation-delay:.22s}.obtx>button,.obtx>.btn{animation-delay:.32s}
+.scn{position:relative;width:240px;height:240px;animation:sceneIn .6s var(--ease) both}
+@keyframes sceneIn{from{opacity:0;transform:translateY(24px) scale(.94)}}
+.scc{position:absolute;background:#fff;color:#1b1d1b;border-radius:20px;box-shadow:0 20px 44px rgba(0,0,0,.3);display:flex;flex-direction:column;box-sizing:border-box}
+.scl{display:flex;flex-direction:column;gap:2px;margin-top:12px;text-align:left}
+.scl b{font-weight:590;font-size:1rem;line-height:1.2}.scl span{font-size:.8rem;color:#6b6d6b}
+.qrg{position:relative;display:grid;grid-template-columns:repeat(7,1fr);gap:3px;aspect-ratio:1}
+.qrg .q{border-radius:2px;background:#ecece9;animation:qpop .4s var(--ease) both}
+.qrg .q.on{background:#1b1d1b}
+@keyframes qpop{from{transform:scale(0);opacity:0}}
+.scan{position:absolute;left:-6px;right:-6px;height:3px;border-radius:2px;background:var(--primary);box-shadow:0 0 14px 3px color-mix(in srgb,var(--primary) 70%,transparent);animation:scanmv 2.6s ease-in-out 1s infinite}
+@keyframes scanmv{0%,100%{top:0}50%{top:calc(100% - 3px)}}
+.scb{position:absolute;right:6px;bottom:22px;width:56px;height:56px;border-radius:50%;background:var(--success);color:#fff;display:grid;place-items:center;box-shadow:0 10px 24px rgba(0,0,0,.3)}
+.scb.s1{animation:bpop 5.2s var(--ease) 1.2s infinite both}
+@keyframes bpop{0%{transform:scale(0)}8%{transform:scale(1.15)}14%,88%{transform:scale(1)}96%,100%{transform:scale(0)}}
+.paybtn{position:relative;margin-top:14px;height:40px;border-radius:20px;overflow:hidden;animation:press 5.4s var(--ease) 1s infinite both}
+.paybtn em{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:6px;font-style:normal;font-weight:590;font-size:.95rem;color:#fff}
+.paybtn .pa{background:var(--primary);animation:pa 5.4s linear 1s infinite both}
+.paybtn .pb{background:var(--success);animation:pb 5.4s linear 1s infinite both}
+@keyframes pa{0%,38%{opacity:1}42%,92%{opacity:0}96%,100%{opacity:1}}
+@keyframes pb{0%,38%{opacity:0}42%,92%{opacity:1}96%,100%{opacity:0}}
+@keyframes press{0%,34%{transform:scale(1)}38%{transform:scale(.94)}44%,100%{transform:scale(1)}}
+.pkg,.chip{flex-direction:row;align-items:center;gap:10px}
+.pkgi{width:36px;height:36px;border-radius:50%;background:var(--primary);color:#fff;display:grid;place-items:center;flex:none}
+.pkg{animation:slideR 5.4s var(--ease) 1s infinite both}
+@keyframes slideR{0%{transform:translateX(120%);opacity:0}12%,88%{transform:none;opacity:1}96%,100%{transform:translateX(120%);opacity:0}}
+.calg{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cd{aspect-ratio:1;border-radius:7px;background:#ecece9}
+.cd.hit{animation:hit 5.2s var(--ease) 1s infinite both}
+@keyframes hit{0%,10%{background:#ecece9;transform:scale(1)}16%{background:var(--primary);transform:scale(1.35)}22%,90%{background:var(--primary);transform:scale(1)}98%,100%{background:#ecece9}}
+.chip{animation:chipUp 5.2s var(--ease) 1s infinite both}
+@keyframes chipUp{0%,14%{transform:translateY(40px);opacity:0}26%,88%{transform:none;opacity:1}96%,100%{transform:translateY(40px);opacity:0}}
+.obdone{position:relative;width:120px;height:120px;display:grid;place-items:center;margin-bottom:28px}
+.obdone .dc{fill:var(--success);stroke:none;transform-origin:center;animation:okpop .7s var(--ease) both}
+.obdone .dk{fill:none;stroke:#fff;stroke-width:7;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:90;stroke-dashoffset:90;animation:dk .5s ease-out .5s forwards}
+@keyframes dk{to{stroke-dashoffset:0}}
+.cf{position:absolute;left:50%;top:50%;width:9px;height:9px;opacity:0;animation:cfb 1.5s cubic-bezier(.2,.7,.3,1) both}
+@keyframes cfb{0%{opacity:1;transform:translate(-50%,-50%) scale(.4)}70%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y) + 40px)) rotate(var(--r)) scale(1)}}
+@media (prefers-reduced-motion:reduce){.scan,.scb,.paybtn,.paybtn em,.pkg,.chip,.cd.hit,.cf{animation:none!important}.pkg,.chip,.scb{opacity:1}.cf{display:none}}
+.obs .ob0-sheet h1{min-height:2.4em;display:flex;align-items:center;justify-content:center}
