@@ -181,3 +181,7 @@ html[data-theme=claro] .logo-d{display:none}html[data-theme=claro] .logo-l{displ
 .toast{animation:toastIn .35s var(--ease)}
 @keyframes toastIn{from{transform:translateY(-16px);opacity:0}}
 .sw i{transition:left .2s var(--ease)}.sw{transition:background-color .2s}
+/* El indicador de carga siempre gira (también con "reducir movimiento", más lento) */
+.scroll>.spin,.spin{animation:rot .8s linear infinite!important;animation-delay:0s!important}
+html[data-motion=reducir] .spin{animation-duration:1.6s!important;animation-iteration-count:infinite!important}
+@media (prefers-reduced-motion:reduce){.spin{animation-duration:1.6s!important;animation-iteration-count:infinite!important}}
