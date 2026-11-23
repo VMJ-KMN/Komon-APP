@@ -208,7 +208,7 @@ html[data-motion=reducir] .spin{animation-duration:1.6s!important;animation-iter
 /* Onboarding: bienvenida con color de marca + hoja blanca; pasos con ícono en círculo y puntos bajo el texto */
 .ob0{flex:1;min-height:0;display:flex;flex-direction:column}
 .ob0-top{flex:1;min-height:0;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:0 0 28px;
-  background:linear-gradient(170deg,color-mix(in srgb,var(--primary) 80%,#fff) 0%,var(--primary) 48%,color-mix(in srgb,var(--primary) 68%,#000) 100%)}
+  background:var(--primary)}
 .ob0-top::before,.ob0-top::after{content:"";position:absolute;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);pointer-events:none}
 .ob0-top::before{width:520px;height:520px;left:50%;top:50%;transform:translate(-50%,-38%)}
 .ob0-top::after{width:340px;height:340px;left:50%;top:50%;transform:translate(-50%,-30%);background:rgba(255,255,255,.06)}
