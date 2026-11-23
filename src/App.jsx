@@ -116,27 +116,34 @@ function Onb({ st, up, tab }) {
   const lab = ['Comenzar', 'Siguiente', 'Siguiente', 'Siguiente', 'Activar y continuar', 'Ir al Inicio']
   const rows = [['pases', 'Pases y visitas', 'Cuando llega o sale una visita'], ['paq', 'Encomiendas', 'Cuando llega un paquete'], ['fin', 'Gastos comunes', 'Vencimientos y comprobantes']]
   const I = n <= 3 ? slides[n][0] : null
+  const Dots = ({ k }) => <div className="row" style={{ gap: 8, justifyContent: 'center' }} role="img" aria-label={`Paso ${k} de 4`}>{[1, 2, 3, 4].map(i => <span key={i} style={{ width: i === k ? 24 : 8, height: 8, borderRadius: 4, background: i === k ? 'var(--primary)' : 'var(--elevated)', transition: 'width .25s var(--ease), background-color .25s' }} />)}</div>
+  if (n === 0) return (
+    <div className="ob0">
+      <div className="ob0-top"><img src="/logo-komon.svg" alt="Komón" width="150" height="139" /></div>
+      <div className="ob0-sheet">
+        <h1>{slides[0][1]}</h1>
+        <p>{slides[0][2]}</p>
+        <Btn onClick={() => adv(1)}>Comenzar</Btn>
+      </div>
+    </div>)
   return (
     <>
       <div className="hdr" style={{ justifyContent: 'space-between', paddingTop: 'calc(env(safe-area-inset-top) + 20px)' }}>
         <div style={{ width: 72 }}>{n > 0 && <button className="back" aria-label="Atrás" onClick={prev} style={{ background: 'none', border: 0, height: 40, display: 'flex', alignItems: 'center' }}><ArrowUpLeft size={22} /></button>}</div>
-        {n >= 1 && n <= 4 && <div className="row" style={{ gap: 8 }} aria-label={`Paso ${n} de 4`}>{[1, 2, 3, 4].map(i => <span key={i} style={{ width: i === n ? 24 : 8, height: 8, borderRadius: 4, background: i === n ? '#f3f3f3' : '#444544' }} />)}</div>}
+        <div />
         <div style={{ width: 72, textAlign: 'right' }}>{n >= 1 && n <= 4 && <button className="lnk" style={{ color: 'var(--content-muted)', height: 40 }} onClick={() => adv(5)}>Omitir</button>}</div>
       </div>
       <div key={n} className="scroll col center" style={{ justifyContent: "center", gap: 24 }}>
-        {n === 0 && <><img className="logo-d" src="/logo-komon.svg" alt="Komón" width="150" height="139" />
-          <img className="logo-l" src="/logo-komon-claro.svg" alt="Komón" width="150" height="139" />
-          <div className="col" style={{ gap: 12 }}><h1 style={{ margin: 0, fontSize: '2rem', lineHeight: 1.2, fontWeight: 590 }}>Tu comunidad, en tu mano</h1><p className="mut" style={{ margin: 0, fontSize: '1rem', lineHeight: '1.5rem' }}>{slides[0][2]}</p></div></>}
-        {I && n > 0 && <><span className="tile" style={{ width: 120, height: 120, background: 'var(--muted)' }}><I size={52} strokeWidth={1.6} /></span>
+        {I && n > 0 && <><span className="obic"><I size={52} strokeWidth={1.6} /></span>
           <div className="col" style={{ gap: 12 }}>
-            <h1 style={{ margin: 0, fontSize: '1.75rem', lineHeight: 1.2, fontWeight: 590 }}>{slides[n][1]}</h1><p className="mut" style={{ margin: 0, fontSize: '1rem', lineHeight: '1.5rem' }}>{slides[n][2]}</p></div></>}
+            <h1 style={{ margin: 0, fontSize: '1.75rem', lineHeight: 1.2, fontWeight: 590 }}>{slides[n][1]}</h1><p className="mut" style={{ margin: 0, fontSize: '1rem', lineHeight: '1.5rem' }}>{slides[n][2]}</p></div><Dots k={n} /></>}
         {n === 4 && <div style={{ width: '100%' }}><h1 style={{ margin: '0 0 12px', fontSize: '1.75rem', fontWeight: 590 }}>Avisos que importan</h1><p className="mut" style={{ margin: '0 0 24px', fontSize: '1rem' }}>Elige de qué quieres enterarte. Puedes cambiarlo después en tu perfil.</p>
-          <div className="card s" style={{ padding: '0 16px', textAlign: 'left' }}>{rows.map(([k, l, s], i) => <div key={k} className="row" style={{ minHeight: 68, gap: 12, borderTop: i ? '1px solid var(--border)' : 0 }}><div style={{ flex: 1 }}><div className="t-base">{l}</div><div className="t-sm mut">{s}</div></div><Switch label={l} on={sw[k]} onChange={() => setSw({ ...sw, [k]: !sw[k] })} /></div>)}</div></div>}
+          <div className="card s" style={{ padding: '0 16px', textAlign: 'left' }}>{rows.map(([k, l, s], i) => <div key={k} className="row" style={{ minHeight: 68, gap: 12, borderTop: i ? '1px solid var(--border)' : 0 }}><div style={{ flex: 1 }}><div className="t-base">{l}</div><div className="t-sm mut">{s}</div></div><Switch label={l} on={sw[k]} onChange={() => setSw({ ...sw, [k]: !sw[k] })} /></div>)}</div><div style={{ marginTop: 24 }}><Dots k={4} /></div></div>}
         {n === 5 && <><span className="tile" style={{ width: 120, height: 120, background: 'var(--success)' }}><Check size={56} strokeWidth={1.8} /></span><div><h1 style={{ margin: '0 0 12px', fontSize: '1.75rem', fontWeight: 590 }}>Todo listo, Residente</h1><p className="mut" style={{ margin: 0, fontSize: '1rem' }}>Tu Inicio te muestra primero lo que requiere tu atención.</p></div></>}
       </div>
       <Foot nb>
         <Btn onClick={() => (n === 5 ? finish() : adv(n + 1))}>{lab[n]}</Btn>
-        {(n === 0 || n === 4) ? <Btn v="dark" onClick={() => (n === 0 ? finish() : adv(5))}>{n === 0 ? 'Ya tengo cuenta' : 'Ahora no'}</Btn> : <div style={{ height: 48 }} />}
+        {n === 4 ? <Btn v="dark" onClick={() => adv(5)}>Ahora no</Btn> : <div style={{ height: 48 }} />}
       </Foot></>)
 }
 
