@@ -194,15 +194,20 @@ html[data-motion=reducir] .spin{animation-duration:1.6s!important;animation-iter
   .phone::before{content:"";position:absolute;top:11px;left:50%;transform:translateX(-50%);width:118px;height:34px;border-radius:20px;background:#000;z-index:60;pointer-events:none}
   .phone::after{content:"";position:absolute;top:22px;left:calc(50% + 34px);width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#2b3a55,#07090d 70%);z-index:61;pointer-events:none}
 }
-/* Inicio: cabecera con los colores del tema + hoja con esquinas redondeadas (separación en dos planos) */
-.hero{flex:none;background:var(--muted);color:var(--content);padding:calc(env(safe-area-inset-top) + 20px) 24px 52px;display:flex;flex-direction:column;gap:20px}
+/* Inicio: cabecera naranja de marca (mismo degradado que la bienvenida) + hoja con esquinas redondeadas */
+.hero{flex:none;background:linear-gradient(170deg,color-mix(in srgb,var(--primary) 80%,#fff) 0%,var(--primary) 55%,color-mix(in srgb,var(--primary) 78%,#000) 100%);color:#fff;padding:calc(env(safe-area-inset-top) + 20px) 24px 52px;display:flex;flex-direction:column;gap:20px}
 .hero h1{margin:0;font-weight:400;font-size:1.875rem;line-height:2.25rem}
+.hero .t-sm{color:rgba(255,255,255,.85)}
 .hrow{display:flex;align-items:flex-start;gap:12px}
-.hero .hbtn{background:var(--elevated);color:var(--content);border:1px solid var(--border)!important}
-.hero .glass{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:8px 6px}
-.hero .qa{background:none}
+.hero .hbtn{background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.3)!important}
+.hero .glass{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);border-radius:24px;padding:8px 6px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.hero .qa{background:none;color:#fff}
+.hero .qa .tile{background:rgba(255,255,255,.24);color:#fff}
+.hero .qa .tile.pri{background:#fff;color:var(--primary)}
 .sheet{position:relative;margin-top:-28px;background:var(--surface);border-radius:28px 28px 0 0;padding:24px 24px 0;display:flex;flex-direction:column;gap:24px;flex:1 0 auto;box-shadow:0 -6px 20px rgba(0,0,0,.10)}
-.phone.home .sbar{background:var(--muted)}
+.phone.home .sbar{background:color-mix(in srgb,var(--primary) 80%,#fff)}
+.phone.home .sbar,.phone.home .sbar *{color:#fff}
+.phone.home .sbar i{background:#fff!important}
 /* Onboarding: bienvenida con color de marca + hoja blanca; pasos con ícono en círculo y puntos bajo el texto */
 .ob0{flex:1;min-height:0;display:flex;flex-direction:column}
 .ob0-top{flex:1;min-height:0;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;padding-top:var(--sb-top);
