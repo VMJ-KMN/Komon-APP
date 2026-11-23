@@ -210,7 +210,7 @@ html[data-motion=reducir] .spin{animation-duration:1.6s!important;animation-iter
 .phone.home .sbar i{background:#fff!important}
 /* Onboarding: bienvenida con color de marca + hoja blanca; pasos con ícono en círculo y puntos bajo el texto */
 .ob0{flex:1;min-height:0;display:flex;flex-direction:column}
-.ob0-top{flex:1;min-height:0;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;padding-top:var(--sb-top);
+.ob0-top{flex:1;min-height:0;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:0 0 28px;
   background:linear-gradient(170deg,color-mix(in srgb,var(--primary) 80%,#fff) 0%,var(--primary) 48%,color-mix(in srgb,var(--primary) 68%,#000) 100%)}
 .ob0-top::before,.ob0-top::after{content:"";position:absolute;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);pointer-events:none}
 .ob0-top::before{width:520px;height:520px;left:50%;top:50%;transform:translate(-50%,-38%)}
@@ -223,3 +223,14 @@ html[data-motion=reducir] .spin{animation-duration:1.6s!important;animation-iter
 .phone:has(.ob0) .sbar,.phone:has(.ob0) .sbar *{color:#fff}
 .phone:has(.ob0) .sbar i{background:#fff!important}
 .obic{width:132px;height:132px;border-radius:50%;background:var(--muted);color:var(--primary);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 14px color-mix(in srgb,var(--primary) 11%,transparent),0 14px 34px rgba(0,0,0,.22)}
+
+/* Patrón de puntos de la marca */
+.ob0-top::before{content:"";position:absolute;inset:64px 0 0 0;width:auto;height:auto;border:0;border-radius:0;transform:none;
+  background-image:radial-gradient(circle,rgba(255,255,255,.55) 0 2.2px,transparent 2.8px);background-size:33px 33px;background-position:center;
+  -webkit-mask-image:radial-gradient(ellipse 62% 52% at 50% 50%,transparent 0 38%,#000 100%);mask-image:radial-gradient(ellipse 62% 52% at 50% 50%,transparent 0 38%,#000 100%);opacity:.85}
+.ob0-top::after{display:none}
+.hero{position:relative;overflow:hidden}
+.hero>*{position:relative;z-index:1}
+.hero::before{content:"";position:absolute;z-index:0;top:0;right:0;bottom:0;width:62%;pointer-events:none;
+  background-image:radial-gradient(circle,rgba(255,255,255,.5) 0 1.8px,transparent 2.4px);background-size:28px 28px;background-position:right 10px top 14px;
+  -webkit-mask-image:linear-gradient(to left,#000 0,transparent 100%);mask-image:linear-gradient(to left,#000 0,transparent 100%)}
