@@ -205,9 +205,6 @@ html[data-motion=reducir] .spin{animation-duration:1.6s!important;animation-iter
 .hero .qa .tile{background:rgba(255,255,255,.24);color:#fff}
 .hero .qa .tile.pri{background:#fff;color:var(--primary)}
 .sheet{position:relative;margin-top:-28px;background:var(--surface);border-radius:28px 28px 0 0;padding:24px 24px 0;display:flex;flex-direction:column;gap:24px;flex:1 0 auto;box-shadow:0 -6px 20px rgba(0,0,0,.10)}
-.phone.home .sbar{background:var(--primary)}
-.phone.home .sbar,.phone.home .sbar *{color:#fff}
-.phone.home .sbar i{background:#fff!important}
 /* Onboarding: bienvenida con color de marca + hoja blanca; pasos con ícono en círculo y puntos bajo el texto */
 .ob0{flex:1;min-height:0;display:flex;flex-direction:column}
 .ob0-top{flex:1;min-height:0;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:0 0 28px;
@@ -235,3 +232,10 @@ html[data-motion=reducir] .spin{animation-duration:1.6s!important;animation-iter
   background-image:radial-gradient(circle,rgba(255,255,255,.5) 0 1.8px,transparent 2.4px);background-size:28px 28px;background-position:right 10px top 14px;
   -webkit-mask-image:linear-gradient(to left,#000 0,transparent 100%);mask-image:linear-gradient(to left,#000 0,transparent 100%)}
 html[data-theme=claro] .obic{color:var(--primary)}
+
+/* Inicio: la barra de estado va sobre el contenido; sobre el naranja es blanca y al deslizar toma el fondo */
+.phone.home .sbar{position:absolute;left:0;right:0;top:0;background:transparent;transition:background-color .2s,color .2s}
+.phone.home:not(.sb-scrolled) .sbar,.phone.home:not(.sb-scrolled) .sbar *{color:#fff}
+.phone.home:not(.sb-scrolled) .sbar i{background:#fff!important}
+.phone.home.sb-scrolled .sbar{background:var(--surface)}
+.phone.home .hero{padding-top:calc(env(safe-area-inset-top) + var(--sb-top) + 20px)}

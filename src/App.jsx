@@ -155,6 +155,13 @@ function Home({ st, go }) {
   const rsv = st.reservas.slice().sort((a, b) => dt(a.date) - dt(b.date))[0]
   const open = st.reqs.filter(r => r.status < 2)
   const nt = st.notices[0]
+  useEffect(() => {
+    const sc = document.querySelector('.scroll.home'), ph = document.querySelector('.phone')
+    if (!sc || !ph) return
+    const f = () => ph.classList.toggle('sb-scrolled', sc.scrollTop > sc.querySelector('.hero').offsetHeight - 70)
+    sc.addEventListener('scroll', f, { passive: true }); f()
+    return () => { sc.removeEventListener('scroll', f); ph.classList.remove('sb-scrolled') }
+  }, [])
   const qa = [[QrCode, 'Nuevo pase', () => go('nuevoPase'), 1], [Cal, 'Reservar', () => go('reservar')], [ClipboardList, 'Solicitud', () => go('solCat')], [Receipt, 'Pagar', () => go('pagar')]]
   return (
     <>
