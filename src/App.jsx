@@ -141,7 +141,7 @@ function SceneRes() {
         <div className="scl" style={{ marginTop: 0, marginBottom: 10 }}><b style={{ fontSize: '.95rem' }}>Noviembre</b></div>
         <div className="calg">{cells}</div>
       </div>
-      <div className="scc chip" style={{ left: 20, top: 168, width: 200, padding: '10px 14px' }}>
+      <div className="scc rchip" style={{ left: 20, top: 168, width: 200, padding: '10px 14px' }}>
         <span className="pkgi" style={{ background: 'var(--success)' }}><Check size={18} strokeWidth={2.4} /></span>
         <div className="scl" style={{ marginTop: 0 }}><b style={{ fontSize: '.95rem' }}>Quincho · sáb 21</b><span>13:00 – 17:00</span></div>
       </div>
