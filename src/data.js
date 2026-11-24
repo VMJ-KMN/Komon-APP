@@ -1,6 +1,7 @@
 const T = '#c5c5c5'
 export const initial = () => ({
   onboarded: false,
+  read: [],
   sw: { pases: true, paq: true, fin: false, face: false },
   passes: [
     { id: 'p1', name: 'Técnico ClimaSur', kind: 'Técnico', when: '15:00 - 18:00', pin: '7743', rut: '12.345.678-9', created: 'Hoy, 12:10', valid: 'Hoy, 18:00', status: 'vigente' },

@@ -234,7 +234,7 @@ function Home({ st, go }) {
   const act = st.passes.filter(p => p.status === 'vigente')
   const rsv = st.reservas.slice().sort((a, b) => dt(a.date) - dt(b.date))[0]
   const open = st.reqs.filter(r => r.status < 2)
-  const nt = st.notices[0]
+  const nt = st.notices[0], hasUnr = st.notices.some(n => !(st.read || []).includes(n.id))
   useEffect(() => {
     const sc = document.querySelector('.scroll.home'), ph = document.querySelector('.phone')
     if (!sc || !ph) return
@@ -262,7 +262,7 @@ function Home({ st, go }) {
     <>
       <div className="hdr" style={{ paddingBottom: 0, alignItems: 'flex-start' }}>
         <div className="col" style={{ flex: 1, gap: 2, minWidth: 0 }}><h1 style={{ margin: 0, fontWeight: 400, fontSize: '1.875rem', lineHeight: '2.25rem' }}>Hola,<br />Residente</h1><span className="t-sm mut">Torre A · Depto 1204</span></div>
-        <button className="tile" aria-label="Avisos" onClick={() => go('avisos')} style={{ width: 40, height: 40, border: 0, background: 'var(--muted)', position: 'relative', marginTop: -2 }}><Bell size={20} /><i style={{ position: 'absolute', top: 8, right: 9, width: 8, height: 8, borderRadius: 4, background: '#e5484d' }} /></button>
+        <button className="tile" aria-label="Avisos" onClick={() => go('avisos')} style={{ width: 40, height: 40, border: 0, background: 'var(--muted)', position: 'relative', marginTop: -2 }}><Bell size={20} />{hasUnr && <i style={{ position: 'absolute', top: 8, right: 9, width: 8, height: 8, borderRadius: 4, background: '#e5484d' }} />}</button>
         <button className="av" aria-label="Perfil" onClick={() => go('perfil')} style={{ width: 40, height: 40, background: 'none', overflow: 'hidden', padding: 0, marginTop: -2 }}>{st.photo ? <img src={st.photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : 'RD'}</button>
       </div>
       <div className="scroll nav-pad" style={{ paddingTop: 12 }}>
@@ -278,7 +278,7 @@ function Home({ st, go }) {
           {iv === 'gris' && <div className="twk" aria-hidden="true"><i /><i /><i /><i /></div>}
           <div className="hrow">
             <div className="col" style={{ flex: 1, gap: 2, minWidth: 0 }}><h1>Hola,<br />Residente</h1><span className="t-sm">Torre A · Depto 1204</span></div>
-            <button className="tile hbtn" aria-label="Avisos" onClick={() => go('avisos')} style={{ width: 40, height: 40, border: 0, position: 'relative', marginTop: -2 }}><Bell size={20} strokeWidth={1.5} /><i style={{ position: 'absolute', top: 8, right: 9, width: 9, height: 9, borderRadius: 5, background: '#e5484d', boxShadow: '0 0 0 1px #fff' }} /></button>
+            <button className="tile hbtn" aria-label="Avisos" onClick={() => go('avisos')} style={{ width: 40, height: 40, border: 0, position: 'relative', marginTop: -2 }}><Bell size={20} strokeWidth={1.5} />{hasUnr && <i style={{ position: 'absolute', top: 8, right: 9, width: 9, height: 9, borderRadius: 5, background: '#e5484d', boxShadow: '0 0 0 1px #fff' }} />}</button>
             <button className="av hbtn" aria-label="Perfil" onClick={() => go('perfil')} style={{ width: 40, height: 40, background: 'none', overflow: 'hidden', padding: 0, marginTop: -2 }}>{st.photo ? <img src={st.photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : 'RD'}</button>
           </div>
           <div className="glass row" style={{ gap: 4, alignItems: 'stretch' }}>
@@ -291,7 +291,12 @@ function Home({ st, go }) {
       </div></>)
 }
 
-function Notice({ n, onClick, action }) {
+function ReadBar({ read, onRead, pri }) {
+  return read
+    ? <div className="row t-xs" style={{ gap: 6, marginTop: 4, color: pri ? 'rgba(255,255,255,.85)' : 'var(--content-muted)' }}><Check size={16} aria-hidden="true" />Leído</div>
+    : <button className="chip" onClick={e => { e.stopPropagation(); onRead() }} style={{ alignSelf: 'flex-start', marginTop: 4, background: pri ? '#fff' : 'var(--content)', color: pri ? '#1b1d1b' : 'var(--surface)', borderColor: 'transparent' }}>Marcar como leído</button>
+}
+function Notice({ n, onClick, action, read, onRead }) {
   const pri = n.kind === 'urg'
   const Ic = pri ? CircleAlert : n.kind === 'com' ? Megaphone : Wrench
   return (
@@ -303,14 +308,16 @@ function Notice({ n, onClick, action }) {
       </div>
       <div className="t-lg">{n.t}</div>
       <div className="t-sm" style={{ opacity: .9 }}>{n.s}</div>
+      {onRead && <ReadBar read={read} onRead={onRead} pri={pri} />}
     </div>)
 }
 
-function ManCard({ n }) {
+function ManCard({ n, read, onRead }) {
   return (
     <div className="card s col" style={{ gap: 12 }}>
       <div className="row" style={{ gap: 12, alignItems: 'flex-start' }}><Wrench size={22} style={{ marginTop: 2 }} /><span className="t-base" style={{ flex: 1, fontWeight: 400 }}>{n.t}</span><span className="tag">{n.badge}</span></div>
       <div className="col" style={{ gap: 4 }}><span className="t-xs mut">{n.date}</span>{n.time && <span className="t-xs mut">{n.time}</span>}{n.s && <span className="t-xs" style={{ marginTop: 8 }}>{n.s}</span>}</div>
+      {onRead && <ReadBar read={read} onRead={onRead} />}
     </div>)
 }
 
@@ -793,22 +800,24 @@ function SolDetalle({ st, up, p, back, tab, go }) {
 }
 
 /* ---------- Avisos / Perfil ---------- */
-function Avisos({ st, back, go }) {
+function Avisos({ st, up, back, go }) {
   const [t, setT] = useState('t')
+  const rd = st.read || [], mark = id => up(s2 => ({ read: [...new Set([...(s2.read || []), id])] }))
+  const unr = st.notices.filter(n => !rd.includes(n.id)), unrM = unr.filter(n => n.kind === 'man')
   const mans = st.notices.filter(n => n.kind === 'man'), avs = st.notices.filter(n => n.kind !== 'man')
   const urg = avs.find(n => n.kind === 'urg')
   return (
     <>
       <div className="hdr in"><button className="back" aria-label="Atrás" onClick={back}><ArrowUpLeft size={22} /></button><h1>Avisos</h1><button className="tile" aria-label="Ajustes de notificaciones" onClick={() => go('ajustes')} style={{ width: 40, height: 40, border: 0, background: 'var(--muted)' }}><Settings size={20} /></button></div>
       <div className="scroll nav-pad" style={{ paddingTop: 4, gap: 16 }}>
-        <Tabs items={[['t', 'Todos', '03'], ['m', 'Mantención', '2']]} value={t} onChange={setT} />
+        <Tabs items={[['t', 'Todos', unr.length > 0 ? unr.length : undefined], ['m', 'Mantención', unrM.length > 0 ? unrM.length : undefined]]} value={t} onChange={setT} />
         {t === 't' ? <>
-          {avs.map(n => <Notice key={n.id} n={n} />)}
+          {avs.map(n => <Notice key={n.id} n={n} read={rd.includes(n.id)} onRead={() => mark(n.id)} />)}
           <p className="sec" style={{ marginBottom: -4 }}>Mantenciones</p>
-          {mans.map(n => <ManCard key={n.id} n={n} />)}</> : <>
+          {mans.map(n => <ManCard key={n.id} n={n} read={rd.includes(n.id)} onRead={() => mark(n.id)} />)}</> : <>
           <div className="row" style={{ justifyContent: 'space-between', marginBottom: -4 }}><p className="sec">Mantenciones</p><span className="t-xs mut">29 De Octubre</span></div>
-          {urg && <Notice n={{ ...urg, date: null }} />}
-          {mans.filter(n => n.badge === 'Finalizada').map(n => <ManCard key={n.id} n={n} />)}</>}
+          {urg && <Notice n={{ ...urg, date: null }} read={rd.includes(urg.id)} onRead={() => mark(urg.id)} />}
+          {mans.filter(n => n.badge === 'Finalizada').map(n => <ManCard key={n.id} n={n} read={rd.includes(n.id)} onRead={() => mark(n.id)} />)}</>}
       </div></>)
 }
 function Ajustes({ st, up, back }) {
@@ -864,6 +873,7 @@ function Perfil({ st, up, back, go, reset, toast }) {
           <div className="row" style={{ minHeight: 52, gap: 12, borderTop: '1px solid var(--border)' }}><span className="t-sm" style={{ flex: 1 }}>Gasto común vencido</span><Switch label="Gasto común vencido" on={!!(st.sim && st.sim.vencido)} onChange={sim('vencido')} /></div>
           <div className="col" style={{ gap: 8, padding: '12px 0', borderTop: '1px solid var(--border)' }}><span className="t-sm">Diseño del Inicio</span>
             <div className="row" role="radiogroup" aria-label="Diseño del Inicio" style={{ gap: 8 }}>{[['nuevo', 'Naranja'], ['gris', 'Grises'], ['orig', 'Original']].map(([k, l]) => { const cur = homeVar(st.sim); return <button key={k} role="radio" aria-checked={cur === k} className={'chip' + (cur === k ? ' on' : '')} style={{ flex: 1, justifyContent: 'center' }} onClick={() => up(s2 => ({ sim: { ...(s2.sim || {}), inicio: k, inicioOrig: false } }))}>{l}</button> })}</div></div>
+          <div className="row" style={{ minHeight: 52, gap: 12, borderTop: '1px solid var(--border)' }}><div className="col" style={{ flex: 1 }}><span className="t-sm">Avisos leídos (vista de administración)</span><span className="t-xs mut">{(st.read || []).length} de {st.notices.length} avisos</span></div><span className="t-base">{Math.round(((st.read || []).length / st.notices.length) * 100)} %</span></div>
           <span className="t-xs sub">«Cerrar sesión» reinicia la demo para el siguiente participante.</span>
         </div>}
       </div>
