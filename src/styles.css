@@ -347,3 +347,12 @@ html[data-theme=claro] .phone.home.gris:not(.sb-scrolled) .sbar i{background:#f3
 .ob0-sheet .row[role=img]{margin:2px 0 4px}
 
 @media (prefers-reduced-motion:reduce){.scr,.scroll>*,.sheet,.sheet-bg,.toast,.ok,.obtx>*,.scn{animation-duration:.01ms!important;animation-delay:0s!important}}
+
+/* Onboarding oscuro: misma barra superior (altura y estilo) que los pasos naranjas */
+.obbar.d{z-index:3}
+.obbar.d button{color:var(--content)}
+.obbar.d .skip{background:color-mix(in srgb,var(--content) 12%,transparent);-webkit-backdrop-filter:none;backdrop-filter:none}
+.obbar.d>span{display:block;width:44px;height:36px}
+/* Botón principal a la misma altura en todos los pasos */
+.ob0-sheet{padding-bottom:calc(env(safe-area-inset-bottom) + var(--sb-bot) + 72px)}
+.obs .ob0-sheet{padding-bottom:calc(env(safe-area-inset-bottom) + var(--sb-bot) + 72px)}

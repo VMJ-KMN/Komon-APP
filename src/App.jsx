@@ -210,11 +210,11 @@ function Onb({ st, up, tab }) {
     </div>)
   return (
     <>
-      <div className="hdr" style={{ justifyContent: 'space-between', paddingTop: 'calc(env(safe-area-inset-top) + 20px)' }}>
-        <div style={{ width: 72 }}>{n > 0 && <button className="back" aria-label="Atrás" onClick={prev} style={{ background: 'none', border: 0, height: 40, display: 'flex', alignItems: 'center' }}><ArrowUpLeft size={22} /></button>}</div>
-        <div style={{ flex: 1 }} />
-        <div style={{ width: 72, textAlign: 'right' }}>{n >= 1 && n <= 4 && <button className="lnk" style={{ color: 'var(--content-muted)', height: 40 }} onClick={() => adv(5)}>Omitir</button>}</div>
+      <div className="obbar d">
+        {n > 0 ? <button aria-label="Atrás" onClick={prev}><ArrowUpLeft size={22} /></button> : <span />}
+        {n >= 1 && n <= 4 ? <button className="skip" onClick={() => adv(5)}>Omitir</button> : <span />}
       </div>
+      <div style={{ height: 96, flex: 'none' }} aria-hidden="true" />
       <div key={n} className="scroll col center" style={{ justifyContent: "center", gap: 24 }}>
         {I && n > 0 && <><span className="obic"><I size={52} strokeWidth={1.6} /></span>
           <div className="col" style={{ gap: 12 }}>
