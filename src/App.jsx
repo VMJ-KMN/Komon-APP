@@ -500,11 +500,7 @@ function Encomiendas({ st, up, back, deep, toast }) {
   const lp = st.pkgs.filter(p => p.status === 'porteria'), lr = st.pkgs.filter(p => p.status === 'retirado')
   const list = t === 'p' ? lp : lr
   const [ask, setAsk] = useState(null)
-  const [ev, setEv] = useState(null)
-  const [rate, setRate] = useState(0)
-  const openEv = q => { setRate(0); setEv(q) }
-  const sendEv = () => { up(s => ({ evals: [{ id: 'e' + Date.now(), conserje: conOf(ev), puntaje: rate, comentario: '', motivo: 'Encomienda', fecha: 'Hoy, ' + hhmm(), ref: ev.id }, ...(s.evals || [])] })); setEv(null); toast('Gracias por tu evaluación') }
-  const confirm = id => { const q = st.pkgs.find(x => x.id === id); up(s => ({ pkgs: s.pkgs.map(q => (q.id === id ? { ...q, status: 'retirado' } : q)) })); setAsk(null); toast('Retiro confirmado'); openEv(q) }
+  const confirm = id => { up(s => ({ pkgs: s.pkgs.map(q => (q.id === id ? { ...q, status: 'retirado' } : q)) })); setAsk(null); toast('Retiro confirmado') }
   const del = id => up(s => ({ pkgs: s.pkgs.filter(q => q.id !== id) }))
   return (
     <>
@@ -516,20 +512,13 @@ function Encomiendas({ st, up, back, deep, toast }) {
           <div key={p.id} className="card col" style={{ gap: 12 }}>
             <div className="col" style={{ gap: 4 }}><div className="row" style={{ gap: 12 }}><Package size={22} /><span className="t-base" style={{ fontWeight: 400 }}>{p.from}</span></div><span className="t-xs mut">{p.info}</span></div>
             <PinBox label="PIN de retiro" pin={p.pin} />
-            {t === 'p' ? <Btn v="inv" onClick={() => setAsk(p)}>Confirmar Retiro</Btn> : <>
-              {evOf(st, p.id) ? <div className="row t-sm" style={{ gap: 8 }}><Star size={16} fill="var(--primary)" color="var(--primary)" />Evaluaste a {conOf(p)} · {evOf(st, p.id).puntaje} de 5</div> : <Btn v="inv" onClick={() => openEv(p)}><Star size={18} />Evaluar atención de {conOf(p).split(' ')[0]}</Btn>}
-              <Btn v="dark" onClick={() => del(p.id)}>Borrar de la lista</Btn></>}
+            {t === 'p' ? <Btn v="inv" onClick={() => setAsk(p)}>Confirmar Retiro</Btn> : <Btn v="dark" onClick={() => del(p.id)}>Borrar de la lista</Btn>}
           </div>))}
       </div>
       {ask && <Sheet onClose={() => setAsk(null)}>
         <h2 style={{ margin: 0, fontSize: '1rem', fontWeight: 510 }}>¿Ya retiraste la encomienda de {ask.from}?</h2>
         <p className="t-xs mut" style={{ margin: '0 0 8px' }}>Confirma solo si ya tienes el paquete en tus manos. Pasará a Retirados.</p>
-        <Btn onClick={() => confirm(ask.id)}>Sí, la retiré</Btn><Btn v="dark" onClick={() => setAsk(null)}>Todavía no</Btn></Sheet>}
-      {ev && <Sheet onClose={() => setEv(null)}>
-        <h2 style={{ margin: 0, fontSize: '1rem', fontWeight: 510 }}>¿Cómo te atendió {conOf(ev)}?</h2>
-        <p className="t-xs mut" style={{ margin: '0 0 4px' }}>Tu evaluación llega a la administración, sin tu nombre.</p>
-        <Stars v={rate} onChange={setRate} size={36} />
-        <Btn disabled={!rate} onClick={sendEv}>Enviar evaluación</Btn><Btn v="dark" onClick={() => setEv(null)}>Ahora no</Btn></Sheet>}</>)
+        <Btn onClick={() => confirm(ask.id)}>Sí, la retiré</Btn><Btn v="dark" onClick={() => setAsk(null)}>Todavía no</Btn></Sheet>}</>)
 }
 
 /* ---------- Finanzas ---------- */
@@ -922,6 +911,7 @@ function Perfil({ st, up, back, go, reset, toast }) {
           <R last={0} icon={UserRound} t="Mis datos" onClick={() => go('datos')} />
           <R icon={Bell} t="Notificaciones" onClick={() => go('ajustes')} />
           <R icon={Accessibility} t="Apariencia y accesibilidad" onClick={() => go('a11y')} />
+          <R icon={Star} t="Evaluar al conserje" onClick={() => go('evalCon', {})} />
           <R icon={Info} t="Ayuda" onClick={() => go('ayuda')} />
         </div>
         <button className="lnk" style={{ alignSelf: 'center', color: 'var(--err)', minHeight: 44 }} onClick={reset}>Cerrar sesión</button>
@@ -1027,7 +1017,6 @@ function Ayuda({ back, go }) {
       <Header title="Ayuda" onBack={back} />
       <div className="scroll" style={{ paddingTop: 0, gap: 12 }}>
         <C icon={Phone} t="Conserjería" s="+56 2 2345 6789 · 24 horas" />
-        <C icon={Star} t="Evaluar al conserje" s="Cuéntanos cómo fue su atención" onClick={() => go('evalCon', {})} />
         <C icon={Mail} t="Escribir a administración" s="admin@komon.cl · Lun a Vie, 9:00 a 18:00" onClick={() => go('correo', {})} />
         <span className="sec" style={{ marginTop: 8 }}>Preguntas frecuentes</span>
         {F.map(([q, r]) => <div key={q} className="card col" style={{ gap: 4 }}><span className="t-sm" style={{ fontWeight: 510 }}>{q}</span><span className="t-xs mut">{r}</span></div>)}
