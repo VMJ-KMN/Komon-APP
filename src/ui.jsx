@@ -11,10 +11,10 @@ export const money = n => '$' + n.toLocaleString('es-CL')
 export const initials = n => n.split(' ').filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('')
 export const pinText = p => p.split('').join(' ')
 
-export const Header = ({ title, onBack }) => (
+export const Header = ({ title, onBack, right }) => (
   <div className="hdr in">
     {onBack && <button className="back" aria-label="Atrás" onClick={onBack}><ArrowUpLeft size={22} strokeWidth={2} /></button>}
-    <h1>{title}</h1>
+    <h1>{title}</h1>{right}
   </div>
 )
 export const TabHeader = ({ title, right }) => <div className="hdr"><h1>{title}</h1>{right}</div>

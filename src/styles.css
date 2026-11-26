@@ -358,3 +358,9 @@ html[data-theme=claro] .phone.home.gris:not(.sb-scrolled) .sbar i{background:#f3
 .obs .ob0-sheet{padding-bottom:calc(env(safe-area-inset-bottom) + var(--sb-bot) + 72px)}
 .obbar.d{top:calc(54px - var(--sb-top))}
 .ob0-sheet .row[role=img]{margin:2px 0 -4px}
+
+/* Homologación */
+.ib{width:40px;height:40px;border:0;background:var(--muted)}
+.rt{margin:12px 0 0;font-size:1.375rem;line-height:1.75rem;font-weight:590}
+.obh{margin:0;font-size:1.75rem;line-height:1.2;font-weight:590;text-wrap:balance}
+.rowc{gap:12px;background:var(--card-alt);border:0;border-radius:var(--r-2xl);padding:16px;text-align:left;width:100%}

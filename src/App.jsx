@@ -128,7 +128,7 @@ function ScenePay() {
       </div>
       <div className="scc pkg" style={{ left: 16, top: 166, width: 218, padding: '12px 14px' }}>
         <span className="pkgi"><Package size={20} /></span>
-        <div className="scl" style={{ marginTop: 0 }}><b style={{ fontSize: '.95rem' }}>Llegó tu encomienda</b><span>Retira en conserjería</span></div>
+        <div className="scl" style={{ marginTop: 0 }}><b className="t-base">Llegó tu encomienda</b><span>Retira en conserjería</span></div>
       </div>
     </div>)
 }
@@ -139,12 +139,12 @@ function SceneRes() {
   return (
     <div className="scn">
       <div className="scc" style={{ left: 24, top: 14, width: 192, padding: 16 }}>
-        <div className="scl" style={{ marginTop: 0, marginBottom: 10 }}><b style={{ fontSize: '.95rem' }}>Noviembre</b></div>
+        <div className="scl" style={{ marginTop: 0, marginBottom: 10 }}><b className="t-base">Noviembre</b></div>
         <div className="calg">{cells}</div>
       </div>
       <div className="scc rchip" style={{ left: 20, top: 168, width: 200, padding: '10px 14px' }}>
         <span className="pkgi" style={{ background: 'var(--success)' }}><Check size={18} strokeWidth={2.4} /></span>
-        <div className="scl" style={{ marginTop: 0 }}><b style={{ fontSize: '.95rem' }}>Quincho · sáb 21</b><span>13:00 – 17:00</span></div>
+        <div className="scl" style={{ marginTop: 0 }}><b className="t-base">Quincho · sáb 21</b><span>13:00 – 17:00</span></div>
       </div>
     </div>)
 }
@@ -218,10 +218,10 @@ function Onb({ st, up, tab }) {
       <div key={n} className="scroll col center" style={{ justifyContent: "center", gap: 24 }}>
         {I && n > 0 && <><span className="obic"><I size={52} strokeWidth={1.6} /></span>
           <div className="col" style={{ gap: 12 }}>
-            <h1 style={{ margin: 0, fontSize: '1.75rem', lineHeight: 1.2, fontWeight: 590 }}>{slides[n][1]}</h1><p className="mut" style={{ margin: 0, fontSize: '1rem', lineHeight: '1.5rem' }}>{slides[n][2]}</p></div><Dots k={n} /></>}
-        {n === 4 && <div style={{ width: '100%' }}><h1 style={{ margin: '0 0 12px', fontSize: '1.75rem', fontWeight: 590 }}>Avisos que importan</h1><p className="mut" style={{ margin: '0 0 24px', fontSize: '1rem' }}>Elige de qué quieres enterarte. Puedes cambiarlo después en tu perfil.</p>
+            <h1 className="obh">{slides[n][1]}</h1><p className="mut" style={{ margin: 0, fontSize: '1rem', lineHeight: '1.5rem' }}>{slides[n][2]}</p></div><Dots k={n} /></>}
+        {n === 4 && <div style={{ width: '100%' }}><h1 className="obh" style={{ marginBottom: 12 }}>Avisos que importan</h1><p className="mut" style={{ margin: '0 0 24px', fontSize: '1rem' }}>Elige de qué quieres enterarte. Puedes cambiarlo después en tu perfil.</p>
           <div className="card s" style={{ padding: '0 16px', textAlign: 'left' }}>{rows.map(([k, l, s], i) => <div key={k} className="row" style={{ minHeight: 68, gap: 12, borderTop: i ? '1px solid var(--border)' : 0 }}><div style={{ flex: 1 }}><div className="t-base">{l}</div><div className="t-sm mut">{s}</div></div><Switch label={l} on={sw[k]} onChange={() => setSw({ ...sw, [k]: !sw[k] })} /></div>)}</div><div style={{ marginTop: 24 }}></div></div>}
-        {n === 5 && <><div className="obdone"><Confetti /><svg viewBox="0 0 120 120" width="120" height="120"><circle className="dc" cx="60" cy="60" r="56" /><path className="dk" d="M36 62l17 17 31-36" /></svg></div><div><h1 style={{ margin: '0 0 12px', fontSize: '1.75rem', fontWeight: 590 }}>Todo listo, Residente</h1><p className="mut" style={{ margin: 0, fontSize: '1rem' }}>Tu Inicio te muestra primero lo que requiere tu atención.</p></div></>}
+        {n === 5 && <><div className="obdone"><Confetti /><svg viewBox="0 0 120 120" width="120" height="120"><circle className="dc" cx="60" cy="60" r="56" /><path className="dk" d="M36 62l17 17 31-36" /></svg></div><div><h1 className="obh" style={{ marginBottom: 12 }}>Todo listo, Residente</h1><p className="mut" style={{ margin: 0, fontSize: '1rem' }}>Tu Inicio te muestra primero lo que requiere tu atención.</p></div></>}
       </div>
       <Foot nb>
         {n === 4 && <Dots k={4} />}
@@ -265,7 +265,7 @@ function Home({ st, go }) {
     <>
       <div className="hdr" style={{ paddingBottom: 0, alignItems: 'flex-start' }}>
         <div className="col" style={{ flex: 1, gap: 2, minWidth: 0 }}><h1 style={{ margin: 0, fontWeight: 400, fontSize: '1.875rem', lineHeight: '2.25rem' }}>Hola,<br />Residente</h1><span className="t-sm mut">Torre A · Depto 1204</span></div>
-        <button className="tile" aria-label="Avisos" onClick={() => go('avisos')} style={{ width: 40, height: 40, border: 0, background: 'var(--muted)', position: 'relative', marginTop: -2 }}><Bell size={20} />{hasUnr && <i style={{ position: 'absolute', top: 8, right: 9, width: 8, height: 8, borderRadius: 4, background: '#e5484d' }} />}</button>
+        <button className="tile ib" aria-label="Avisos" onClick={() => go('avisos')} style={{ position: 'relative', marginTop: -2 }}><Bell size={20} />{hasUnr && <i style={{ position: 'absolute', top: 8, right: 9, width: 8, height: 8, borderRadius: 4, background: '#e5484d' }} />}</button>
         <button className="av" aria-label="Perfil" onClick={() => go('perfil')} style={{ width: 40, height: 40, background: 'none', overflow: 'hidden', padding: 0, marginTop: -2 }}>{st.photo ? <img src={st.photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : 'RD'}</button>
       </div>
       <div className="scroll nav-pad" style={{ paddingTop: 12 }}>
@@ -315,7 +315,7 @@ function Notice({ n, onClick, action, read, onRead }) {
   const pri = n.kind === 'urg', seen = useSeen(read, onRead)
   const Ic = pri ? CircleAlert : n.kind === 'com' ? Megaphone : Wrench
   return (
-    <div ref={seen} role="button" onClick={() => { if (onRead && !read) onRead(); if (onClick) onClick() }} className="col" style={{ gap: 8, padding: 20, borderRadius: 16, background: pri ? 'var(--primary)' : 'var(--muted)', color: pri ? '#fff' : undefined, cursor: 'pointer' }}>
+    <div ref={seen} role="button" onClick={() => { if (onRead && !read) onRead(); if (onClick) onClick() }} className="col" style={{ gap: 8, padding: 20, borderRadius: 'var(--r-2xl)', background: pri ? 'var(--primary)' : 'var(--muted)', color: pri ? '#fff' : undefined, cursor: 'pointer' }}>
       <div className="row" style={{ gap: 8, minHeight: 20 }}>
         <Ic size={20} /><span className="t-sm" style={{ flex: 1, fontWeight: 510 }}>{n.eyebrow}</span>
         {n.date && <span className="t-xs" style={{ color: pri ? 'rgba(255,255,255,.85)' : 'var(--content-muted)' }}>{n.date}</span>}
@@ -362,7 +362,7 @@ function Accesos({ st, go }) {
             <div className="row" style={{ gap: 12 }}><Btn v="inv" onClick={() => go('pase', { id: p.id })}>Ver</Btn><Btn v="danger" onClick={() => go('pase', { id: p.id, ask: true })}>Revocar</Btn></div>
           </div>))}
         {t === 'h' && hist.map(p => (
-          <button key={p.id} onClick={() => go('pase', { id: p.id })} className="row" style={{ gap: 12, background: 'var(--card-alt)', border: 0, borderRadius: 16, padding: 16, textAlign: 'left', width: '100%', alignItems: 'flex-start' }}>
+          <button key={p.id} onClick={() => go('pase', { id: p.id })} className="row rowc" style={{ alignItems: 'flex-start' }}>
             <span className="av" style={{ width: 40, height: 40 }}>{initials(p.name)}</span>
             <div className="col" style={{ flex: 1, gap: 6, minWidth: 0 }}><span className="t-base" style={{ fontWeight: 400 }}>{p.name}</span><span className="tag" style={{ alignSelf: 'flex-start' }}>{p.kind} • <Clock size={12} /> {p.when}</span></div>
             <Dot c={STC[p.status]} t={p.status} />
@@ -413,7 +413,7 @@ function PaseCreado({ st, p, tab, toast }) {
   return (
     <>
       <div className="scroll center" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 56px)', gap: 16 }}>
-        <h1 style={{ margin: 0, fontSize: '1.375rem', fontWeight: 590 }}>Pase creado</h1>
+        <h1 className="rt" style={{ marginTop: 0 }}>Pase creado</h1>
         <p className="t-sm mut" style={{ margin: 0 }}>{x.name} · {x.kind} · Válido {x.long || 'hoy hasta las 23:59'}</p>
         <Qr seed={x.id + x.name} size={160} />
         <div style={{ width: '100%' }}><PinBox label="PIN de visita" pin={x.pin} /></div>
@@ -427,7 +427,7 @@ function PaseRevocado({ st, p, tab, under }) {
   return (
     <>
       <div className="scroll center" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 48px)', gap: 16 }}>
-        <h1 style={{ margin: 0, fontSize: '1.375rem', fontWeight: 590 }}>Pase revocado</h1>
+        <h1 className="rt" style={{ marginTop: 0 }}>Pase revocado</h1>
         <p className="t-sm mut" style={{ margin: 0 }}>El acceso de {x.name} fue anulado y avisamos a conserjería.</p>
         <Qr seed={x.id + x.name} size={160} dim bad />
         <div className="card s" style={{ width: '100%', padding: '12px 24px' }}><KV k="Pase" v={`${x.name} · ${x.kind}`} /><KV k="Revocado" v={'Hoy, ' + (x.revokedAt || hhmm())} /></div>
@@ -491,7 +491,7 @@ function Encomiendas({ st, up, back, deep, toast }) {
 
 /* ---------- Finanzas ---------- */
 const PayRow = ({ c, onClick }) => (
-  <button className="row" onClick={onClick} style={{ gap: 12, background: 'var(--card-alt)', border: 0, borderRadius: 16, padding: 16, textAlign: 'left', width: '100%' }}>
+  <button className="row rowc" onClick={onClick}>
     <Tile icon={Receipt} /><div className="col" style={{ flex: 1 }}><span className="t-base" style={{ fontSize: '1rem', fontWeight: 400 }}>{c.concept}</span><span className="t-xs mut">Pagado {c.short} · {c.m}</span></div><span className="t-base">{money(c.v)}</span>
   </button>)
 
@@ -606,7 +606,7 @@ function PagoOk({ st, p, tab, toast }) {
   return (
     <>
       <div className="scroll center" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 48px)', gap: 12 }}>
-        <Success /><h1 style={{ margin: '12px 0 0', fontSize: '1.375rem', fontWeight: 590 }}>Pago realizado</h1>
+        <Success /><h1 className="rt">Pago realizado</h1>
         <div style={{ fontSize: '2.25rem', lineHeight: '2.75rem', fontWeight: 590 }}>{money(c.v)}</div>
         <p className="t-xs mut" style={{ margin: 0 }}>Gastos comunes de noviembre 2026</p>
         <div className="card s" style={{ width: '100%', padding: '12px 24px', marginTop: 8 }}><KV k="N° de comprobante" v={c.ref} /><KV k="Fecha" v={c.date} /><KV k="Método" v={c.method} /></div>
@@ -642,10 +642,10 @@ function Servicios({ st, go, p }) {
         <Tabs items={[['res', 'Reservas'], ['sol', 'Solicitudes']]} value={t} onChange={setT} />
         {t === 'res' ? <>
           {next && <div className="col" style={{ gap: 12 }}><p className="sec">Mi próxima reserva</p>
-            <div className="sum alert"><Tile icon={Cal} pri /><span className="b"><span className="t-xs mut">{next.space}</span><span className="t-base" style={{ fontSize: '1.125rem' }}>{dShort(dt(next.date))}</span><span className="t-xs mut">{next.from} – {next.to} · Gratis</span></span><ChevronRight size={16} color="var(--content-muted)" /></div></div>}
+            <div className="sum alert"><Tile icon={Cal} pri /><span className="b"><span className="t-xs mut">{next.space}</span><span className="t-lg">{dShort(dt(next.date))}</span><span className="t-xs mut">{next.from} – {next.to} · Gratis</span></span><ChevronRight size={16} color="var(--content-muted)" /></div></div>}
           <div className="col" style={{ gap: 12 }}><p className="sec">Reservar un espacio</p>
             {spaces.map(([I, n, s]) => (
-              <button key={n} onClick={() => go('reservar')} style={{ background: 'var(--muted)', border: 0, borderRadius: 24, overflow: 'hidden', textAlign: 'left', padding: 0, width: '100%' }}>
+              <button key={n} onClick={() => go('reservar')} style={{ background: 'var(--muted)', border: 0, borderRadius: 'var(--r-3xl)', overflow: 'hidden', textAlign: 'left', padding: 0, width: '100%' }}>
                 <div style={{ height: 112, background: 'var(--elevated)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><I size={44} strokeWidth={1.4} /></div>
                 <div className="col" style={{ padding: 16, gap: 8 }}><div className="row" style={{ justifyContent: 'space-between' }}><span className="t-base" style={{ fontSize: '1rem', fontWeight: 400 }}>{n}</span><Dot c="#16a34a" t="Disponible" /></div><span className="t-xs mut">{s}</span></div>
               </button>))}
@@ -709,7 +709,7 @@ function ConfReserva({ p, up, back, replace }) {
     <>
       <Header title="Confirmar reserva" onBack={back} />
       <div className="scroll" style={{ paddingTop: 4, gap: 16 }}>
-        <div className="card col" style={{ gap: 4 }}><span className="t-base" style={{ fontSize: '1.125rem', fontWeight: 400, marginBottom: 8 }}>Resumen</span>
+        <div className="card col" style={{ gap: 4 }}><span className="t-lg" style={{ marginBottom: 8 }}>Resumen</span>
           <KV k="Espacio" v="Quincho" /><KV k="Fecha" v={`${dShort(d)} ${d.getFullYear()}`} /><KV k="Horario" v={`${b[1]} – ${b[2]}`} /><KV k="Departamento" v="Torre A · 1204" /><KV k="Costo" v="Gratis" /></div>
         <div className="row t-xs mut" style={{ gap: 8 }}><Info size={16} />Puedes cancelar hasta 24 horas antes, sin costo.</div>
       </div>
@@ -723,7 +723,7 @@ function ReservaOk({ st, p, tab }) {
   return (
     <>
       <div className="scroll center" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 56px)', gap: 16 }}>
-        <Success /><h1 style={{ margin: '8px 0 0', fontSize: '1.375rem', fontWeight: 590 }}>Reserva confirmada</h1>
+        <Success /><h1 className="rt">Reserva confirmada</h1>
         <p className="t-sm mut" style={{ margin: 0 }}>Quincho · {dShort(d)} · {r.from} – {r.to}</p>
         <div className="card s" style={{ width: '100%', padding: '12px 24px' }}><KV k="N° de reserva" v={r.ref} /><KV k="Costo" v="Gratis" /><KV k="Cancelación" v={`Hasta el ${DIAS[c.getDay()].slice(0, 3)} ${c.getDate()} ${MESES[c.getMonth()].slice(0, 3)}, ${r.from}`} /></div>
       </div>
@@ -740,7 +740,7 @@ function SolCat({ back, go }) {
     <>
       <Header title="Nueva solicitud" onBack={back} />
       <div className="scroll" style={{ paddingTop: 0, gap: 16 }}>
-        <span className="t-base" style={{ fontSize: '1.125rem', fontWeight: 510 }}>¿Qué necesitas?</span>
+        <span className="t-lg">¿Qué necesitas?</span>
         {CATS.map(([I, c]) => <button key={c} className="sum" style={{ padding: '16px', minHeight: 72 }} onClick={() => go('solForm', { cat: c })}><Tile icon={I} size={40} ico={20} /><span className="t-sm" style={{ flex: 1, fontSize: '1rem', lineHeight: '1.5rem' }}>{c}</span><ChevronRight size={16} color="var(--content-muted)" /></button>)}
       </div></>)
 }
@@ -775,8 +775,8 @@ function SolForm({ p, up, back, replace }) {
         <div><span className="lbl" style={{ marginBottom: 8, display: 'block' }}>Fotos <span className="mut">(opcional · hasta 3)</span></span>
           <input ref={fin} type="file" accept="image/*" multiple hidden onChange={async e => { const fs = [...e.target.files].slice(0, 3 - fotos.length); e.target.value = ''; const out = []; for (const f of fs) { try { out.push(await shrink(f)) } catch (x) {} } setFotos(a => [...a, ...out].slice(0, 3)) }} />
           <div className="row" style={{ gap: 8, flexWrap: 'wrap' }}>
-            {fotos.map((u, i) => <div key={i} style={{ position: 'relative', width: 88, height: 88 }}><img src={u} alt={'Foto ' + (i + 1)} style={{ width: 88, height: 88, objectFit: 'cover', borderRadius: 16, display: 'block' }} /><button aria-label={'Quitar foto ' + (i + 1)} onClick={() => setFotos(a => a.filter((_, j) => j !== i))} style={{ position: 'absolute', top: -6, right: -6, width: 24, height: 24, borderRadius: 12, border: 0, background: 'var(--content)', color: 'var(--surface)', display: 'grid', placeItems: 'center' }}><X size={14} /></button></div>)}
-            {fotos.length < 3 && <button onClick={() => fin.current && fin.current.click()} className="col" style={{ alignItems: 'center', justifyContent: 'center', gap: 4, width: fotos.length ? 88 : '100%', height: fotos.length ? 88 : 88, border: '1px dashed var(--border-strong)', borderRadius: 16, background: 'none', fontSize: '0.875rem' }}><Camera size={20} />{fotos.length ? 'Agregar' : 'Tomar o subir foto'}</button>}
+            {fotos.map((u, i) => <div key={i} style={{ position: 'relative', width: 88, height: 88 }}><img src={u} alt={'Foto ' + (i + 1)} style={{ width: 88, height: 88, objectFit: 'cover', borderRadius: 'var(--r-2xl)', display: 'block' }} /><button aria-label={'Quitar foto ' + (i + 1)} onClick={() => setFotos(a => a.filter((_, j) => j !== i))} style={{ position: 'absolute', top: -6, right: -6, width: 24, height: 24, borderRadius: 12, border: 0, background: 'var(--content)', color: 'var(--surface)', display: 'grid', placeItems: 'center' }}><X size={14} /></button></div>)}
+            {fotos.length < 3 && <button onClick={() => fin.current && fin.current.click()} className="col" style={{ alignItems: 'center', justifyContent: 'center', gap: 4, width: fotos.length ? 88 : '100%', height: fotos.length ? 88 : 88, border: '1px dashed var(--border-strong)', borderRadius: 'var(--r-2xl)', background: 'none', fontSize: '0.875rem' }}><Camera size={20} />{fotos.length ? 'Agregar' : 'Tomar o subir foto'}</button>}
           </div></div>
       </div>
       <Foot><Btn onClick={send}>Enviar solicitud</Btn></Foot></>)
@@ -787,7 +787,7 @@ function SolOk({ st, p, tab, under }) {
   return (
     <>
       <div className="scroll center" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 48px)', gap: 12 }}>
-        <Success /><h1 style={{ margin: '12px 0 0', fontSize: '1.375rem', fontWeight: 590 }}>Solicitud enviada</h1>
+        <Success /><h1 className="rt">Solicitud enviada</h1>
         <p className="t-xs mut" style={{ margin: 0 }}>Te avisaremos cuando cambie su estado.</p>
         <div className="card s" style={{ width: '100%', padding: '12px 24px', marginTop: 8 }}><KV k="N° de solicitud" v={r.ref} /><KV k="Categoría" v={SHORT[r.cat]} /><KV k="Importancia" v={PRIO[r.prio ?? 1][0]} /><KV k="Estado" v="Recibida" /><KV k="Respuesta estimada" v="En 48 horas" /></div>
       </div>
@@ -805,7 +805,7 @@ function SolDetalle({ st, up, p, back, tab, go }) {
         <div className="card s col" style={{ gap: 12 }}>
           <div className="row" style={{ gap: 12, alignItems: 'flex-start' }}><Tile icon={I} size={40} ico={18} /><div className="col" style={{ flex: 1 }}><span className="t-base" style={{ fontWeight: 400 }}>{r.title}</span><span className="t-xs mut">N° {r.ref} · {r.created}{r.prio != null ? ` · Importancia ${PRIO[r.prio][0].toLowerCase()}` : ''}</span></div><Dot c={SC[r.status]} t={stepName[r.status]} /></div>
           <span className="t-xs mut">{r.desc}</span>
-          {r.fotos && r.fotos.length > 0 && <div className="row" style={{ gap: 8 }}>{r.fotos.map((u, i) => <img key={i} src={u} alt={'Foto ' + (i + 1)} style={{ width: 88, height: 88, objectFit: 'cover', borderRadius: 16 }} />)}</div>}</div>
+          {r.fotos && r.fotos.length > 0 && <div className="row" style={{ gap: 8 }}>{r.fotos.map((u, i) => <img key={i} src={u} alt={'Foto ' + (i + 1)} style={{ width: 88, height: 88, objectFit: 'cover', borderRadius: 'var(--r-2xl)' }} />)}</div>}</div>
         <div className="card"><span className="t-base" style={{ display: 'block', marginBottom: 16, fontWeight: 400 }}>Seguimiento</span>
           <div className="tl">{stepName.map((s, i) => <div key={s} className={'it ' + (i < r.status || (i === 2 && r.status === 2) ? 'done' : i === r.status ? 'cur' : '')}><b />
             <div className="t-sm" style={{ fontWeight: 510, color: i > r.status ? 'var(--content-muted)' : undefined }}>{s}</div>
@@ -824,7 +824,7 @@ function Avisos({ st, up, back, go }) {
   const urg = avs.find(n => n.kind === 'urg')
   return (
     <>
-      <div className="hdr in"><button className="back" aria-label="Atrás" onClick={back}><ArrowUpLeft size={22} /></button><h1>Avisos</h1><button className="tile" aria-label="Ajustes de notificaciones" onClick={() => go('ajustes')} style={{ width: 40, height: 40, border: 0, background: 'var(--muted)' }}><Settings size={20} /></button></div>
+      <Header title="Avisos" onBack={back} right={<button className="tile ib" aria-label="Ajustes de notificaciones" onClick={() => go('ajustes')}><Settings size={20} /></button>} />
       <div className="scroll nav-pad" style={{ paddingTop: 4, gap: 16 }}>
         <Tabs items={[['t', 'Todos', unr.length > 0 ? unr.length : undefined], ['m', 'Mantención', unrM.length > 0 ? unrM.length : undefined]]} value={t} onChange={setT} />
         {t === 't' ? <>
@@ -957,7 +957,7 @@ function PagoFallido({ st, p, go, replace, tab, back }) {
     <>
       <div className="scroll center" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 48px)', gap: 12 }}>
         <div className="ok" style={{ width: 96, height: 96, background: 'var(--danger)' }}><CircleX size={48} strokeWidth={1.6} color="#fff" /></div>
-        <h1 style={{ margin: '12px 0 0', fontSize: '1.375rem', fontWeight: 590 }}>No pudimos procesar tu pago</h1>
+        <h1 className="rt">No pudimos procesar tu pago</h1>
         <p className="t-sm mut" style={{ margin: 0, maxWidth: 300 }}>Tu banco rechazó la operación. No se hizo ningún cargo a tu {p.method.startsWith('Tarjeta') ? 'tarjeta' : 'cuenta'}.</p>
         <div className="card s" style={{ width: '100%', padding: '12px 24px', marginTop: 8 }}><KV k="Método" v={p.method} /><KV k="Motivo" v="Rechazado por el emisor" /></div>
       </div>
@@ -1007,7 +1007,7 @@ function Correo({ st, p, back, replace }) {
       <Header title="Contactar con administrador" onBack={back} />
       <div className="scroll" style={{ paddingTop: 0, gap: 20 }}>
         <div><span className="lbl" style={{ marginBottom: 8 }}>Para</span>
-          <div className="card row" style={{ gap: 12, padding: 12, borderRadius: 16 }}><Tile icon={Building2} size={36} ico={18} /><div className="col"><span className="t-sm" style={{ fontWeight: 510 }}>Administración</span><span className="t-xs mut">admin@komon.cl</span></div></div></div>
+          <div className="card row" style={{ gap: 12, padding: 12, borderRadius: 'var(--r-2xl)' }}><Tile icon={Building2} size={36} ico={18} /><div className="col"><span className="t-sm" style={{ fontWeight: 510 }}>Administración</span><span className="t-xs mut">admin@komon.cl</span></div></div></div>
         <div><label className="lbl" htmlFor="cs" style={{ marginBottom: 8 }}>Asunto</label><input id="cs" className={'field' + (er.subj ? ' bad' : '')} aria-invalid={!!er.subj} aria-describedby="cs-h" placeholder="Ej: Consulta sobre mi solicitud" value={subj} onChange={e => { setSubj(e.target.value); setEr(x => ({ ...x, subj: null })) }} /><Hint id="cs-h" err={er.subj}>Resume el motivo de tu correo</Hint></div>
         <div><label className="lbl" htmlFor="cm" style={{ marginBottom: 8 }}>Mensaje</label><textarea id="cm" className={'field' + (er.msg ? ' bad' : '')} aria-invalid={!!er.msg} aria-describedby="cm-h" rows={6} placeholder="Escribe tu mensaje" value={msg} onChange={e => { setMsg(e.target.value); setEr(x => ({ ...x, msg: null })) }} style={{ resize: 'none' }} /><Hint id="cm-h" err={er.msg}>Responderán a tu correo registrado.</Hint></div>
       </div>
@@ -1019,7 +1019,7 @@ function CorreoOk({ st, p, tab, under }) {
   return (
     <>
       <div className="scroll center" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 48px)', gap: 12 }}>
-        <Success /><h1 style={{ margin: '12px 0 0', fontSize: '1.375rem', fontWeight: 590 }}>Correo enviado</h1>
+        <Success /><h1 className="rt">Correo enviado</h1>
         <p className="t-sm mut" style={{ margin: 0, maxWidth: 300 }}>La administración te responderá a residente@komon.cl en un plazo de 48 horas hábiles.</p>
       </div>
       <Foot nb>{r && <Btn v="inv" onClick={() => under(['serv', { tab: 'sol' }], 'sol', { id: r.id, fresh: true })}>Volver a mi solicitud</Btn>}<Btn v={r ? 'dark' : 'inv'} onClick={() => tab('home')}>Volver al inicio</Btn></Foot></>)
