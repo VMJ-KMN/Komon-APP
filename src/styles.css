@@ -339,3 +339,8 @@ html[data-theme=claro] .phone.home.gris:not(.sb-scrolled) .sbar i{background:#f3
 @keyframes obt{0%,100%{opacity:0}50%{opacity:1}}
 @keyframes obd{from{-webkit-mask-position:0 0,40px 30px,0 0;mask-position:0 0,40px 30px,0 0}to{-webkit-mask-position:130px 110px,170px 140px,0 0;mask-position:130px 110px,170px 140px,0 0}}
 @media (prefers-reduced-motion:reduce){.ob0-top::before,.ob0-top::after{animation:none}.ob0-top::after{opacity:0}}
+
+/* Onboarding: Omitir en píldora legible sobre el patrón; progreso en puntos, siempre abajo */
+.obbar{justify-content:space-between}
+.obbar .skip{opacity:1;background:rgba(0,0,0,.32);border-radius:9999px;height:36px;min-width:44px;padding:0 16px;font-weight:500;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.ob0-sheet .row[role=img]{margin:2px 0 4px}

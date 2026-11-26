@@ -195,7 +195,7 @@ function Onb({ st, up, tab }) {
       <div className="ob0-top" style={{ paddingTop: 56 }}>
         <div className="obbar">
           <button aria-label="Atrás" onClick={prev}><ArrowUpLeft size={22} /></button>
-          <Seg k={n} />
+          <span style={{ flex: 1 }} />
           <button className="skip" onClick={() => adv(5)}>Omitir</button>
         </div>
         <Scene />
@@ -203,6 +203,7 @@ function Onb({ st, up, tab }) {
       <div className="ob0-sheet obtx">
         <h1>{slides[n][1]}</h1>
         <p>{slides[n][2]}</p>
+        <Dots k={n} />
         <Btn onClick={() => adv(n + 1)}>{lab[n]}</Btn>
       </div>
     </div>)
@@ -210,7 +211,7 @@ function Onb({ st, up, tab }) {
     <>
       <div className="hdr" style={{ justifyContent: 'space-between', paddingTop: 'calc(env(safe-area-inset-top) + 20px)' }}>
         <div style={{ width: 72 }}>{n > 0 && <button className="back" aria-label="Atrás" onClick={prev} style={{ background: 'none', border: 0, height: 40, display: 'flex', alignItems: 'center' }}><ArrowUpLeft size={22} /></button>}</div>
-        <div style={{ flex: 1, padding: '0 8px' }}>{n === 4 && <Seg k={4} d />}</div>
+        <div style={{ flex: 1 }} />
         <div style={{ width: 72, textAlign: 'right' }}>{n >= 1 && n <= 4 && <button className="lnk" style={{ color: 'var(--content-muted)', height: 40 }} onClick={() => adv(5)}>Omitir</button>}</div>
       </div>
       <div key={n} className="scroll col center" style={{ justifyContent: "center", gap: 24 }}>
@@ -218,10 +219,11 @@ function Onb({ st, up, tab }) {
           <div className="col" style={{ gap: 12 }}>
             <h1 style={{ margin: 0, fontSize: '1.75rem', lineHeight: 1.2, fontWeight: 590 }}>{slides[n][1]}</h1><p className="mut" style={{ margin: 0, fontSize: '1rem', lineHeight: '1.5rem' }}>{slides[n][2]}</p></div><Dots k={n} /></>}
         {n === 4 && <div style={{ width: '100%' }}><h1 style={{ margin: '0 0 12px', fontSize: '1.75rem', fontWeight: 590 }}>Avisos que importan</h1><p className="mut" style={{ margin: '0 0 24px', fontSize: '1rem' }}>Elige de qué quieres enterarte. Puedes cambiarlo después en tu perfil.</p>
-          <div className="card s" style={{ padding: '0 16px', textAlign: 'left' }}>{rows.map(([k, l, s], i) => <div key={k} className="row" style={{ minHeight: 68, gap: 12, borderTop: i ? '1px solid var(--border)' : 0 }}><div style={{ flex: 1 }}><div className="t-base">{l}</div><div className="t-sm mut">{s}</div></div><Switch label={l} on={sw[k]} onChange={() => setSw({ ...sw, [k]: !sw[k] })} /></div>)}</div><div style={{ marginTop: 24 }}><Dots k={4} /></div></div>}
+          <div className="card s" style={{ padding: '0 16px', textAlign: 'left' }}>{rows.map(([k, l, s], i) => <div key={k} className="row" style={{ minHeight: 68, gap: 12, borderTop: i ? '1px solid var(--border)' : 0 }}><div style={{ flex: 1 }}><div className="t-base">{l}</div><div className="t-sm mut">{s}</div></div><Switch label={l} on={sw[k]} onChange={() => setSw({ ...sw, [k]: !sw[k] })} /></div>)}</div><div style={{ marginTop: 24 }}></div></div>}
         {n === 5 && <><div className="obdone"><Confetti /><svg viewBox="0 0 120 120" width="120" height="120"><circle className="dc" cx="60" cy="60" r="56" /><path className="dk" d="M36 62l17 17 31-36" /></svg></div><div><h1 style={{ margin: '0 0 12px', fontSize: '1.75rem', fontWeight: 590 }}>Todo listo, Residente</h1><p className="mut" style={{ margin: 0, fontSize: '1rem' }}>Tu Inicio te muestra primero lo que requiere tu atención.</p></div></>}
       </div>
       <Foot nb>
+        {n === 4 && <Dots k={4} />}
         <Btn onClick={() => (n === 5 ? finish() : adv(n + 1))}>{lab[n]}</Btn>
         {n === 4 ? <Btn v="dark" onClick={() => adv(5)}>Ahora no</Btn> : <div style={{ height: 48 }} />}
       </Foot></>)
