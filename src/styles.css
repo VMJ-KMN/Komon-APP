@@ -356,3 +356,5 @@ html[data-theme=claro] .phone.home.gris:not(.sb-scrolled) .sbar i{background:#f3
 /* Botón principal a la misma altura en todos los pasos */
 .ob0-sheet{padding-bottom:calc(env(safe-area-inset-bottom) + var(--sb-bot) + 72px)}
 .obs .ob0-sheet{padding-bottom:calc(env(safe-area-inset-bottom) + var(--sb-bot) + 72px)}
+.obbar.d{top:calc(54px - var(--sb-top))}
+.ob0-sheet .row[role=img]{margin:2px 0 -4px}
