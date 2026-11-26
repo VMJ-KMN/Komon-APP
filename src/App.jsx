@@ -16,7 +16,8 @@ export default function App() {
   const [stack, setStack] = useState([{ s: st.onboarded ? 'home' : 'onb' }])
   const [toast, setToast] = useState(null)
   useEffect(() => { try { localStorage.setItem(LS, JSON.stringify(st)) } catch (e) {} }, [st])
-  useEffect(() => { if (toast) { const t = setTimeout(() => setToast(null), 2400); return () => clearTimeout(t) } }, [toast])
+  const [toastOut, setToastOut] = useState(false)
+  useEffect(() => { if (toast) { setToastOut(false); const t1 = setTimeout(() => setToastOut(true), 2150), t2 = setTimeout(() => { setToast(null); setToastOut(false) }, 2400); return () => { clearTimeout(t1); clearTimeout(t2) } } }, [toast])
   const cur = stack[stack.length - 1]
   const A11 = { size: 'n', contrast: 'normal', motion: 'normal', theme: 'oscuro', ...(st.a11y || {}) }
   const [sysLight, setSysLight] = useState(() => window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches)
@@ -89,7 +90,7 @@ export default function App() {
               {b === 'dot' ? st.bills.length > 0 && <i className="dot" aria-hidden="true" /> : b > 0 && <span className="bd" aria-hidden="true">{b}</span>}
             </button>))}
         </nav></>}
-      {toast && <div className="toast" role="status"><CircleCheck size={18} aria-hidden="true" />{toast}</div>}
+      {toast && <div className={'toast' + (toastOut ? ' out' : '')} role="status"><CircleCheck size={18} aria-hidden="true" />{toast}</div>}
       <div className="sr" role="status" aria-live="polite">{live}</div>
     </div></div>
   )
