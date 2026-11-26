@@ -293,16 +293,28 @@ function Home({ st, go }) {
       </div></>)
 }
 
-function ReadBar({ read, onRead, pri }) {
+function useSeen(read, onRead) {
+  const ref = React.useRef(null)
+  useEffect(() => {
+    if (read || !onRead || !ref.current || typeof IntersectionObserver === 'undefined') return
+    let t
+    const io = new IntersectionObserver(([e]) => { clearTimeout(t); if (e.isIntersecting) t = setTimeout(onRead, 1400) }, { threshold: 0.6 })
+    io.observe(ref.current)
+    return () => { clearTimeout(t); io.disconnect() }
+  }, [read])
+  return ref
+}
+function ReadBar({ read, pri }) {
+  const c = pri ? 'rgba(255,255,255,.9)' : 'var(--content-muted)'
   return read
-    ? <div className="row t-xs" style={{ gap: 6, marginTop: 4, color: pri ? 'rgba(255,255,255,.85)' : 'var(--content-muted)' }}><Check size={16} aria-hidden="true" />Leído</div>
-    : <button className="chip" onClick={e => { e.stopPropagation(); onRead() }} style={{ alignSelf: 'flex-start', marginTop: 4, background: pri ? '#fff' : 'var(--content)', color: pri ? '#1b1d1b' : 'var(--surface)', borderColor: 'transparent' }}>Marcar como leído</button>
+    ? <div className="row t-xs" style={{ gap: 6, marginTop: 4, color: c }}><Check size={16} aria-hidden="true" />Leído</div>
+    : <div className="row t-xs" style={{ gap: 6, marginTop: 4, color: pri ? '#fff' : 'var(--content)', fontWeight: 510 }}><i style={{ width: 8, height: 8, borderRadius: 4, background: pri ? '#fff' : 'var(--primary)', flex: 'none' }} aria-hidden="true" />Nuevo</div>
 }
 function Notice({ n, onClick, action, read, onRead }) {
-  const pri = n.kind === 'urg'
+  const pri = n.kind === 'urg', seen = useSeen(read, onRead)
   const Ic = pri ? CircleAlert : n.kind === 'com' ? Megaphone : Wrench
   return (
-    <div role="button" onClick={onClick} className="col" style={{ gap: 8, padding: 20, borderRadius: 16, background: pri ? 'var(--primary)' : 'var(--muted)', color: pri ? '#fff' : undefined, cursor: 'pointer' }}>
+    <div ref={seen} role="button" onClick={() => { if (onRead && !read) onRead(); if (onClick) onClick() }} className="col" style={{ gap: 8, padding: 20, borderRadius: 16, background: pri ? 'var(--primary)' : 'var(--muted)', color: pri ? '#fff' : undefined, cursor: 'pointer' }}>
       <div className="row" style={{ gap: 8, minHeight: 20 }}>
         <Ic size={20} /><span className="t-sm" style={{ flex: 1, fontWeight: 510 }}>{n.eyebrow}</span>
         {n.date && <span className="t-xs" style={{ color: pri ? 'rgba(255,255,255,.85)' : 'var(--content-muted)' }}>{n.date}</span>}
@@ -310,16 +322,17 @@ function Notice({ n, onClick, action, read, onRead }) {
       </div>
       <div className="t-lg">{n.t}</div>
       <div className="t-sm" style={{ opacity: .9 }}>{n.s}</div>
-      {onRead && <ReadBar read={read} onRead={onRead} pri={pri} />}
+      {onRead && <ReadBar read={read} pri={pri} />}
     </div>)
 }
 
 function ManCard({ n, read, onRead }) {
+  const seen = useSeen(read, onRead)
   return (
-    <div className="card s col" style={{ gap: 12 }}>
+    <div ref={seen} className="card s col" style={{ gap: 12 }}>
       <div className="row" style={{ gap: 12, alignItems: 'flex-start' }}><Wrench size={22} style={{ marginTop: 2 }} /><span className="t-base" style={{ flex: 1, fontWeight: 400 }}>{n.t}</span><span className="tag">{n.badge}</span></div>
       <div className="col" style={{ gap: 4 }}><span className="t-xs mut">{n.date}</span>{n.time && <span className="t-xs mut">{n.time}</span>}{n.s && <span className="t-xs" style={{ marginTop: 8 }}>{n.s}</span>}</div>
-      {onRead && <ReadBar read={read} onRead={onRead} />}
+      {onRead && <ReadBar read={read} />}
     </div>)
 }
 
