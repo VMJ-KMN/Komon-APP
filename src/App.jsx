@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { House, ScanQrCode, Package, Wallet, LayoutGrid, QrCode, Calendar as Cal, ClipboardList, Receipt, Bell, Utensils, Users, CircleAlert, ArrowUpRight, ArrowUpLeft, Clock, Building2, Shield, Droplet, Flame, Landmark, Lock, Camera, Wrench, MessageCircle, CircleHelp, CreditCard, Info, Plus, ChevronRight, Check, Wifi, Settings, Megaphone, TriangleAlert, CircleCheck, UserRound, ShieldCheck, LogOut, Accessibility, CircleX, Phone, Mail, FlaskConical, Image as ImageIcon, Trash2, X } from 'lucide-react'
+import { Star, House, ScanQrCode, Package, Wallet, LayoutGrid, QrCode, Calendar as Cal, ClipboardList, Receipt, Bell, Utensils, Users, CircleAlert, ArrowUpRight, ArrowUpLeft, Clock, Building2, Shield, Droplet, Flame, Landmark, Lock, Camera, Wrench, MessageCircle, CircleHelp, CreditCard, Info, Plus, ChevronRight, Check, Wifi, Settings, Megaphone, TriangleAlert, CircleCheck, UserRound, ShieldCheck, LogOut, Accessibility, CircleX, Phone, Mail, FlaskConical, Image as ImageIcon, Trash2, X } from 'lucide-react'
 import { Header, TabHeader, Foot, Btn, Sheet, Switch, Tabs, Tile, Sum, KV, PinBox, Success, Qr, Calendar, Dot, TODAY, MESES, DIAS, key, cap, dShort, money, initials } from './ui.jsx'
 import { initial, BLOCKS, STEPS, SHORT } from './data.js'
 
@@ -68,7 +68,7 @@ export default function App() {
   const Screens = { onb: Onb, home: Home, accesos: Accesos, nuevoPase: NuevoPase, paseCreado: PaseCreado, pase: PaseDetalle, paseRev: PaseRevocado,
     enc: Encomiendas, fin: Finanzas, detalleCobro: DetalleCobro, historial: HistorialPagos, pagar: Pagar, confPago: ConfPago, proc: Procesando, pagoOk: PagoOk, comp: Comprobante,
     serv: Servicios, reservar: Reservar, confReserva: ConfReserva, reservaOk: ReservaOk,
-    solCat: SolCat, solForm: SolForm, solOk: SolOk, sol: SolDetalle, avisos: Avisos, ajustes: Ajustes, perfil: Perfil, a11y: Accesib, datos: Datos, ayuda: Ayuda, pagoFail: PagoFallido, correo: Correo, correoOk: CorreoOk }
+    solCat: SolCat, solForm: SolForm, solOk: SolOk, sol: SolDetalle, avisos: Avisos, ajustes: Ajustes, perfil: Perfil, a11y: Accesib, datos: Datos, ayuda: Ayuda, pagoFail: PagoFallido, correo: Correo, correoOk: CorreoOk, evalCon: EvalCon }
   const S = Screens[cur.s]
   const showNav = NAV.includes(cur.s) || cur.s === 'avisos'
   const act = cur.s === 'avisos' ? 'home' : cur.s
@@ -463,12 +463,48 @@ function PaseDetalle({ st, up, p, back, replace, toast }) {
 }
 
 /* ---------- Encomiendas ---------- */
+const conOf = x => (x && x.by) || 'Marcelo Soto'
+const evOf = (st, ref) => (st.evals || []).find(e => e.ref === ref)
+function Stars({ v, onChange, size = 40 }) {
+  const L = ['', 'Muy mala', 'Mala', 'Regular', 'Buena', 'Muy buena']
+  return (
+    <div className="col" style={{ gap: 4, alignItems: 'center' }}>
+      <div className="row" role="radiogroup" aria-label="Puntaje de 1 a 5" style={{ gap: 4, justifyContent: 'center' }}>
+        {[1, 2, 3, 4, 5].map(i => <button key={i} role="radio" aria-checked={v === i} aria-label={i + ' de 5'} className="star" onClick={() => onChange(i)}><Star size={size} strokeWidth={1.5} fill={i <= v ? 'var(--primary)' : 'none'} color={i <= v ? 'var(--primary)' : 'var(--content-muted)'} /></button>)}
+      </div>
+      <span className="t-sm mut" style={{ minHeight: 20 }} aria-live="polite">{v ? L[v] : 'Toca una estrella'}</span>
+    </div>)
+}
+function EvalCon({ up, back, p, toast }) {
+  const [rate, setRate] = useState(0)
+  const [mot, setMot] = useState(p.motivo || 'Otro')
+  const [txt, setTxt] = useState('')
+  const who = p.conserje || 'Marcelo Soto'
+  const send = () => { up(s => ({ evals: [{ id: 'e' + Date.now(), conserje: who, puntaje: rate, comentario: txt.trim(), motivo: mot, fecha: 'Hoy, ' + hhmm(), ref: p.ref || null }, ...(s.evals || [])] })); toast('Gracias por tu evaluación'); back() }
+  return (
+    <>
+      <Header title="Evaluar al conserje" onBack={back} />
+      <div className="scroll" style={{ paddingTop: 0, gap: 20 }}>
+        <div className="card s row" style={{ gap: 12 }}><span className="av" style={{ width: 48, height: 48 }}>{initials(who)}</span><div className="col"><span className="t-base">{who}</span><span className="t-xs mut">Conserje · Turno de día</span></div></div>
+        <div className="col" style={{ gap: 8 }}><span className="lbl" style={{ textAlign: 'center' }}>¿Cómo fue su atención?</span><Stars v={rate} onChange={setRate} /></div>
+        <div><span className="lbl" id="mo-l" style={{ marginBottom: 8, display: 'block' }}>Motivo</span>
+          <div className="row" role="radiogroup" aria-labelledby="mo-l" style={{ gap: 8 }}>{['Encomienda', 'Visita', 'Otro'].map(m => <button key={m} role="radio" aria-checked={mot === m} className={'chip' + (mot === m ? ' on' : '')} style={{ flex: 1, justifyContent: 'center' }} onClick={() => setMot(m)}>{m}</button>)}</div></div>
+        <div><label className="lbl" htmlFor="ev-c" style={{ marginBottom: 8 }}>Comentario <span className="mut">(opcional)</span></label><textarea id="ev-c" className="field" rows={3} placeholder="Cuéntanos qué salió bien o qué mejorar" value={txt} onChange={e => setTxt(e.target.value)} /></div>
+        <p className="t-xs mut" style={{ margin: 0 }}>Evaluamos el servicio, no a la persona. La administración ve tu puntaje y comentario, sin tu nombre.</p>
+      </div>
+      <Foot><Btn disabled={!rate} onClick={send}>Enviar evaluación</Btn></Foot></>)
+}
+
 function Encomiendas({ st, up, back, deep, toast }) {
   const [t, setT] = useState('p')
   const lp = st.pkgs.filter(p => p.status === 'porteria'), lr = st.pkgs.filter(p => p.status === 'retirado')
   const list = t === 'p' ? lp : lr
   const [ask, setAsk] = useState(null)
-  const confirm = id => { up(s => ({ pkgs: s.pkgs.map(q => (q.id === id ? { ...q, status: 'retirado' } : q)) })); setAsk(null); toast('Retiro confirmado') }
+  const [ev, setEv] = useState(null)
+  const [rate, setRate] = useState(0)
+  const openEv = q => { setRate(0); setEv(q) }
+  const sendEv = () => { up(s => ({ evals: [{ id: 'e' + Date.now(), conserje: conOf(ev), puntaje: rate, comentario: '', motivo: 'Encomienda', fecha: 'Hoy, ' + hhmm(), ref: ev.id }, ...(s.evals || [])] })); setEv(null); toast('Gracias por tu evaluación') }
+  const confirm = id => { const q = st.pkgs.find(x => x.id === id); up(s => ({ pkgs: s.pkgs.map(q => (q.id === id ? { ...q, status: 'retirado' } : q)) })); setAsk(null); toast('Retiro confirmado'); openEv(q) }
   const del = id => up(s => ({ pkgs: s.pkgs.filter(q => q.id !== id) }))
   return (
     <>
@@ -480,13 +516,20 @@ function Encomiendas({ st, up, back, deep, toast }) {
           <div key={p.id} className="card col" style={{ gap: 12 }}>
             <div className="col" style={{ gap: 4 }}><div className="row" style={{ gap: 12 }}><Package size={22} /><span className="t-base" style={{ fontWeight: 400 }}>{p.from}</span></div><span className="t-xs mut">{p.info}</span></div>
             <PinBox label="PIN de retiro" pin={p.pin} />
-            {t === 'p' ? <Btn v="inv" onClick={() => setAsk(p)}>Confirmar Retiro</Btn> : <Btn v="dark" onClick={() => del(p.id)}>Borrar de la lista</Btn>}
+            {t === 'p' ? <Btn v="inv" onClick={() => setAsk(p)}>Confirmar Retiro</Btn> : <>
+              {evOf(st, p.id) ? <div className="row t-sm" style={{ gap: 8 }}><Star size={16} fill="var(--primary)" color="var(--primary)" />Evaluaste a {conOf(p)} · {evOf(st, p.id).puntaje} de 5</div> : <Btn v="inv" onClick={() => openEv(p)}><Star size={18} />Evaluar atención de {conOf(p).split(' ')[0]}</Btn>}
+              <Btn v="dark" onClick={() => del(p.id)}>Borrar de la lista</Btn></>}
           </div>))}
       </div>
       {ask && <Sheet onClose={() => setAsk(null)}>
         <h2 style={{ margin: 0, fontSize: '1rem', fontWeight: 510 }}>¿Ya retiraste la encomienda de {ask.from}?</h2>
         <p className="t-xs mut" style={{ margin: '0 0 8px' }}>Confirma solo si ya tienes el paquete en tus manos. Pasará a Retirados.</p>
-        <Btn onClick={() => confirm(ask.id)}>Sí, la retiré</Btn><Btn v="dark" onClick={() => setAsk(null)}>Todavía no</Btn></Sheet>}</>)
+        <Btn onClick={() => confirm(ask.id)}>Sí, la retiré</Btn><Btn v="dark" onClick={() => setAsk(null)}>Todavía no</Btn></Sheet>}
+      {ev && <Sheet onClose={() => setEv(null)}>
+        <h2 style={{ margin: 0, fontSize: '1rem', fontWeight: 510 }}>¿Cómo te atendió {conOf(ev)}?</h2>
+        <p className="t-xs mut" style={{ margin: '0 0 4px' }}>Tu evaluación llega a la administración, sin tu nombre.</p>
+        <Stars v={rate} onChange={setRate} size={36} />
+        <Btn disabled={!rate} onClick={sendEv}>Enviar evaluación</Btn><Btn v="dark" onClick={() => setEv(null)}>Ahora no</Btn></Sheet>}</>)
 }
 
 /* ---------- Finanzas ---------- */
@@ -890,6 +933,7 @@ function Perfil({ st, up, back, go, reset, toast }) {
           <div className="col" style={{ gap: 8, padding: '12px 0', borderTop: '1px solid var(--border)' }}><span className="t-sm">Diseño del Inicio</span>
             <div className="row" role="radiogroup" aria-label="Diseño del Inicio" style={{ gap: 8 }}>{[['nuevo', 'Naranja'], ['gris', 'Grises'], ['orig', 'Original']].map(([k, l]) => { const cur = homeVar(st.sim); return <button key={k} role="radio" aria-checked={cur === k} className={'chip' + (cur === k ? ' on' : '')} style={{ flex: 1, justifyContent: 'center' }} onClick={() => up(s2 => ({ sim: { ...(s2.sim || {}), inicio: k, inicioOrig: false } }))}>{l}</button> })}</div></div>
           <div className="row" style={{ minHeight: 52, gap: 12, borderTop: '1px solid var(--border)' }}><div className="col" style={{ flex: 1 }}><span className="t-sm">Avisos leídos (vista de administración)</span><span className="t-xs mut">{(st.read || []).length} de {st.notices.length} avisos</span></div><span className="t-base">{Math.round(((st.read || []).length / st.notices.length) * 100)} %</span></div>
+          <div className="row" style={{ minHeight: 52, gap: 12, borderTop: '1px solid var(--border)' }}><div className="col" style={{ flex: 1 }}><span className="t-sm">Evaluación del conserje (vista de administración)</span><span className="t-xs mut">{(st.evals || []).length} {(st.evals || []).length === 1 ? 'evaluación' : 'evaluaciones'}{(st.evals || []).length > 0 && ' · último: ' + (st.evals[0].comentario || 'sin comentario')}</span></div><span className="t-base">{(st.evals || []).length ? (st.evals.reduce((a, e) => a + e.puntaje, 0) / st.evals.length).toFixed(1).replace('.', ',') + ' ★' : '—'}</span></div>
           <span className="t-xs sub">«Cerrar sesión» reinicia la demo para el siguiente participante.</span>
         </div>}
       </div>
@@ -983,6 +1027,7 @@ function Ayuda({ back, go }) {
       <Header title="Ayuda" onBack={back} />
       <div className="scroll" style={{ paddingTop: 0, gap: 12 }}>
         <C icon={Phone} t="Conserjería" s="+56 2 2345 6789 · 24 horas" />
+        <C icon={Star} t="Evaluar al conserje" s="Cuéntanos cómo fue su atención" onClick={() => go('evalCon', {})} />
         <C icon={Mail} t="Escribir a administración" s="admin@komon.cl · Lun a Vie, 9:00 a 18:00" onClick={() => go('correo', {})} />
         <span className="sec" style={{ marginTop: 8 }}>Preguntas frecuentes</span>
         {F.map(([q, r]) => <div key={q} className="card col" style={{ gap: 4 }}><span className="t-sm" style={{ fontWeight: 510 }}>{q}</span><span className="t-xs mut">{r}</span></div>)}

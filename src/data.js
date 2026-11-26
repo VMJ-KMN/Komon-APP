@@ -2,6 +2,7 @@ const T = '#c5c5c5'
 export const initial = () => ({
   onboarded: false,
   read: [],
+  evals: [],
   sw: { pases: true, paq: true, fin: false, face: false },
   passes: [
     { id: 'p1', name: 'Técnico ClimaSur', kind: 'Técnico', when: '15:00 - 18:00', pin: '7743', rut: '12.345.678-9', created: 'Hoy, 12:10', valid: 'Hoy, 18:00', status: 'vigente' },
@@ -12,9 +13,9 @@ export const initial = () => ({
     { id: 'h4', name: 'Marta Soto', kind: 'Visita', when: '3 Días', pin: '1275', rut: '—', created: '1 nov, 10:00', valid: '4 nov, 23:59', status: 'expirado' },
   ],
   pkgs: [
-    { id: 'k1', from: 'Mercado Libre', info: 'Caja mediana - 1,8 kg - 29 oct', pin: '8421', status: 'porteria' },
-    { id: 'k2', from: 'Mercado Libre', info: 'Caja mediana - 1,8 kg - 29 oct', pin: '3951', status: 'porteria' },
-    { id: 'k0', from: 'Falabella', info: 'Bolsa - 0,6 kg - 24 oct', pin: '3373', status: 'retirado' },
+    { id: 'k1', from: 'Mercado Libre', info: 'Caja mediana - 1,8 kg - 29 oct', pin: '8421', status: 'porteria', by: 'Marcelo Soto' },
+    { id: 'k2', from: 'Mercado Libre', info: 'Caja mediana - 1,8 kg - 29 oct', pin: '3951', status: 'porteria', by: 'Camila Reyes' },
+    { id: 'k0', from: 'Falabella', info: 'Bolsa - 0,6 kg - 24 oct', pin: '3373', status: 'retirado', by: 'Marcelo Soto' },
   ],
   bills: [
     { k: 'Gasto común ordinario', s: 'Noviembre 2026', l: 'Según prorrateo del depto', v: 98000, i: 'building', g: 0 },
