@@ -169,7 +169,7 @@ function Onb({ st, up, tab }) {
   }, [])
   const finish = () => { const k = pushed.current; pushed.current = 0; up(() => ({ onboarded: true, sw })); tab('home'); if (k > 0) setTimeout(() => history.go(-k), 0) }
   const slides = [
-    [House, 'Tu comunidad, en tu mano', 'Visitas, pagos, encomiendas y reservas del edificio en un solo lugar.'],
+    [House, 'Tu edificio, sin llamadas', 'Komón es la gestión de tu edificio, simple y conectada: visitas, pagos, encomiendas y reservas en un solo lugar.'],
     [QrCode, 'Invita sin llamar a conserjería', 'Crea un pase con QR en segundos y revócalo cuando quieras.'],
     [Wallet, 'Todo al día, sin papeles', 'Paga tus gastos comunes y entérate apenas llega una encomienda.'],
     [Cal, 'Reserva y pide ayuda', 'Reserva el quincho gratis y haz solicitudes con seguimiento.'],
@@ -882,7 +882,7 @@ function Perfil({ st, up, back, go, reset, toast }) {
           <R icon={Info} t="Ayuda" onClick={() => go('ayuda')} />
         </div>
         <button className="lnk" style={{ alignSelf: 'center', color: 'var(--err)', minHeight: 44 }} onClick={reset}>Cerrar sesión</button>
-        <button className="t-xs sub" style={{ background: 'none', border: 0, alignSelf: 'center', minHeight: 44 }} onClick={() => setTaps(t => t + 1)}>Komón APP · Prototipo v1.0</button>
+        <button className="t-xs sub" style={{ background: 'none', border: 0, alignSelf: 'center', minHeight: 44 }} onClick={() => setTaps(t => t + 1)}>Komón APP · Prototipo v1.1</button>
         {mod && <div className="card col" style={{ gap: 4, padding: '12px 16px' }}>
           <span className="t-xs sub row" style={{ gap: 6 }}><FlaskConical size={14} />Modo moderador</span>
           <div className="row" style={{ minHeight: 52, gap: 12 }}><span className="t-sm" style={{ flex: 1 }}>El próximo pago falla</span><Switch label="El próximo pago falla" on={!!(st.sim && st.sim.fail)} onChange={sim('fail')} /></div>
