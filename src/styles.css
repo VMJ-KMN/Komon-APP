@@ -368,3 +368,8 @@ html[data-theme=claro] .phone.home.gris:not(.sb-scrolled) .sbar i{background:#f3
 .star{background:none;border:0;padding:4px;min-width:44px;min-height:44px;display:grid;place-items:center;border-radius:9999px;transition:transform .2s var(--ease)}
 .star:active{transform:scale(.88)}
 .star svg{transition:fill .2s var(--ease),color .2s var(--ease)}
+
+/* Barra de estado transparente al hacer scroll: el contenido pasa por detrás con un difuminado suave */
+.phone.home.sb-scrolled .sbar,.phone.home.gris.sb-scrolled .sbar{background:transparent}
+.phone.home .sbar::before{content:"";position:absolute;left:0;right:0;top:0;height:calc(100% + 14px);z-index:-1;pointer-events:none;opacity:0;transition:opacity .3s var(--ease);background:linear-gradient(to bottom,color-mix(in srgb,var(--surface) 55%,transparent),transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);-webkit-mask-image:linear-gradient(#000 55%,transparent);mask-image:linear-gradient(#000 55%,transparent)}
+.phone.home.sb-scrolled .sbar::before{opacity:1}
