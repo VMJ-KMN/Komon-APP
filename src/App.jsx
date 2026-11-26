@@ -907,11 +907,15 @@ function Perfil({ st, up, back, go, reset, toast }) {
           </button>
           <div className="col" style={{ gap: 2 }}><span className="t-lg">Residente Demo</span><span className="t-sm mut">Torre A · Depto 1204</span><button className="lnk" style={{ alignSelf: 'flex-start', minHeight: 28, textAlign: 'left' }} onClick={() => setAsk(true)}>Editar foto</button></div>
         </div>
+        <button className="sum" onClick={() => go('evalCon', {})} style={{ border: '1px solid var(--primary)' }}>
+          <Tile icon={Star} pri />
+          <span className="col" style={{ flex: 1, textAlign: 'left' }}><span className="t-base">Evalúa a tu conserje</span><span className="t-xs mut">Cuéntanos cómo fue su atención</span></span>
+          <ChevronRight size={20} />
+        </button>
         <div className="card" style={{ padding: '0 12px' }}>
           <R last={0} icon={UserRound} t="Mis datos" onClick={() => go('datos')} />
           <R icon={Bell} t="Notificaciones" onClick={() => go('ajustes')} />
           <R icon={Accessibility} t="Apariencia y accesibilidad" onClick={() => go('a11y')} />
-          <R icon={Star} t="Evaluar al conserje" onClick={() => go('evalCon', {})} />
           <R icon={Info} t="Ayuda" onClick={() => go('ayuda')} />
         </div>
         <button className="lnk" style={{ alignSelf: 'center', color: 'var(--err)', minHeight: 44 }} onClick={reset}>Cerrar sesión</button>
