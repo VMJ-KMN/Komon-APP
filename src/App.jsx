@@ -288,7 +288,7 @@ function Home({ st, go }) {
             {qa.map(([I, l, f, p]) => <button key={l} className="qa" onClick={f}><Tile icon={I} size={40} ico={20} pri={p} />{l}</button>)}
           </div>
         </div>
-        <div className="sheet">
+        <div className="hsheet">
           {main}
         </div>
       </div></>)

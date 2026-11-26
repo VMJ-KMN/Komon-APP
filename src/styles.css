@@ -176,7 +176,7 @@ html[data-theme=claro] .logo-d{display:none}html[data-theme=claro] .logo-l{displ
 .ok svg{animation:okdraw .4s .25s var(--ease) both}
 @keyframes okdraw{from{opacity:0;transform:scale(.6)}}
 .sheet-bg{animation:fade .2s}
-.sheet{animation:sheetUp .42s var(--ease)}
+.sheet,.hsheet{animation:sheetUp .42s var(--ease)}
 @keyframes sheetUp{from{transform:translateY(100%)}}
 .toast{animation:toastIn .4s var(--ease)}.toast.out{animation:toastOut .26s var(--ease-io) forwards}
 @keyframes toastOut{to{transform:translateY(-12px);opacity:0}}
@@ -205,7 +205,7 @@ html[data-motion=reducir] .spin{animation-duration:1.6s!important;animation-iter
 .hero .qa{background:none;color:#fff}
 .hero .qa .tile{background:rgba(255,255,255,.24);color:#fff}
 .hero .qa .tile.pri{background:#fff;color:var(--primary)}
-.sheet{position:relative;margin-top:-28px;background:var(--surface);border-radius:28px 28px 0 0;padding:24px 24px 0;display:flex;flex-direction:column;gap:24px;flex:1 0 auto;box-shadow:0 -6px 20px rgba(0,0,0,.10)}
+.hsheet{position:relative;margin-top:-28px;background:var(--surface);border-radius:28px 28px 0 0;padding:24px 24px 0;display:flex;flex-direction:column;gap:24px;flex:1 0 auto;box-shadow:0 -6px 20px rgba(0,0,0,.10)}
 /* Onboarding: bienvenida con color de marca + hoja blanca; pasos con ícono en círculo y puntos bajo el texto */
 .ob0{flex:1;min-height:0;display:flex;flex-direction:column}
 .ob0-top{flex:1;min-height:0;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:0 0 28px;
@@ -346,7 +346,7 @@ html[data-theme=claro] .phone.home.gris:not(.sb-scrolled) .sbar i{background:#f3
 .obbar .skip{opacity:1;background:rgba(0,0,0,.32);border-radius:9999px;height:36px;min-width:44px;padding:0 16px;font-weight:500;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
 .ob0-sheet .row[role=img]{margin:2px 0 4px}
 
-@media (prefers-reduced-motion:reduce){.scr,.scroll>*,.sheet,.sheet-bg,.toast,.ok,.obtx>*,.scn{animation-duration:.01ms!important;animation-delay:0s!important}}
+@media (prefers-reduced-motion:reduce){.scr,.scroll>*,.sheet,.hsheet,.sheet-bg,.toast,.ok,.obtx>*,.scn{animation-duration:.01ms!important;animation-delay:0s!important}}
 
 /* Onboarding oscuro: misma barra superior (altura y estilo) que los pasos naranjas */
 .obbar.d{z-index:3}
