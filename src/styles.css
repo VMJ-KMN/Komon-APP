@@ -8,7 +8,7 @@
   --sb-top:0px;--sb-bot:0px;--navb:18px;color-scheme:dark;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html{font-size:16px}html[data-size=l]{font-size:18px}html[data-size=xl]{font-size:20px}
+html{font-size:16px}html[data-size=s]{font-size:14px}html[data-size=l]{font-size:18px}html[data-size=xl]{font-size:20px}
 html,body,#root{height:100%;margin:0}
 body{background:var(--page);color:var(--content);font-family:-apple-system,'SF Pro Text','SF Pro Display',BlinkMacSystemFont,'Inter Variable',Inter,Roboto,'Segoe UI',sans-serif;font-optical-sizing:auto;-webkit-font-smoothing:antialiased}
 button{font-family:inherit;color:inherit;cursor:pointer;padding:0}
@@ -18,7 +18,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .tabs button:focus-visible{outline-offset:-3px}
 input,textarea{font-family:inherit}
 svg{flex:none}
-.stage{height:100dvh;display:flex;align-items:center;justify-content:center}
+.stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .phone{width:100%;height:100%;background:var(--surface);position:relative;overflow:hidden;display:flex;flex-direction:column}
 @media (min-width:520px){:root{--sb-top:47px;--sb-bot:34px;--navb:34px}.phone{width:390px;height:844px;max-height:96vh;border-radius:44px;border:1px solid var(--frame)}.sbar,.hind{display:flex!important}}
 .phone{max-width:430px}

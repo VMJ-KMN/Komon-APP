@@ -946,7 +946,7 @@ function Perfil({ st, up, back, go, reset, toast }) {
 function Accesib({ st, up, back }) {
   const A = { size: 'n', contrast: 'normal', motion: 'normal', theme: 'oscuro', ...(st.a11y || {}) }
   const set = o => up(s => ({ a11y: { ...(s.a11y || {}), ...o } }))
-  const sizes = [['n', 'Normal', 16], ['l', 'Grande', 18], ['xl', 'Muy grande', 20]]
+  const sizes = [['s', 'Pequeño', 14], ['n', 'Normal', 16], ['l', 'Grande', 18], ['xl', 'Muy grande', 20]]
   return (
     <>
       <Header title="Apariencia" onBack={back} />
