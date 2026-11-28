@@ -373,3 +373,9 @@ html[data-theme=claro] .phone.home.gris:not(.sb-scrolled) .sbar i{background:#f3
 .phone.home.sb-scrolled .sbar,.phone.home.gris.sb-scrolled .sbar{background:transparent}
 .phone.home .sbar::before{content:"";position:absolute;left:0;right:0;top:0;height:calc(100% + 14px);z-index:-1;pointer-events:none;opacity:0;transition:opacity .3s var(--ease);background:linear-gradient(to bottom,color-mix(in srgb,var(--surface) 55%,transparent),transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);-webkit-mask-image:linear-gradient(#000 55%,transparent);mask-image:linear-gradient(#000 55%,transparent)}
 .phone.home.sb-scrolled .sbar::before{opacity:1}
+
+/* Adaptación a cualquier ancho de celular: barra inferior y accesos rápidos sin pisarse */
+.nav button{flex:1 1 0;min-width:0;padding-left:2px;padding-right:2px;white-space:nowrap;font-size:clamp(9px,2.8vw,12px)}
+.nav button.on{flex:1.25 1 0;padding:8px clamp(4px,2vw,14px)}
+.qa{font-size:min(.75rem,3.4vw);text-align:center}
+@media (max-width:359px){.nav{left:8px;right:8px;padding:8px 6px}}
